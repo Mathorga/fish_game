@@ -4,10 +4,11 @@ import pyglet.gl as gl
 import amonite.controllers as controllers
 from amonite.upscaler import TrueUpscaler
 from amonite.scene_node import SceneNode
+from amonite.shapes.rect_node import RectNode
+from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
-from playable_scene_node import PlayableSceneNode
 
 
 FRAGMENT_SOURCE = """
@@ -86,16 +87,25 @@ class FishGame:
         )
 
         # Create a scene.
-        self.__active_scene: PlayableSceneNode
-        self.set_active_scene(
-            scene = PlayableSceneNode(
-                name = "FISH_GAME_000",
-                window = self.__window,
-                view_width = SETTINGS[Keys.VIEW_WIDTH],
-                view_height = SETTINGS[Keys.VIEW_HEIGHT],
-                on_ended = self.__on_scene_end
-            )
+        uniques.ACTIVE_SCENE = SceneNode(
+            window = self.__window,
+            view_width = SETTINGS[Keys.VIEW_WIDTH],
+            view_height = SETTINGS[Keys.VIEW_HEIGHT],
+            default_cam_speed = SETTINGS[Keys.CAMERA_SPEED],
+            title = "fish_game"
         )
+
+        test_child: PositionNode = RectNode(
+            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
+            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            width = 50.0,
+            height = 50.0,
+            anchor_x = 25.0,
+            anchor_y = 25.0,
+            color = (0xFF, 0x00, 0x00, 0xFF),
+            batch = uniques.ACTIVE_SCENE.world_batch,
+        )
+        uniques.ACTIVE_SCENE.add_child(test_child)
 
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
@@ -116,31 +126,46 @@ class FishGame:
 
         return window
 
-    def set_active_scene(self, scene: PlayableSceneNode) -> None:
+    def on_draw(self) -> None:
         """
-        Sets the currently active scene to [scene].
+        Draws everything to the screen.
         """
 
-        self.__active_scene = scene
+        # Update window matrix.
+        self.__window.projection = pyglet.math.Mat4.orthogonal_projection(
+            left = 0,
+            right = self.__window.width,
+            bottom = 0,
+            top = self.__window.height,
+            # For some reason near and far planes are inverted in sign, so that -500 means 500 and 1024 means -1024.
+            z_near = -3000,
+            z_far = 3000
+        )
 
-        # Make sure the active scene was set globally.
-        assert uniques.ACTIVE_SCENE is not None
+        # Benchmark measures render time.
+        self.__window.clear()
 
-    def __on_scene_end(self, bundle: dict):
-        print("scene_ended", bundle)
-        if bundle["next_scene"]:
-            # First delete the current scene then clear controllers.
-            self.__active_scene.delete()
-            controllers.COLLISION_CONTROLLER.clear()
-            controllers.INTERACTION_CONTROLLER.clear()
+        # Upscaler handles maintaining the wanted output resolution.
+        with self.__upscaler:
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.draw()
 
-            self.set_active_scene(
-                scene = PlayableSceneNode(
-                    name = bundle["next_scene"],
-                    window = self.__window,
-                    view_width = SETTINGS[Keys.VIEW_WIDTH],
-                    view_height = SETTINGS[Keys.VIEW_HEIGHT],
-                    bundle = bundle,
-                    on_ended = self.__on_scene_end
-                )
-            )
+            if SETTINGS[Keys.DEBUG]:
+                self.__fps_display.draw()
+
+    def update(self, dt: float) -> None:
+        # upscaler_program["dt"] = dt
+        # Benchmark measures update time.
+        # Compute collisions through collision manager.
+        controllers.COLLISION_CONTROLLER.update(dt = dt)
+
+        # InputController makes sure every input is handled correctly.
+        with controllers.INPUT_CONTROLLER:
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.update(dt = dt)
+
+    def run(self) -> None:
+        pyglet.clock.schedule_interval(self.update, 1.0 / (2.0 * SETTINGS[Keys.TARGET_FPS]))
+        pyglet.app.run(interval =  1.0 / SETTINGS[Keys.TARGET_FPS])
+
+FishGame().run()
