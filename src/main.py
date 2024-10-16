@@ -2,9 +2,11 @@ import os
 import pyglet
 import pyglet.gl as gl
 import amonite.controllers as controllers
+from amonite.animation import Animation
 from amonite.upscaler import TrueUpscaler
 from amonite.scene_node import SceneNode
 from amonite.shapes.rect_node import RectNode
+from amonite.sprite_node import SpriteNode
 from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
@@ -95,17 +97,17 @@ class FishGame:
             title = "fish_game"
         )
 
-        test_child: PositionNode = RectNode(
+        ######################## Scene content ########################
+
+        test_sprite: PositionNode = SpriteNode(
+            resource = Animation(source = "sprites/fish_idle.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
-            width = 50.0,
-            height = 50.0,
-            anchor_x = 25.0,
-            anchor_y = 25.0,
-            color = (0xFF, 0x00, 0x00, 0xFF),
-            batch = uniques.ACTIVE_SCENE.world_batch,
+            batch = uniques.ACTIVE_SCENE.world_batch
         )
-        uniques.ACTIVE_SCENE.add_child(test_child)
+
+        # Add children to the active scene.
+        uniques.ACTIVE_SCENE.add_child(test_sprite)
 
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
