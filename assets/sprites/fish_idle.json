@@ -1,0 +1,7 @@
+{
+    "name": "fish_idle",
+    "path": "sprites/fish_idle.png",
+    "rows": 1,
+    "columns": 1,
+    "center_x": true
+}
