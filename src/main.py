@@ -11,6 +11,7 @@ from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
+from fish_node import FishNode
 
 
 FRAGMENT_SOURCE = """
@@ -99,15 +100,21 @@ class FishGame:
 
         ######################## Scene content ########################
 
-        test_sprite: PositionNode = SpriteNode(
-            resource = Animation(source = "sprites/fish_idle.json").content,
+        # test_sprite: PositionNode = SpriteNode(
+        #     resource = Animation(source = "sprites/fish_idle.json").content,
+        #     x = SETTINGS[Keys.VIEW_WIDTH] / 2,
+        #     y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+        #     batch = uniques.ACTIVE_SCENE.world_batch
+        # )
+
+        fish: FishNode = FishNode(
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             batch = uniques.ACTIVE_SCENE.world_batch
         )
 
         # Add children to the active scene.
-        uniques.ACTIVE_SCENE.add_child(test_sprite)
+        uniques.ACTIVE_SCENE.add_child(fish)
 
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
