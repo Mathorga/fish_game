@@ -16,6 +16,9 @@ from constants import collision_tags
 
 
 class WaterFishDataNode(PositionNode):
+    """
+    """
+
     def __init__(
         self,
         x: float = 0.0,
@@ -84,15 +87,6 @@ class WaterFishDataNode(PositionNode):
 
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)
-
-    def get_input_movement(self) -> bool:
-        return controllers.INPUT_CONTROLLER.get_movement()
-
-    def get_input_movement_vec(self) -> pm.Vec2:
-        return controllers.INPUT_CONTROLLER.get_movement_vec()
-
-    def get_input_dash(self) -> bool:
-        return controllers.INPUT_CONTROLLER.get_sprint()
 
     def compute_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
         target_speed: float = 0.0

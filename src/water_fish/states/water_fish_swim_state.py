@@ -1,5 +1,6 @@
 import pyglet
 from amonite.animation import Animation
+import amonite.controllers as controllers
 from water_fish.water_fish_data_node import WaterFishDataNode
 from water_fish.states.water_fish_state import WaterFishState
 from water_fish.states.water_fish_state import WaterFishStates
@@ -27,8 +28,8 @@ class WaterFishSwimState(WaterFishState):
         """
 
         if self.input_enabled:
-            self.__move_vec = self.actor.get_input_movement_vec()
-            self.__dash = self.actor.get_input_dash()
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
+            self.__dash = controllers.INPUT_CONTROLLER.get_sprint()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

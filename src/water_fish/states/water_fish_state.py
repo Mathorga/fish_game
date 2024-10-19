@@ -3,11 +3,19 @@ from amonite.state_machine import State
 from water_fish.water_fish_data_node import WaterFishDataNode
 
 class WaterFishStates(str, Enum):
+    """
+    All possible states for water fish.
+    """
+
     IDLE = "idle"
     SWIM = "swim"
     DASH = "dash"
 
 class WaterFishState(State):
+    """
+    Base class for water fish states.
+    """
+
     def __init__(
         self,
         actor: WaterFishDataNode

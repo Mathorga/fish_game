@@ -1,4 +1,5 @@
 from amonite.animation import Animation
+import amonite.controllers as controllers
 from water_fish.water_fish_data_node import WaterFishDataNode
 from water_fish.states.water_fish_state import WaterFishStates
 from water_fish.states.water_fish_state import WaterFishState
@@ -25,8 +26,8 @@ class WaterFishIdleState(WaterFishState):
         """
 
         if self.input_enabled:
-            self.__move = self.actor.get_input_movement()
-            self.__dash = self.actor.get_input_dash()
+            self.__move = controllers.INPUT_CONTROLLER.get_movement()
+            self.__dash = controllers.INPUT_CONTROLLER.get_sprint()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
