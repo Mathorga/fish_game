@@ -11,7 +11,7 @@ from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
-from fish_node import FishNode
+from water_fish.water_fish_node import WaterFishNode
 
 
 FRAGMENT_SOURCE = """
@@ -107,7 +107,7 @@ class FishGame:
         #     batch = uniques.ACTIVE_SCENE.world_batch
         # )
 
-        fish: FishNode = FishNode(
+        fish: WaterFishNode = WaterFishNode(
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             batch = uniques.ACTIVE_SCENE.world_batch
