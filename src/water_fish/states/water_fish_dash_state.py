@@ -13,12 +13,21 @@ class WaterFishDashState(WaterFishState):
         # Animation.
         self.__animation: Animation = Animation(source = "sprites/fish_dash.json")
         self.__startup: bool = False
+        self.__animation_ended: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.__startup = True
+        self.__animation_ended = False
 
     def update(self, dt: float) -> str | None:
+        # Handle animation end.
+        if self.__animation_ended:
+            if self.actor.speed <= 0.0:
+                return WaterFishStates.IDLE
+            else:
+                return WaterFishStates.SWIM
+
         if self.__startup:
             self.actor.speed = self.actor.max_speed * 2
             self.__startup = False
@@ -33,7 +42,4 @@ class WaterFishDashState(WaterFishState):
             return WaterFishStates.IDLE
 
     def on_animation_end(self) -> str | None:
-        if self.actor.speed <= 0.0:
-            return WaterFishStates.IDLE
-        else:
-            return WaterFishStates.SWIM
+        self.__animation_ended = True
