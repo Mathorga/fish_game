@@ -1,44 +1,47 @@
 import math
+from typing import Callable
 import pyglet
 import pyglet.math as pm
+import amonite.controllers as controllers
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
 from amonite.animation import Animation
 from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
-import amonite.controllers as controllers
 from amonite.settings import SETTINGS
 from amonite.settings import GLOBALS
 from amonite.settings import Keys
-from constants import uniques
 from constants import collision_tags
 
-class FishNode(PositionNode):
+
+class WaterFishDataNode(PositionNode):
+    """
+    """
+
     def __init__(
         self,
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
+        on_sprite_animation_end: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         super().__init__(x, y, z)
 
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.__speed: float = 0.0
-        self.__max_speed: float = 100.0
-        self.__accel: float = 150.0
+        self.speed: float = 0.0
+        self.max_speed: float = 80.0
+        self.accel: float = 150.0
         self.__move_dir: float = 0.0
         self.__hor_facing: int = 1
 
-        ################ Animations ################
-        self.__idle_animation: Animation = Animation(source = "sprites/fish_idle.json")
-
         ################ Sprite ################
-        self.__sprite: SpriteNode = SpriteNode(
-            resource = self.__idle_animation.content,
+        self.sprite: SpriteNode = SpriteNode(
+            resource = Animation(source = "sprites/fish_swim.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            on_animation_end = on_sprite_animation_end,
             batch = batch
         )
 
@@ -67,19 +70,8 @@ class FishNode(PositionNode):
         )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
 
-        ################ Inputs ################
-        self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
-
     def update(self, dt: float) -> None:
-        super().update(dt)
-
-        # Read inputs.
-        self.__fetch_input()
-
-        # Compute speed and then move.
-        self.__compute_speed(dt = dt)
-
-        self.move(dt = dt)
+        super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
         dir_cos: float = math.cos(self.__move_dir)
@@ -88,36 +80,36 @@ class FishNode(PositionNode):
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
         # Update sprite position.
-        self.__sprite.set_position(self.get_position())
+        self.sprite.set_position(self.get_position())
 
         # Flip sprite if moving to the left.
-        self.__sprite.set_scale(x_scale = self.__hor_facing)
+        self.sprite.set_scale(x_scale = self.__hor_facing)
 
-    def __compute_speed(self, dt: float) -> None:
+    def set_animation(self, animation: Animation) -> None:
+        self.sprite.set_image(animation.content)
+
+    def compute_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
         target_speed: float = 0.0
-        if self.__move_vec.mag > 0.0:
+        if move_vec.mag > 0.0:
             # Only set dirs if there's any move input.
-            self.__move_dir = self.__move_vec.heading
+            self.__move_dir = move_vec.heading
 
-            target_speed = self.__max_speed
+            target_speed = self.max_speed
 
-        if self.__speed < target_speed:
+        if self.speed < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            self.__speed += self.__accel * dt
+            self.speed += self.accel * dt
         else:
             # Decelerate otherwise.
-            self.__speed -= self.__accel * dt
-        self.__speed = pm.clamp(self.__speed, 0.0, self.__max_speed)
-
-    def __fetch_input(self) -> None:
-        self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
+            self.speed -= self.accel * dt
+        self.speed = pm.clamp(self.speed, 0.0, self.max_speed)
 
     def move(self, dt: float) -> None:
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
         # Compute velocity.
-        velocity: pyglet.math.Vec2 = pm.Vec2.from_polar(self.__speed, self.__move_dir)
+        velocity: pyglet.math.Vec2 = pm.Vec2.from_polar(self.speed, self.__move_dir)
 
         self.__set_velocity(velocity = velocity)
 
