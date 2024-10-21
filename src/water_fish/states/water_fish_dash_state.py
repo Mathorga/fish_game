@@ -41,5 +41,5 @@ class WaterFishDashState(WaterFishState):
         if self.actor.speed <= 0.0:
             return WaterFishStates.IDLE
 
-    def on_animation_end(self) -> str | None:
+    def on_animation_end(self) -> None:
         self.__animation_ended = True
