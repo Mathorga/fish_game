@@ -1,11 +1,11 @@
 import pyglet
 from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
-from water_fish.states.water_fish_dash_state import WaterFishDashState
-from water_fish.water_fish_data_node import WaterFishDataNode
-from water_fish.states.water_fish_idle_state import WaterFishIdleState
-from water_fish.states.water_fish_state import WaterFishStates
-from water_fish.states.water_fish_swim_state import WaterFishSwimState
+from fish.water_fish.states.water_fish_dash_state import WaterFishDashState
+from fish.water_fish.water_fish_data_node import WaterFishDataNode
+from fish.water_fish.states.water_fish_idle_state import WaterFishIdleState
+from fish.water_fish.states.water_fish_state import WaterFishStates
+from fish.water_fish.states.water_fish_swim_state import WaterFishSwimState
 
 class WaterFishNode(PositionNode):
     """

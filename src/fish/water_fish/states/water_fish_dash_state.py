@@ -1,7 +1,7 @@
 from amonite.animation import Animation
-from water_fish.water_fish_data_node import WaterFishDataNode
-from water_fish.states.water_fish_state import WaterFishStates
-from water_fish.states.water_fish_state import WaterFishState
+from fish.water_fish.water_fish_data_node import WaterFishDataNode
+from fish.water_fish.states.water_fish_state import WaterFishStates
+from fish.water_fish.states.water_fish_state import WaterFishState
 
 class WaterFishDashState(WaterFishState):
     def __init__(

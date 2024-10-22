@@ -1,0 +1,18 @@
+{
+    "title": "0_0_0",
+    "children": [
+        {
+            "name": "fish_node",
+            "x": 10,
+            "y": 10
+        },
+        {
+            "name": "leg_node",
+            "x": 10,
+            "y": 10
+        },
+        {
+            "name": "tilemap_node"
+        }
+    ]
+}
