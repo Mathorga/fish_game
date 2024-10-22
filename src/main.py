@@ -12,7 +12,7 @@ from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
 from fish.water_fish.water_fish_node import WaterFishNode
-from scene_composer_node import SceneComposerNode
+from scene_composer import SceneComposerNode
 
 
 FRAGMENT_SOURCE = """
