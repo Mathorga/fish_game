@@ -1,6 +1,6 @@
 from enum import Enum
 from amonite.state_machine import State
-from water_fish.water_fish_data_node import WaterFishDataNode
+from fish.water_fish.water_fish_data_node import WaterFishDataNode
 
 class WaterFishStates(str, Enum):
     """

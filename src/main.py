@@ -11,7 +11,8 @@ from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
-from water_fish.water_fish_node import WaterFishNode
+from fish.water_fish.water_fish_node import WaterFishNode
+from scene_composer_node import SceneComposerNode
 
 
 FRAGMENT_SOURCE = """
@@ -90,13 +91,19 @@ class FishGame:
         )
 
         # Create a scene.
-        uniques.ACTIVE_SCENE = SceneNode(
+        # uniques.ACTIVE_SCENE = SceneNode(
+        #     window = self.__window,
+        #     view_width = SETTINGS[Keys.VIEW_WIDTH],
+        #     view_height = SETTINGS[Keys.VIEW_HEIGHT],
+        #     default_cam_speed = SETTINGS[Keys.CAMERA_SPEED],
+        #     title = "fish_game"
+        # )
+        uniques.ACTIVE_SCENE = SceneComposerNode(
             window = self.__window,
             view_width = SETTINGS[Keys.VIEW_WIDTH],
             view_height = SETTINGS[Keys.VIEW_HEIGHT],
-            default_cam_speed = SETTINGS[Keys.CAMERA_SPEED],
-            title = "fish_game"
-        )
+            config_file_path = "scenes/0_0_0.json"
+        ).scene
 
         ######################## Scene content ########################
 
@@ -107,14 +114,14 @@ class FishGame:
         #     batch = uniques.ACTIVE_SCENE.world_batch
         # )
 
-        fish: WaterFishNode = WaterFishNode(
-            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
-            batch = uniques.ACTIVE_SCENE.world_batch
-        )
+        # fish: WaterFishNode = WaterFishNode(
+        #     x = SETTINGS[Keys.VIEW_WIDTH] / 2,
+        #     y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+        #     batch = uniques.ACTIVE_SCENE.world_batch
+        # )
 
         # Add children to the active scene.
-        uniques.ACTIVE_SCENE.add_child(fish)
+        # uniques.ACTIVE_SCENE.add_child(fish)
 
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
