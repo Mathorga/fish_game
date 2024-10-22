@@ -10,6 +10,11 @@ from fish.fish_node import FishNode
 from fish.water_fish.water_fish_node import WaterFishNode
 
 class SceneComposerNode():
+    """
+    Handles scene composition via file.
+    Creates a new scene by reading a config file.
+    """
+
     def __init__(
         self,
         window: BaseWindow,
