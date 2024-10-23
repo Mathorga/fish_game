@@ -1,7 +1,14 @@
-from amonite.node import PositionNode
 import pyglet
 
+from amonite.node import PositionNode
+
+from fish.water_fish.water_fish_node import WaterFishNode
+
 class FishNode(PositionNode):
+    __slots__: tuple[str] = (
+        "__water_fish"
+    )
+
     def __init__(
         self,
         x: float = 0.0,
@@ -14,3 +21,22 @@ class FishNode(PositionNode):
             y = y,
             z = z
         )
+
+        self.__water_fish: WaterFishNode = WaterFishNode(
+            x = x,
+            y = y,
+            z = z,
+            batch = batch
+        )
+
+    def update(self, dt: float) -> None:
+        super().update(dt)
+
+        self.__water_fish.update(dt = dt)
+
+    def delete(self) -> None:
+        # Delete water fish node.
+        self.__water_fish.delete()
+        self.__water_fish = None
+
+        super().delete()
