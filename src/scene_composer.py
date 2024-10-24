@@ -3,11 +3,9 @@ from typing import Any
 import pyglet
 from pyglet.window import BaseWindow
 from amonite.node import Node
-from amonite.scene_node import Bounds
 from amonite.scene_node import SceneNode
 
 from fish.fish_node import FishNode
-from fish.water_fish.water_fish_node import WaterFishNode
 
 class SceneComposerNode():
     """
@@ -64,11 +62,7 @@ class SceneComposerNode():
 
         match child_data["name"]:
             case "fish_node":
-                # return FishNode(
-                #     x = child_data["x"],
-                #     y = child_data["y"]
-                # )
-                return WaterFishNode(
+                return FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
                     batch = self.scene.world_batch
