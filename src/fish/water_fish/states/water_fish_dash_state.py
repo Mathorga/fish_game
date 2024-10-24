@@ -11,7 +11,7 @@ class WaterFishDashState(WaterFishState):
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/fish_dash.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_dash.json")
         self.__startup: bool = False
         self.__animation_ended: bool = False
 

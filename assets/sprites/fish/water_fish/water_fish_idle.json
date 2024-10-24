@@ -1,6 +1,6 @@
 {
-    "name": "fish_idle",
-    "path": "sprites/fish_idle.png",
+    "name": "water_fish_idle",
+    "path": "sprites/fish/water_fish/water_fish_idle.png",
     "rows": 1,
     "columns": 2,
     "center_x": true,

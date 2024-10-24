@@ -1,6 +1,6 @@
 {
-    "name": "fish_swim",
-    "path": "sprites/fish_swim.png",
+    "name": "water_fish_swim",
+    "path": "sprites/fish/water_fish/water_fish_swim.png",
     "rows": 1,
     "columns": 6,
     "center_x": true,

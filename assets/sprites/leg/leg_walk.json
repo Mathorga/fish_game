@@ -1,0 +1,8 @@
+{
+    "name": "leg_walk",
+    "path": "sprites/leg/leg_walk.png",
+    "rows": 1,
+    "columns": 6,
+    "center_x": true,
+    "center_y": true
+}

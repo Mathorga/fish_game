@@ -5,7 +5,7 @@ from amonite.node import PositionNode
 from fish.water_fish.water_fish_node import WaterFishNode
 
 class FishNode(PositionNode):
-    __slots__: tuple[str] = (
+    __slots__ = (
         "__water_fish"
     )
 
@@ -22,7 +22,7 @@ class FishNode(PositionNode):
             z = z
         )
 
-        self.__water_fish: WaterFishNode = WaterFishNode(
+        self.__water_fish: WaterFishNode | None = WaterFishNode(
             x = x,
             y = y,
             z = z,
@@ -32,11 +32,13 @@ class FishNode(PositionNode):
     def update(self, dt: float) -> None:
         super().update(dt)
 
-        self.__water_fish.update(dt = dt)
+        if self.__water_fish is not None:
+            self.__water_fish.update(dt = dt)
 
     def delete(self) -> None:
         # Delete water fish node.
-        self.__water_fish.delete()
-        self.__water_fish = None
+        if self.__water_fish is not None:
+            self.__water_fish.delete()
+            self.__water_fish = None
 
         super().delete()

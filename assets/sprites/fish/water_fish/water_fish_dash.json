@@ -1,0 +1,8 @@
+{
+    "name": "water_fish_dash",
+    "path": "sprites/fish/water_fish/water_fish_dash.png",
+    "rows": 1,
+    "columns": 8,
+    "center_x": true,
+    "center_y": true
+}

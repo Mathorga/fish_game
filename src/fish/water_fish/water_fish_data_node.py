@@ -38,7 +38,7 @@ class WaterFishDataNode(PositionNode):
 
         ################ Sprite ################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/fish_swim.json").content,
+            resource = Animation(source = "sprites/fish/water_fish/water_fish_swim.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             on_animation_end = on_sprite_animation_end,
@@ -84,6 +84,11 @@ class WaterFishDataNode(PositionNode):
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
+
+    def delete(self) -> None:
+        self.sprite.delete()
+        self.__collider.delete()
+        super().delete()
 
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)

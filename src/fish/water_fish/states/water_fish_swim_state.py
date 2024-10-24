@@ -13,7 +13,7 @@ class WaterFishSwimState(WaterFishState):
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/fish_swim.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_swim.json")
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
