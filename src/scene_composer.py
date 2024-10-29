@@ -6,6 +6,7 @@ from amonite.node import Node
 from amonite.scene_node import SceneNode
 
 from fish.fish_node import FishNode
+from leg.leg_node import LegNode
 
 class SceneComposerNode():
     """
@@ -68,7 +69,11 @@ class SceneComposerNode():
                     batch = self.scene.world_batch
                 )
             case "leg_node":
-                return Node()
+                return LegNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
+                    batch = self.scene.world_batch
+                )
             case "tilemap":
                 return Node()
             case _:

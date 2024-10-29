@@ -8,6 +8,8 @@ from amonite.settings import Keys
 
 class LegNode(PositionNode):
     __slots__ = (
+        "__batch",
+        "sprite"
     )
 
     def __init__(
@@ -27,7 +29,7 @@ class LegNode(PositionNode):
 
         ################ Sprite ################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/fish/water_fish/water_fish_swim.json").content,
+            resource = Animation(source = "sprites/leg/leg_idle.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             batch = batch

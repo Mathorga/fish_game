@@ -8,8 +8,8 @@
         },
         {
             "name": "leg_node",
-            "x": 10,
-            "y": 10
+            "x": 50,
+            "y": 25
         },
         {
             "name": "tilemap_node"
