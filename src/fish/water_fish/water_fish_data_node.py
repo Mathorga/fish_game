@@ -19,6 +19,17 @@ class WaterFishDataNode(PositionNode):
     """
     """
 
+    __slots__ = (
+        "__batch",
+        "speed",
+        "max_speed",
+        "accel",
+        "__move_dir",
+        "__hor_facing",
+        "sprite",
+        "__collider"
+    )
+
     def __init__(
         self,
         x: float = 0.0,
@@ -32,7 +43,7 @@ class WaterFishDataNode(PositionNode):
         self.__batch: pyglet.graphics.Batch | None = batch
         self.speed: float = 0.0
         self.max_speed: float = 80.0
-        self.accel: float = 150.0
+        self.accel: float = 200.0
         self.__move_dir: float = 0.0
         self.__hor_facing: int = 1
 
