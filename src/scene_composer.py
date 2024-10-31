@@ -3,7 +3,9 @@ from typing import Any
 import pyglet
 from pyglet.window import BaseWindow
 from amonite.node import Node
+from amonite.node import PositionNode
 from amonite.scene_node import SceneNode
+from amonite.tilemap_node import TilemapNode
 
 from fish.fish_node import FishNode
 from leg.leg_node import LegNode
@@ -42,7 +44,18 @@ class SceneComposerNode():
             title = self.title,
         )
 
-        # Read children.
+        ################ Read tilemap ################
+        tilemaps: list[TilemapNode] = TilemapNode.from_tmx_file(
+            source = self.config_data["tilemap"],
+            tilesets_path = "tilesets/",
+            batch = self.scene.world_batch
+        )
+        self.__tile_size = tilemaps[0].get_tile_size()[0]
+        tilemap_width = tilemaps[0].map_width
+        tilemap_height = tilemaps[0].map_height
+        cam_bounds = tilemaps[0].bounds
+
+        ################ Read children ################
         self.children_data: list[dict[str, Any]] = self.config_data["children"]
         self.children: list[Node] = list(
             filter(
@@ -56,7 +69,15 @@ class SceneComposerNode():
             )
         )
 
+        self.scene.add_children(tilemaps)
         self.scene.add_children(self.children)
+        self.scene.add_child(
+            PositionNode(
+                x = 200.0,
+                y = 100.0
+            ),
+            cam_target = True
+        )
 
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()

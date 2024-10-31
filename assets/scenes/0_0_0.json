@@ -1,5 +1,6 @@
 {
     "title": "0_0_0",
+    "tilemap": "tilemaps/r_0_4.tmx",
     "children": [
         {
             "name": "fish_node",
