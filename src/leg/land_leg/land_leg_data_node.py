@@ -15,7 +15,7 @@ from amonite.settings import Keys
 from constants import collision_tags
 
 
-class WaterFishDataNode(PositionNode):
+class LandLegDataNode(PositionNode):
     """
     """
 
@@ -24,7 +24,7 @@ class WaterFishDataNode(PositionNode):
         "speed",
         "max_speed",
         "accel",
-        "__move_dir",
+        "move_dir",
         "__hor_facing",
         "sprite",
         "__collider"
@@ -44,7 +44,7 @@ class WaterFishDataNode(PositionNode):
         self.speed: float = 0.0
         self.max_speed: float = 80.0
         self.accel: float = 200.0
-        self.__move_dir: float = 0.0
+        self.move_dir: float = 0.0
         self.__hor_facing: int = 1
 
 
@@ -52,7 +52,7 @@ class WaterFishDataNode(PositionNode):
         # Sprite
         ################################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/fish/water_fish/water_fish_swim.json").content,
+            resource = Animation(source = "sprites/leg/land_leg/land_leg_idle.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             y_sort = False,
@@ -96,7 +96,7 @@ class WaterFishDataNode(PositionNode):
         super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.__move_dir)
+        dir_cos: float = math.cos(self.move_dir)
         dir_len: float = abs(dir_cos)
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
@@ -119,7 +119,7 @@ class WaterFishDataNode(PositionNode):
         target_speed: float = 0.0
         if move_vec.mag > 0.0:
             # Only set dirs if there's any move input.
-            self.__move_dir = move_vec.heading
+            self.move_dir = move_vec.heading
 
             target_speed = self.max_speed
 
@@ -136,7 +136,7 @@ class WaterFishDataNode(PositionNode):
         self.set_position(self.__collider.get_position())
 
         # Compute velocity.
-        velocity: pyglet.math.Vec2 = pm.Vec2.from_polar(self.speed, self.__move_dir)
+        velocity: pyglet.math.Vec2 = pm.Vec2.from_polar(self.speed, self.move_dir)
 
         self.__set_velocity(velocity = velocity)
 

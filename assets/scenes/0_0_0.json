@@ -1,6 +1,6 @@
 {
     "title": "0_0_0",
-    "tilemap": "tilemaps/r_0_4.tmx",
+    "tilemap": "tilemaps/lv_1.tmx",
     "children": [
         {
             "name": "fish_node",
@@ -11,9 +11,6 @@
             "name": "leg_node",
             "x": 150,
             "y": 100
-        },
-        {
-            "name": "tilemap_node"
         }
     ]
 }
