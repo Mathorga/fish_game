@@ -79,12 +79,14 @@ class SceneComposerNode():
 
         ################################
         # Read walls.
-        # TODO
         ################################
         self.__walls: list[WallNode] = []
         if self.config_data["walls"] is not None:
-            # self.__walls = WallsLoader.fetch()
-            pass
+            self.__walls = WallsLoader.fetch(
+                source = self.config_data["walls"],
+                batch = self.scene.world_batch
+            )
+
         ################################
         ################################
 
