@@ -2,10 +2,13 @@ import json
 from typing import Any
 import pyglet
 from pyglet.window import BaseWindow
+
 from amonite.node import Node
 from amonite.node import PositionNode
 from amonite.scene_node import SceneNode
 from amonite.tilemap_node import TilemapNode
+from amonite.wall_node import WallNode
+from amonite.utils.walls_loader import WallsLoader
 
 from fish.fish_node import FishNode
 from leg.leg_node import LegNode
@@ -55,7 +58,9 @@ class SceneComposerNode():
         tilemap_height = tilemaps[0].map_height
         cam_bounds = tilemaps[0].bounds
 
-        ################ Read children ################
+        ################################
+        # Read children.
+        ################################
         self.children_data: list[dict[str, Any]] = self.config_data["children"]
         self.children: list[Node] = list(
             filter(
@@ -68,9 +73,26 @@ class SceneComposerNode():
                 )
             )
         )
+        ################################
+        ################################
+
+
+        ################################
+        # Read walls.
+        ################################
+        self.__walls: list[WallNode] = []
+        if self.config_data["walls"] is not None:
+            self.__walls = WallsLoader.fetch(
+                source = self.config_data["walls"],
+                batch = self.scene.world_batch
+            )
+
+        ################################
+        ################################
 
         self.scene.add_children(tilemaps)
         self.scene.add_children(self.children)
+        self.scene.add_children(self.__walls)
         self.scene.add_child(
             PositionNode(
                 x = 200.0,

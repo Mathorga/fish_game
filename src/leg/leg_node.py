@@ -1,15 +1,12 @@
 import pyglet
 
 from amonite.node import PositionNode
-from amonite.sprite_node import SpriteNode
-from amonite.animation import Animation
-from amonite.settings import SETTINGS
-from amonite.settings import Keys
+
+from leg.land_leg.land_leg_node import LandLegNode
 
 class LegNode(PositionNode):
     __slots__ = (
-        "__batch",
-        "sprite"
+        "__water_fish"
     )
 
     def __init__(
@@ -25,22 +22,23 @@ class LegNode(PositionNode):
             z = z
         )
 
-        self.__batch: pyglet.graphics.Batch | None = batch
-
-        ################ Sprite ################
-        self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/leg/leg_idle.json").content,
-            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+        self.__water_fish: LandLegNode | None = LandLegNode(
+            x = x,
+            y = y,
+            z = z,
             batch = batch
         )
 
     def update(self, dt: float) -> None:
-        super().update(dt = dt)
+        super().update(dt)
 
-        # Update sprite position.
-        self.sprite.set_position(self.get_position())
+        if self.__water_fish is not None:
+            self.__water_fish.update(dt = dt)
 
     def delete(self) -> None:
-        self.sprite.delete()
+        # Delete water fish node.
+        if self.__water_fish is not None:
+            self.__water_fish.delete()
+            self.__water_fish = None
+
         super().delete()

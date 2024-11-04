@@ -1,6 +1,6 @@
 {
-    "name": "leg_idle",
-    "path": "sprites/leg/leg_idle.png",
+    "name": "land_leg_idle",
+    "path": "sprites/leg/land_leg/land_leg_idle.png",
     "rows": 1,
     "columns": 2,
     "center_x": true,
