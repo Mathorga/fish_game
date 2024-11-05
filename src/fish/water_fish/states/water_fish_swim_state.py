@@ -14,6 +14,7 @@ class WaterFishSwimState(WaterFishState):
 
         # Animation.
         self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_swim.json")
+        # self.__animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_swim.json")
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
