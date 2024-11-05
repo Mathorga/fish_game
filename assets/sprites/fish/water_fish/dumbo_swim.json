@@ -1,0 +1,8 @@
+{
+    "name": "dumbo_swim",
+    "path": "sprites/fish/water_fish/dumbo_swim.png",
+    "rows": 1,
+    "columns": 10,
+    "center_x": true,
+    "center_y": true
+}
