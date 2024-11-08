@@ -6,7 +6,7 @@ from leg.land_leg.land_leg_node import LandLegNode
 
 class LegNode(PositionNode):
     __slots__ = (
-        "__water_fish"
+        "__land_leg"
     )
 
     def __init__(
@@ -22,7 +22,7 @@ class LegNode(PositionNode):
             z = z
         )
 
-        self.__water_fish: LandLegNode | None = LandLegNode(
+        self.__land_leg: LandLegNode | None = LandLegNode(
             x = x,
             y = y,
             z = z,
@@ -32,13 +32,13 @@ class LegNode(PositionNode):
     def update(self, dt: float) -> None:
         super().update(dt)
 
-        if self.__water_fish is not None:
-            self.__water_fish.update(dt = dt)
+        if self.__land_leg is not None:
+            self.__land_leg.update(dt = dt)
 
     def delete(self) -> None:
         # Delete water fish node.
-        if self.__water_fish is not None:
-            self.__water_fish.delete()
-            self.__water_fish = None
+        if self.__land_leg is not None:
+            self.__land_leg.delete()
+            self.__land_leg = None
 
         super().delete()

@@ -21,10 +21,12 @@ class LandLegDataNode(PositionNode):
 
     __slots__ = (
         "__batch",
-        "speed",
-        "max_speed",
-        "accel",
-        "move_dir",
+        "move_vec",
+        "max_move_speed",
+        "move_accel",
+        "gravity_vec",
+        "max_gravity_speed",
+        "gravity_accel",
         "__hor_facing",
         "sprite",
         "__collider"
@@ -41,15 +43,33 @@ class LandLegDataNode(PositionNode):
         super().__init__(x, y, z)
 
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.speed: float = 0.0
-        self.max_speed: float = 80.0
-        self.accel: float = 200.0
-        self.move_dir: float = 0.0
+
+
+        ################################
+        # Input movement.
+        ################################
+        self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
+        self.max_move_speed: float = 80.0
+        self.move_accel: float = 200.0
+        ################################
+        ################################
+
+
+        ################################
+        # Gravity movement.
+        ################################
+        self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
+        self.max_gravity_speed: float = 500.0
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -100.0)
+        ################################
+        ################################
+
+
         self.__hor_facing: int = 1
 
 
         ################################
-        # Sprite
+        # Sprite.
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/leg/land_leg/land_leg_idle.json").content,
@@ -64,7 +84,7 @@ class LandLegDataNode(PositionNode):
 
 
         ################################
-        # Collider
+        # Collider.
         ################################
         self.__collider: CollisionNode = CollisionNode(
             x = x,
@@ -82,7 +102,7 @@ class LandLegDataNode(PositionNode):
                 x = x,
                 y = y,
                 anchor_x = 3,
-                anchor_y = 3,
+                anchor_y = 8,
                 width = 6,
                 height = 6,
                 batch = batch
@@ -96,7 +116,7 @@ class LandLegDataNode(PositionNode):
         super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.move_dir)
+        dir_cos: float = math.cos(self.move_vec.heading)
         dir_len: float = abs(dir_cos)
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
@@ -115,34 +135,57 @@ class LandLegDataNode(PositionNode):
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)
 
-    def compute_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
+    def compute_move_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
         target_speed: float = 0.0
+        target_heading: float = self.move_vec.heading
+
         if move_vec.mag > 0.0:
-            # Only set dirs if there's any move input.
-            self.move_dir = move_vec.heading
+            target_speed = self.max_move_speed
+            target_heading = move_vec.heading
 
-            target_speed = self.max_speed
+        accel_vector: pm.Vec2 = pm.Vec2.from_polar(self.move_accel, target_heading)
 
-        if self.speed < target_speed:
+        if move_vec.mag < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            self.speed += self.accel * dt
+            # current_speed += self.move_accel * dt
+            self.move_vec += accel_vector * dt
         else:
             # Decelerate otherwise.
-            self.speed -= self.accel * dt
-        self.speed = pm.clamp(self.speed, 0.0, self.max_speed)
+            # current_speed -= self.move_accel * dt
+            self.move_vec -= accel_vector * dt
+
+        self.move_vec += self.gravity_accel * dt
+
+        self.move_vec.clamp(0.0, self.max_move_speed)
+
+    def compute_gravity_speed(self, dt: float) -> None:
+        if self.gravity_vec.mag < self.max_gravity_speed:
+            # Accelerate when the current speed is lower than the target speed.
+            self.gravity_vec += self.gravity_accel * dt
+        else:
+            # Decelerate otherwise.
+            self.gravity_vec -= self.gravity_accel * dt
+
+        self.gravity_vec = pm.Vec2.from_polar(pm.clamp(self.gravity_vec.mag, 0.0, self.max_gravity_speed), self.gravity_vec.heading)
 
     def move(self, dt: float) -> None:
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
-        # Compute velocity.
-        velocity: pyglet.math.Vec2 = pm.Vec2.from_polar(self.speed, self.move_dir)
+        # Compute and apply velocity.
+        self.set_velocity(velocity = self.move_vec)
+        # self.put_velocity(velocity = self.gravity_accel)
 
-        self.__set_velocity(velocity = velocity)
-
-    def __set_velocity(self, velocity: pyglet.math.Vec2) -> None:
+    def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
         self.__collider.set_velocity((
+            round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
+            round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
+        ))
+
+    def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
+        # Apply the computed velocity to all colliders.
+        self.__collider.put_velocity((
             round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         ))

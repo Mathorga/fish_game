@@ -1,0 +1,74 @@
+import math
+import pyglet
+import pyglet.math as pm
+
+from amonite.animation import Animation
+import amonite.controllers as controllers
+
+from leg.land_leg.land_leg_data_node import LandLegDataNode
+from leg.land_leg.states.land_leg_state import LandLegState, LandLegStates
+
+class LandLegJumpState(LandLegState):
+    def __init__(
+        self,
+        actor: LandLegDataNode
+    ) -> None:
+        super().__init__(actor = actor)
+
+        # Animation.
+        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_walk.json")
+        self.__startup: bool = False
+        self.__animation_ended: bool = False
+
+        # Input.
+        self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+
+    def start(self) -> None:
+        self.actor.set_animation(self.__animation)
+        self.__startup = True
+        self.__animation_ended = False
+
+    def __fetch_input(self) -> None:
+        """
+        Reads all necessary inputs.
+        """
+
+        if self.input_enabled:
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
+
+    def update(self, dt: float) -> str | None:
+        # Read inputs.
+        self.__fetch_input()
+
+        # # Handle animation end.
+        # if self.__animation_ended:
+        #     if self.actor.move_vec.mag <= 0.0:
+        #         return LandLegStates.IDLE
+        #     else:
+        #         return LandLegStates.WALK
+
+        current_speed: float = self.actor.move_vec.mag
+        current_heading: float = self.actor.move_vec.heading
+
+        if self.__startup:
+            current_speed = self.actor.max_move_speed * 2
+            current_heading = math.pi / 2.0
+            self.__startup = False
+        else:
+            current_speed -= self.actor.move_accel * dt
+        self.actor.move_vec = pm.Vec2.from_polar(current_speed, current_heading)
+
+        self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
+        self.actor.compute_gravity_speed(dt = dt)
+
+        # Move the player.
+        self.actor.move(dt = dt)
+
+        # Check for state changes.
+        if self.actor.move_vec.mag <= 0.0:
+            return LandLegStates.IDLE
+
+        return LandLegStates.WALK
+
+    def on_animation_end(self) -> None:
+        self.__animation_ended = True

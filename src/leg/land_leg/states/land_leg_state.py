@@ -8,7 +8,8 @@ class LandLegStates(str, Enum):
     """
 
     IDLE = "idle"
-    WALK = "swim"
+    WALK = "walk"
+    JUMP = "jump"
 
 class LandLegState(State):
     """
