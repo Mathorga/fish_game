@@ -168,26 +168,23 @@ class LandLegDataNode(PositionNode):
         target_speed: float = 0.0
         target_heading: float = self.move_vec.heading
 
+        current_speed: float = self.move_vec.mag
+
         if move_vec.mag > 0.0:
             target_speed = self.max_move_speed
             target_heading = move_vec.heading
 
-        accel_vector: pm.Vec2 = pm.Vec2.from_polar(self.move_accel, target_heading)
-
         if move_vec.mag < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            # current_speed += self.move_accel * dt
-            self.move_vec += accel_vector * dt
+            current_speed += self.move_accel * dt
         else:
+        # elif move_vec.mag > target_speed:
             # Decelerate otherwise.
-            # current_speed -= self.move_accel * dt
-            self.move_vec -= accel_vector * dt
-
-        # self.move_vec += self.gravity_accel * dt
+            current_speed -= self.move_accel * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            round(pm.clamp(self.move_vec.mag, 0.0, self.max_move_speed), GLOBALS[Keys.FLOAT_ROUNDING]),
-            self.move_vec.heading
+            pm.clamp(current_speed, 0.0, self.max_move_speed),
+            target_heading
         )
 
     def compute_gravity_speed(self, dt: float) -> None:
