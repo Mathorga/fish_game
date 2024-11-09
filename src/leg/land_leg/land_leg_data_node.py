@@ -27,6 +27,7 @@ class LandLegDataNode(PositionNode):
         "gravity_vec",
         "max_gravity_speed",
         "gravity_accel",
+        "grounded",
         "__hor_facing",
         "sprite",
         "__collider",
@@ -62,6 +63,7 @@ class LandLegDataNode(PositionNode):
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_gravity_speed: float = 500.0
         self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -500.0)
+        self.grounded: bool = False
         ################################
         ################################
 
@@ -110,28 +112,28 @@ class LandLegDataNode(PositionNode):
             ),
             on_triggered = self.on_collision_triggered
         )
-        # self.__ground_sensor: CollisionNode = CollisionNode(
-        #     x = x,
-        #     y = y,
-        #     collision_type = CollisionType.DYNAMIC,
-        #     sensor = True,
-        #     active_tags = [
-        #         collision_tags.PLAYER_COLLISION,
-        #         collision_tags.PLAYER_SENSE,
-        #         collision_tags.FALL
-        #     ],
-        #     passive_tags = [],
-        #     shape = CollisionRect(
-        #         x = x,
-        #         y = y,
-        #         anchor_x = 2,
-        #         anchor_y = 8,
-        #         width = 4,
-        #         height = 2,
-        #         batch = batch
-        #     ),
-        #     on_triggered = self.on_collision_triggered
-        # )
+        self.__ground_sensor: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.DYNAMIC,
+            sensor = True,
+            active_tags = [
+                collision_tags.PLAYER_COLLISION,
+                collision_tags.PLAYER_SENSE,
+                collision_tags.FALL
+            ],
+            passive_tags = [],
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 2,
+                anchor_y = 9,
+                width = 4,
+                height = 3,
+                batch = batch
+            ),
+            on_triggered = self.on_collision_triggered
+        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         # controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         ################################
@@ -140,6 +142,7 @@ class LandLegDataNode(PositionNode):
     def on_collision_triggered(self, tags: list[str], entered: bool) -> None:
         # Clear gravity vector on collision.
         self.gravity_vec *= 0.0
+        self.grounded = entered
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -152,6 +155,9 @@ class LandLegDataNode(PositionNode):
 
         # Update sprite position.
         self.sprite.set_position(self.get_position())
+
+        # Update ground sensor position
+        self.__ground_sensor.set_position(self.get_position())
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
@@ -188,6 +194,9 @@ class LandLegDataNode(PositionNode):
         )
 
     def compute_gravity_speed(self, dt: float) -> None:
+        if self.grounded:
+            return
+
         if self.gravity_vec.mag < self.max_gravity_speed:
             # Accelerate when the current speed is lower than the target speed.
             self.gravity_vec += self.gravity_accel * dt
@@ -215,7 +224,6 @@ class LandLegDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.set_velocity(converted_velocity)
-        # self.__ground_sensor.set_velocity(converted_velocity)
 
     def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
@@ -224,4 +232,3 @@ class LandLegDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.put_velocity(converted_velocity)
-        # self.__ground_sensor.put_velocity(converted_velocity)
