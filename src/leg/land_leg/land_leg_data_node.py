@@ -50,7 +50,7 @@ class LandLegDataNode(PositionNode):
         ################################
         self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_move_speed: float = 80.0
-        self.move_accel: float = 200.0
+        self.move_accel: float = 400.0
         ################################
         ################################
 
@@ -60,7 +60,7 @@ class LandLegDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_gravity_speed: float = 500.0
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -100.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -400.0)
         ################################
         ################################
 
@@ -156,7 +156,8 @@ class LandLegDataNode(PositionNode):
 
         self.move_vec += self.gravity_accel * dt
 
-        self.move_vec.clamp(0.0, self.max_move_speed)
+        self.move_vec = pm.Vec2.from_polar(pm.clamp(self.move_vec.mag, 0.0, self.max_move_speed), self.move_vec.heading)
+        print(self.move_vec)
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.gravity_vec.mag < self.max_gravity_speed:
