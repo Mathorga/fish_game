@@ -29,7 +29,8 @@ class LandLegDataNode(PositionNode):
         "gravity_accel",
         "__hor_facing",
         "sprite",
-        "__collider"
+        "__collider",
+        "__ground_sensor"
     )
 
     def __init__(
@@ -60,7 +61,7 @@ class LandLegDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_gravity_speed: float = 500.0
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -400.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -500.0)
         ################################
         ################################
 
@@ -84,7 +85,7 @@ class LandLegDataNode(PositionNode):
 
 
         ################################
-        # Collider.
+        # Colliders.
         ################################
         self.__collider: CollisionNode = CollisionNode(
             x = x,
@@ -106,11 +107,39 @@ class LandLegDataNode(PositionNode):
                 width = 6,
                 height = 6,
                 batch = batch
-            )
+            ),
+            on_triggered = self.on_collision_triggered
         )
+        # self.__ground_sensor: CollisionNode = CollisionNode(
+        #     x = x,
+        #     y = y,
+        #     collision_type = CollisionType.DYNAMIC,
+        #     sensor = True,
+        #     active_tags = [
+        #         collision_tags.PLAYER_COLLISION,
+        #         collision_tags.PLAYER_SENSE,
+        #         collision_tags.FALL
+        #     ],
+        #     passive_tags = [],
+        #     shape = CollisionRect(
+        #         x = x,
+        #         y = y,
+        #         anchor_x = 2,
+        #         anchor_y = 8,
+        #         width = 4,
+        #         height = 2,
+        #         batch = batch
+        #     ),
+        #     on_triggered = self.on_collision_triggered
+        # )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+        # controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         ################################
         ################################
+
+    def on_collision_triggered(self, tags: list[str], entered: bool) -> None:
+        # Clear gravity vector on collision.
+        self.gravity_vec *= 0.0
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -154,10 +183,12 @@ class LandLegDataNode(PositionNode):
             # current_speed -= self.move_accel * dt
             self.move_vec -= accel_vector * dt
 
-        self.move_vec += self.gravity_accel * dt
+        # self.move_vec += self.gravity_accel * dt
 
-        self.move_vec = pm.Vec2.from_polar(pm.clamp(self.move_vec.mag, 0.0, self.max_move_speed), self.move_vec.heading)
-        print(self.move_vec)
+        self.move_vec = pm.Vec2.from_polar(
+            round(pm.clamp(self.move_vec.mag, 0.0, self.max_move_speed), GLOBALS[Keys.FLOAT_ROUNDING]),
+            self.move_vec.heading
+        )
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.gravity_vec.mag < self.max_gravity_speed:
@@ -167,26 +198,33 @@ class LandLegDataNode(PositionNode):
             # Decelerate otherwise.
             self.gravity_vec -= self.gravity_accel * dt
 
-        self.gravity_vec = pm.Vec2.from_polar(pm.clamp(self.gravity_vec.mag, 0.0, self.max_gravity_speed), self.gravity_vec.heading)
+        self.gravity_vec = pm.Vec2.from_polar(
+            round(pm.clamp(self.gravity_vec.mag, 0.0, self.max_gravity_speed), GLOBALS[Keys.FLOAT_ROUNDING]),
+            self.gravity_vec.heading
+        )
 
     def move(self, dt: float) -> None:
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
-        # Compute and apply velocity.
-        self.set_velocity(velocity = self.move_vec)
-        # self.put_velocity(velocity = self.gravity_accel)
+        # Compute and apply velocity for the next step.
+        self.set_velocity(velocity = self.move_vec + self.gravity_vec)
+        # self.put_velocity(velocity = self.gravity_vec)
 
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
-        self.__collider.set_velocity((
+        converted_velocity: tuple[float, float] = (
             round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
-        ))
+        )
+        self.__collider.set_velocity(converted_velocity)
+        # self.__ground_sensor.set_velocity(converted_velocity)
 
     def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
-        self.__collider.put_velocity((
+        converted_velocity: tuple[float, float] = (
             round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
-        ))
+        )
+        self.__collider.put_velocity(converted_velocity)
+        # self.__ground_sensor.put_velocity(converted_velocity)
