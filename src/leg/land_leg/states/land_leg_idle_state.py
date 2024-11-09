@@ -37,6 +37,7 @@ class LandLegIdleState(LandLegState):
         self.__fetch_input()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
+        self.actor.compute_gravity_speed(dt = dt)
 
         self.actor.move(dt = dt)
 
