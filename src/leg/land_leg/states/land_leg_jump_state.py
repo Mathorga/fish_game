@@ -24,7 +24,7 @@ class LandLegJumpState(LandLegState):
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
 
         # Other.
-        self.__jump_force: float = self.actor.max_move_speed * 100
+        self.__jump_force: float = self.actor.max_move_speed * 1000
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -46,7 +46,7 @@ class LandLegJumpState(LandLegState):
         jump_speed: float = 0.0
 
         if self.__startup:
-            jump_speed = self.__jump_force
+            jump_speed = self.__jump_force * dt
             self.__startup = False
 
         jump_vec: pm.Vec2 = pm.Vec2(0.0, jump_speed)
@@ -54,7 +54,7 @@ class LandLegJumpState(LandLegState):
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
 
-        self.actor.move_vec += jump_vec * 10 * dt
+        self.actor.gravity_vec += jump_vec
 
         # Move the player.
         self.actor.move(dt = dt)
