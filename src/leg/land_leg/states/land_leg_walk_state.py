@@ -1,5 +1,6 @@
 import pyglet
 import pyglet.math as pm
+
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
