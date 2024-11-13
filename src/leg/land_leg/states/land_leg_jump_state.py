@@ -1,4 +1,3 @@
-import math
 import pyglet
 import pyglet.math as pm
 
@@ -6,7 +5,8 @@ from amonite.animation import Animation
 import amonite.controllers as controllers
 
 from leg.land_leg.land_leg_data_node import LandLegDataNode
-from leg.land_leg.states.land_leg_state import LandLegState, LandLegStates
+from leg.land_leg.states.land_leg_state import LandLegStates
+from leg.land_leg.states.land_leg_state import LandLegState
 
 class LandLegJumpState(LandLegState):
     def __init__(
