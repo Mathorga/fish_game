@@ -17,19 +17,19 @@ class LandLegJumpState(LandLegState):
 
         # Animation.
         self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_walk.json")
-        self.__startup: bool = False
         self.__animation_ended: bool = False
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
 
         # Other.
-        self.__jump_force: float = self.actor.max_move_speed * 1000
+        self.__jump_force: float = 10.0
+        self.__jump_vec: pm.Vec2 = pm.Vec2()
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
-        self.__startup = True
         self.__animation_ended = False
+        self.__jump_vec = pm.Vec2()
 
     def __fetch_input(self) -> None:
         """
@@ -43,18 +43,15 @@ class LandLegJumpState(LandLegState):
         # Read inputs.
         self.__fetch_input()
 
-        jump_speed: float = 0.0
-
-        if self.__startup:
-            jump_speed = self.__jump_force * dt
-            self.__startup = False
-
-        jump_vec: pm.Vec2 = pm.Vec2(0.0, jump_speed)
-
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
 
-        self.actor.gravity_vec += jump_vec
+        # if self.__startup:
+        if self.__jump_vec.mag < 50.0:
+            self.__jump_vec += pm.Vec2(0.0, self.__jump_force)
+            self.actor.gravity_vec += self.__jump_vec
+
+        print("JUMPING", self.__jump_vec)
 
         # Move the player.
         self.actor.move(dt = dt)
