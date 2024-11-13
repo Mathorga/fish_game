@@ -60,6 +60,9 @@ class LandLegJumpState(LandLegState):
         if self.actor.move_vec.mag <= 0.0:
             return LandLegStates.IDLE
 
+        if self.actor.gravity_vec.mag <= 0.0:
+            return LandLegStates.WALK
+
         # return LandLegStates.WALK
 
     def on_animation_end(self) -> None:
