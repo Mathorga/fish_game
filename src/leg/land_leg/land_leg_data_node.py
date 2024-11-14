@@ -141,8 +141,6 @@ class LandLegDataNode(PositionNode):
     def on_collision_triggered(self, tags: list[str], entered: bool) -> None:
         self.grounded = entered
 
-        print(entered, tags)
-
         # Clear gravity vector on collision.
         if self.grounded:
             self.gravity_vec *= 0.0
