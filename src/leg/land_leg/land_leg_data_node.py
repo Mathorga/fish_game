@@ -107,7 +107,7 @@ class LandLegDataNode(PositionNode):
                 anchor_x = 3,
                 anchor_y = 8,
                 width = 6,
-                height = 6,
+                height = 10,
                 batch = batch
             )
         )
