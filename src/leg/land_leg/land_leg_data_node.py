@@ -1,4 +1,5 @@
 import math
+import time
 from typing import Callable
 import pyglet
 import pyglet.math as pm
@@ -125,9 +126,9 @@ class LandLegDataNode(PositionNode):
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 2,
+                anchor_x = 1,
                 anchor_y = 9,
-                width = 4,
+                width = 2,
                 height = 2,
                 batch = batch
             ),
