@@ -16,7 +16,7 @@ class LandLegJumpState(LandLegState):
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_walk.json")
+        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_jump.json")
         self.__animation_ended: bool = False
 
         # Input.
