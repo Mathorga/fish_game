@@ -10,6 +10,7 @@ from amonite.animation import Animation
 from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
+from amonite.collision.collision_node import CollisionMethod
 from amonite.settings import SETTINGS
 from amonite.settings import GLOBALS
 from amonite.settings import Keys
@@ -28,7 +29,9 @@ class LandLegDataNode(PositionNode):
         "gravity_vec",
         "max_gravity_speed",
         "gravity_accel",
+        "__ground_collision_ids",
         "grounded",
+        "roofed",
         "__hor_facing",
         "sprite",
         "__collider",
@@ -64,7 +67,16 @@ class LandLegDataNode(PositionNode):
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_gravity_speed: float = 500.0
         self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -600.0)
+        ################################
+        ################################
+
+
+        ################################
+        # Collision flags.
+        ################################
+        self.__ground_collision_ids: set[int] = set()
         self.grounded: bool = False
+        self.roofed: bool = False
         ################################
         ################################
 
@@ -123,28 +135,41 @@ class LandLegDataNode(PositionNode):
                 collision_tags.FALL
             ],
             passive_tags = [],
+            collision_method = CollisionMethod.PASSIVE,
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 1,
+                anchor_x = 3,
                 anchor_y = 9,
-                width = 2,
+                width = 6,
                 height = 2,
                 batch = batch
             ),
-            on_triggered = self.on_collision_triggered
+            on_triggered = self.on_ground_collision
         )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         ################################
         ################################
 
-    def on_collision_triggered(self, tags: list[str], entered: bool) -> None:
-        self.grounded = entered
+    def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+        if entered:
+            self.__ground_collision_ids.add(collider_id)
+        else:
+            if collider_id in self.__ground_collision_ids:
+                self.__ground_collision_ids.remove(collider_id)
+
+        if len(self.__ground_collision_ids) > 0:
+            self.grounded = True
+        else:
+            self.grounded = False
 
         # Clear gravity vector on collision.
         if self.grounded:
             self.gravity_vec *= 0.0
+
+    def on_roof_collision(self, tags: list[str], entered: bool) -> None:
+        self.roofed = entered
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -217,7 +242,6 @@ class LandLegDataNode(PositionNode):
 
         # Compute and apply velocity for the next step.
         self.set_velocity(velocity = self.move_vec + self.gravity_vec)
-        # self.put_velocity(velocity = self.gravity_vec)
 
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
@@ -226,7 +250,7 @@ class LandLegDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.set_velocity(converted_velocity)
-        self.__ground_sensor.set_velocity(converted_velocity)
+        # self.__ground_sensor.set_velocity(converted_velocity)
 
     def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
@@ -235,4 +259,4 @@ class LandLegDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.put_velocity(converted_velocity)
-        self.__ground_sensor.put_velocity(converted_velocity)
+        # self.__ground_sensor.put_velocity(converted_velocity)
