@@ -63,7 +63,5 @@ class LandLegJumpState(LandLegState):
 
             return LandLegStates.WALK
 
-        # return LandLegStates.WALK
-
     def on_animation_end(self) -> None:
         self.__animation_ended = True
