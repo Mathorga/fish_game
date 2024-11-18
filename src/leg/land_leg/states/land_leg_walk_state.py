@@ -44,7 +44,7 @@ class LandLegWalkState(LandLegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
-        if self.__jump:
+        if self.__jump and self.actor.grounded:
             return LandLegStates.JUMP
 
         if self.actor.move_vec.mag <= 0.0:

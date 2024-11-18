@@ -1,8 +1,8 @@
 {
     "name": "land_leg_walk",
-    "path": "sprites/leg/land_leg/land_leg_walk.png",
+    "path": "sprites/leg/land_leg/land_leg_idle.png",
     "rows": 1,
-    "columns": 6,
+    "columns": 11,
     "center_x": true,
     "center_y": true
 }
