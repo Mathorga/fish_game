@@ -8,7 +8,7 @@ from leg.land_leg.land_leg_data_node import LandLegDataNode
 from leg.land_leg.states.land_leg_state import LandLegStates
 from leg.land_leg.states.land_leg_state import LandLegState
 
-class LandLegWalkState(LandLegState):
+class LandLegJumpLoadState(LandLegState):
     def __init__(
         self,
         actor: LandLegDataNode
@@ -16,14 +16,23 @@ class LandLegWalkState(LandLegState):
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_walk.json")
+        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_jump_load.json")
+        self.__animation_ended: bool = False
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         self.__jump: bool = False
 
+        # Other.
+        self.__jump_force: float = 20.0
+        self.__jump_vec: pm.Vec2 = pm.Vec2()
+
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
+        self.actor.grounded = False
+        self.__animation_ended = False
+        self.__jump_force = 20.0
+        self.__jump_vec = pm.Vec2()
 
     def __fetch_input(self) -> None:
         """
@@ -32,7 +41,7 @@ class LandLegWalkState(LandLegState):
 
         if self.input_enabled:
             self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
-            self.__jump = controllers.INPUT_CONTROLLER.get_sprint()
+            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.buttons.get("b", False)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
@@ -41,12 +50,20 @@ class LandLegWalkState(LandLegState):
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
 
+        # if self.__startup:
+        if self.__jump_vec.mag < 100.0:
+            self.__jump_vec += pm.Vec2(0.0, self.__jump_force)
+            self.actor.gravity_vec += self.__jump_vec
+
         # Move the player.
         self.actor.move(dt = dt)
 
         # Check for state changes.
-        if self.__jump and self.actor.grounded:
-            return LandLegStates.JUMP
+        if self.actor.grounded:
+            if self.actor.move_vec.mag <= 0.0:
+                return LandLegStates.IDLE
 
-        if self.actor.move_vec.mag <= 0.0:
-            return LandLegStates.IDLE
+            return LandLegStates.WALK
+
+    def on_animation_end(self) -> None:
+        self.__animation_ended = True

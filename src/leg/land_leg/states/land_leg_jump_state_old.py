@@ -8,7 +8,7 @@ from leg.land_leg.land_leg_data_node import LandLegDataNode
 from leg.land_leg.states.land_leg_state import LandLegStates
 from leg.land_leg.states.land_leg_state import LandLegState
 
-class LandLegJumpState(LandLegState):
+class LandLegJumpStateOld(LandLegState):
     def __init__(
         self,
         actor: LandLegDataNode
@@ -50,6 +50,8 @@ class LandLegJumpState(LandLegState):
 
         # if self.__startup:
         if self.__jump_vec.mag < 100.0:
+            print(self.actor.gravity_vec)
+            print(self.actor.move_vec)
             self.__jump_vec += pm.Vec2(0.0, self.__jump_force)
             self.actor.gravity_vec += self.__jump_vec
 

@@ -3,7 +3,7 @@ from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 from leg.land_leg.land_leg_data_node import LandLegDataNode
 from leg.land_leg.states.land_leg_idle_state import LandLegIdleState
-from leg.land_leg.states.land_leg_jump_state import LandLegJumpState
+from leg.land_leg.states.land_leg_jump_state_old import LandLegJumpStateOld
 from leg.land_leg.states.land_leg_walk_state import LandLegWalkState
 from leg.land_leg.states.land_leg_state import LandLegStates
 
@@ -39,7 +39,7 @@ class LandLegNode(PositionNode):
             states = {
                 LandLegStates.IDLE: LandLegIdleState(actor = self.__data),
                 LandLegStates.WALK: LandLegWalkState(actor = self.__data),
-                LandLegStates.JUMP: LandLegJumpState(actor = self.__data),
+                LandLegStates.JUMP: LandLegJumpStateOld(actor = self.__data),
             }
         )
 
