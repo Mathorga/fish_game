@@ -25,13 +25,16 @@ class LandLegJumpStateOld(LandLegState):
         # Other.
         self.__jump_force: float = 20.0
         self.__jump_vec: pm.Vec2 = pm.Vec2()
+        self.__elapsed: float = 0.0
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        self.__jump_force = 20.0
+        self.__jump_force = 100.0
         self.__jump_vec = pm.Vec2()
+        self.__elapsed = 0.0
+        print()
 
     def __fetch_input(self) -> None:
         """
@@ -49,11 +52,19 @@ class LandLegJumpStateOld(LandLegState):
         self.actor.compute_gravity_speed(dt = dt)
 
         # if self.__startup:
-        if self.__jump_vec.mag < 100.0:
-            print(self.actor.gravity_vec)
-            print(self.actor.move_vec)
+        # if self.__jump_vec.mag < 300.0:
+        if self.__elapsed < 0.05:
+            print("old_gravity", self.actor.gravity_vec)
+            # print("jump", self.__jump_vec)
+            print("dt", dt)
+            print("elapsed", self.__elapsed)
             self.__jump_vec += pm.Vec2(0.0, self.__jump_force)
-            self.actor.gravity_vec += self.__jump_vec
+            self.actor.gravity_vec += pm.Vec2(0.0, self.__jump_force)
+            self.__elapsed += dt
+            # self.actor.gravity_vec += pm.Vec2(0.0, self.__jump_force * dt)
+            # self.actor.put_velocity(pm.Vec2(0.0, self.__jump_force * dt))
+            print("new_gravity", self.actor.gravity_vec)
+            print("#############################")
 
         # Move the player.
         self.actor.move(dt = dt)

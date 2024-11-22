@@ -55,8 +55,8 @@ class LandLegDataNode(PositionNode):
         # Input movement.
         ################################
         self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
-        self.max_move_speed: float = 80.0
-        self.move_accel: float = 400.0
+        self.max_move_speed: float = 100.0
+        self.move_accel: float = 20.0
         ################################
         ################################
 
@@ -66,7 +66,7 @@ class LandLegDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_gravity_speed: float = 500.0
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -600.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -20.0)
         ################################
         ################################
 
@@ -209,11 +209,11 @@ class LandLegDataNode(PositionNode):
 
         if move_vec.mag < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            current_speed += self.move_accel * dt
+            current_speed += self.move_accel
         else:
         # elif move_vec.mag > target_speed:
             # Decelerate otherwise.
-            current_speed -= self.move_accel * dt
+            current_speed -= self.move_accel
 
         self.move_vec = pm.Vec2.from_polar(
             pm.clamp(current_speed, 0.0, self.max_move_speed),
@@ -226,10 +226,10 @@ class LandLegDataNode(PositionNode):
 
         if self.gravity_vec.mag < self.max_gravity_speed:
             # Accelerate when the current speed is lower than the target speed.
-            self.gravity_vec += self.gravity_accel * dt
+            self.gravity_vec += self.gravity_accel
         else:
             # Decelerate otherwise.
-            self.gravity_vec -= self.gravity_accel * dt
+            self.gravity_vec -= self.gravity_accel
 
         self.gravity_vec = pm.Vec2.from_polar(
             round(pm.clamp(self.gravity_vec.mag, 0.0, self.max_gravity_speed), GLOBALS[Keys.FLOAT_ROUNDING]),
@@ -241,16 +241,18 @@ class LandLegDataNode(PositionNode):
         self.set_position(self.__collider.get_position())
 
         # Compute and apply velocity for the next step.
+        print(dt)
         self.set_velocity(velocity = self.move_vec + self.gravity_vec)
 
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
+        print("input_velocity", velocity)
         # Apply the computed velocity to all colliders.
         converted_velocity: tuple[float, float] = (
             round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
+        print("converted_velocity", converted_velocity)
         self.__collider.set_velocity(converted_velocity)
-        # self.__ground_sensor.set_velocity(converted_velocity)
 
     def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
@@ -259,4 +261,3 @@ class LandLegDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.put_velocity(converted_velocity)
-        # self.__ground_sensor.put_velocity(converted_velocity)
