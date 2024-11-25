@@ -165,8 +165,8 @@ class LandLegDataNode(PositionNode):
             self.grounded = False
 
         # Clear gravity vector on collision.
-        if self.grounded:
-            self.gravity_vec *= 0.0
+        # if self.grounded:
+        #     self.gravity_vec *= 0.0
 
     def on_roof_collision(self, tags: list[str], entered: bool) -> None:
         self.roofed = entered
@@ -222,17 +222,15 @@ class LandLegDataNode(PositionNode):
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.grounded:
+            # Clear gravity vector on collision.
+            self.gravity_vec *= 0.0
             return
 
-        if self.gravity_vec.mag < self.max_gravity_speed:
-            # Accelerate when the current speed is lower than the target speed.
-            self.gravity_vec += self.gravity_accel * dt
-        else:
-            # Decelerate otherwise.
-            self.gravity_vec -= self.gravity_accel * dt
+        # Accelerate when not grounded.
+        self.gravity_vec += self.gravity_accel * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
-            round(pm.clamp(self.gravity_vec.mag, 0.0, self.max_gravity_speed), GLOBALS[Keys.FLOAT_ROUNDING]),
+            round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
             self.gravity_vec.heading
         )
 

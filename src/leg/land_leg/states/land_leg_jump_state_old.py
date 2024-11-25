@@ -24,14 +24,14 @@ class LandLegJumpStateOld(LandLegState):
 
         # Other.
         self.__jump_force: float = 20.0
-        self.__jump_vec: pm.Vec2 = pm.Vec2()
+        self.__startup: bool = True
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        self.__jump_force = 20.0
-        self.__jump_vec = pm.Vec2()
+        self.__jump_force = 300.0
+        self.__startup = True
 
     def __fetch_input(self) -> None:
         """
@@ -48,12 +48,9 @@ class LandLegJumpStateOld(LandLegState):
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
 
-        # if self.__startup:
-        if self.__jump_vec.mag < 100.0:
-            print(self.actor.gravity_vec)
-            print(self.actor.move_vec)
-            self.__jump_vec += pm.Vec2(0.0, self.__jump_force)
-            self.actor.gravity_vec += self.__jump_vec
+        if self.__startup:
+            self.__startup = False
+            self.actor.gravity_vec = pm.Vec2(0.0, self.__jump_force)
 
         # Move the player.
         self.actor.move(dt = dt)
