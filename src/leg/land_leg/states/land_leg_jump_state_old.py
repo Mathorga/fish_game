@@ -30,7 +30,7 @@ class LandLegJumpStateOld(LandLegState):
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        self.__jump_force = 300.0
+        self.__jump_force = 500.0
         self.__startup = True
 
     def __fetch_input(self) -> None:

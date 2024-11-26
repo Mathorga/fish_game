@@ -30,12 +30,14 @@ class LandLegDataNode(PositionNode):
         "max_gravity_speed",
         "gravity_accel",
         "__ground_collision_ids",
+        "__roof_collision_ids",
         "grounded",
         "roofed",
         "__hor_facing",
         "sprite",
         "__collider",
-        "__ground_sensor"
+        "__ground_sensor",
+        "__roof_sensor"
     )
 
     def __init__(
@@ -65,8 +67,7 @@ class LandLegDataNode(PositionNode):
         # Gravity movement.
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
-        self.max_gravity_speed: float = 500.0
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -600.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -1200.0)
         ################################
         ################################
 
@@ -75,6 +76,7 @@ class LandLegDataNode(PositionNode):
         # Collision flags.
         ################################
         self.__ground_collision_ids: set[int] = set()
+        self.__roof_collision_ids: set[int] = set()
         self.grounded: bool = False
         self.roofed: bool = False
         ################################
@@ -147,8 +149,32 @@ class LandLegDataNode(PositionNode):
             ),
             on_triggered = self.on_ground_collision
         )
+        self.__roof_sensor: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.DYNAMIC,
+            sensor = True,
+            active_tags = [
+                collision_tags.PLAYER_COLLISION,
+                collision_tags.PLAYER_SENSE,
+                collision_tags.FALL
+            ],
+            passive_tags = [],
+            collision_method = CollisionMethod.PASSIVE,
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 3,
+                anchor_y = -11,
+                width = 6,
+                height = 2,
+                batch = batch
+            ),
+            on_triggered = self.on_roof_collision
+        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
         ################################
         ################################
 
@@ -165,11 +191,25 @@ class LandLegDataNode(PositionNode):
             self.grounded = False
 
         # Clear gravity vector on collision.
-        # if self.grounded:
-        #     self.gravity_vec *= 0.0
+        if self.grounded:
+            self.gravity_vec *= 0.0
 
-    def on_roof_collision(self, tags: list[str], entered: bool) -> None:
-        self.roofed = entered
+    def on_roof_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+        if entered:
+            self.__roof_collision_ids.add(collider_id)
+        else:
+            if collider_id in self.__roof_collision_ids:
+                self.__roof_collision_ids.remove(collider_id)
+
+        if len(self.__roof_collision_ids) > 0:
+            self.roofed = True
+        else:
+            self.roofed = False
+
+        # Clear gravity vector on collision.
+        if self.roofed:
+            self.gravity_vec *= 0.0
+            self.roofed = False
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -183,8 +223,9 @@ class LandLegDataNode(PositionNode):
         # Update sprite position.
         self.sprite.set_position(self.get_position())
 
-        # Update ground sensor position
+        # Update sensors position
         self.__ground_sensor.set_position(self.get_position())
+        self.__roof_sensor.set_position(self.get_position())
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
@@ -222,8 +263,6 @@ class LandLegDataNode(PositionNode):
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.grounded:
-            # Clear gravity vector on collision.
-            self.gravity_vec *= 0.0
             return
 
         # Accelerate when not grounded.
