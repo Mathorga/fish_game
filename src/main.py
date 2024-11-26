@@ -127,6 +127,15 @@ class FishGame:
         # Add children to the active scene.
         # uniques.ACTIVE_SCENE.add_child(fish)
 
+
+        ########################
+        # Physics timestep.
+        ########################
+        self.phys_accumulated_time: float = 0.0
+        self.phys_timestep: float = 1.0 / (SETTINGS[Keys.TARGET_FPS])
+        ########################
+        ########################
+
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
             width = SETTINGS[Keys.WINDOW_WIDTH] if not SETTINGS[Keys.FULLSCREEN] else None,
@@ -175,14 +184,27 @@ class FishGame:
 
     def update(self, dt: float) -> None:
         # upscaler_program["dt"] = dt
-        # Benchmark measures update time.
-        # Compute collisions through collision manager.
-        controllers.COLLISION_CONTROLLER.update(dt = dt)
+
+        self.phys_accumulated_time += dt
 
         # InputController makes sure every input is handled correctly.
-        with controllers.INPUT_CONTROLLER:
-            if uniques.ACTIVE_SCENE is not None:
-                uniques.ACTIVE_SCENE.update(dt = dt)
+        # with controllers.INPUT_CONTROLLER:
+        #     if uniques.ACTIVE_SCENE is not None:
+        #         uniques.ACTIVE_SCENE.update(dt = dt)
+
+        # # Compute collisions through collision manager.
+        # controllers.COLLISION_CONTROLLER.update(dt = dt)
+
+        while self.phys_accumulated_time >= self.phys_timestep:
+
+            # InputController makes sure every input is handled correctly.
+            with controllers.INPUT_CONTROLLER:
+                if uniques.ACTIVE_SCENE is not None:
+                    uniques.ACTIVE_SCENE.update(dt = self.phys_timestep)
+
+            # Compute collisions through collision manager.
+            controllers.COLLISION_CONTROLLER.update(dt = self.phys_timestep)
+            self.phys_accumulated_time -= self.phys_timestep
 
     def run(self) -> None:
         pyglet.clock.schedule_interval(self.update, 1.0 / (2.0 * SETTINGS[Keys.TARGET_FPS]))
