@@ -95,8 +95,8 @@ class SceneComposerNode():
         self.scene.add_children(self.__walls)
         self.scene.add_child(
             PositionNode(
-                x = 200.0,
-                y = 100.0
+                x = 500.0,
+                y = 200.0
             ),
             cam_target = True
         )
