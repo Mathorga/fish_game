@@ -46,4 +46,4 @@ class LandLegIdleState(LandLegState):
             return LandLegStates.WALK
 
         if self.__jump and self.actor.grounded:
-            return LandLegStates.JUMP
+            return LandLegStates.JUMP_LOAD

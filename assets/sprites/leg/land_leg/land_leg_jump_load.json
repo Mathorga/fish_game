@@ -5,5 +5,6 @@
     "columns": 5,
     "center_x": true,
     "center_y": true,
-    "duration": 0.1
+    "duration": 0.1,
+    "loop": false
 }

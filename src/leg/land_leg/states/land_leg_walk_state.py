@@ -46,7 +46,7 @@ class LandLegWalkState(LandLegState):
 
         # Check for state changes.
         if self.__jump and self.actor.grounded:
-            return LandLegStates.JUMP
+            return LandLegStates.JUMP_LOAD
 
         if self.actor.move_vec.mag <= 0.0:
             return LandLegStates.IDLE

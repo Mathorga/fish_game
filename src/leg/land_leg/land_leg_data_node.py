@@ -141,9 +141,9 @@ class LandLegDataNode(PositionNode):
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 3,
+                anchor_x = 6,
                 anchor_y = 17,
-                width = 6,
+                width = 12,
                 height = 2,
                 batch = batch
             ),
@@ -164,9 +164,9 @@ class LandLegDataNode(PositionNode):
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 3,
+                anchor_x = 6,
                 anchor_y = -11,
-                width = 6,
+                width = 12,
                 height = 2,
                 batch = batch
             ),

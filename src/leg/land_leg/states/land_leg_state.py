@@ -9,6 +9,7 @@ class LandLegStates(str, Enum):
 
     IDLE = "idle"
     WALK = "walk"
+    JUMP_LOAD = "jump_load"
     JUMP = "jump"
 
 class LandLegState(State):
