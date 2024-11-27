@@ -109,8 +109,9 @@ class FishGame:
             config_file_path = "scenes/0_0_0.json"
         ).scene
 
-        ######################## Scene content ########################
-
+        ########################
+        # Scene content.
+        ########################
         # test_sprite: PositionNode = SpriteNode(
         #     resource = Animation(source = "sprites/fish_idle.json").content,
         #     x = SETTINGS[Keys.VIEW_WIDTH] / 2,
@@ -126,6 +127,8 @@ class FishGame:
 
         # Add children to the active scene.
         # uniques.ACTIVE_SCENE.add_child(fish)
+        ########################
+        ########################
 
 
         ########################

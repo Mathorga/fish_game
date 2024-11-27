@@ -15,16 +15,32 @@ class LandLegJumpLoadState(LandLegState):
     ) -> None:
         super().__init__(actor = actor)
 
+        ########################
         # Animation.
+        ########################
         self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_jump_load.json")
+        ########################
+        ########################
 
+        ########################
         # Input.
+        ########################
         self.__jump: bool = False
+        self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        ########################
+        ########################
 
+        ########################
         # Other.
+        ########################
+        # Time elapsed since state start, used to check for releasability.
         self.__elapsed: float = 0.0
+
+        # Time (in seconds) before the player can release the jump.
         self.__release_threshold: float = 1.0
         self.__animation_ended: bool = False
+        ########################
+        ########################
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -40,10 +56,14 @@ class LandLegJumpLoadState(LandLegState):
 
         if self.input_enabled:
             self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.buttons.get("b", False)
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
+
+        # Applying move speed accounts for updating the actor's facing direction.
+        self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
 
         self.__elapsed += dt
 
