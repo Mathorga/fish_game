@@ -8,7 +8,7 @@ from leg.land_leg.land_leg_data_node import LandLegDataNode
 from leg.land_leg.states.land_leg_state import LandLegStates
 from leg.land_leg.states.land_leg_state import LandLegState
 
-class LandLegJumpStateOld(LandLegState):
+class LandLegJumpState(LandLegState):
     def __init__(
         self,
         actor: LandLegDataNode
@@ -23,14 +23,15 @@ class LandLegJumpStateOld(LandLegState):
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
 
         # Other.
-        self.__jump_force: float = 20.0
+        self.__jump_force: float = 500.0
         self.__startup: bool = True
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        self.__jump_force = 500.0
+        # self.__jump_force = 500.0
+        self.__jump_force = self.actor.jump_force
         self.__startup = True
 
     def __fetch_input(self) -> None:
@@ -61,6 +62,12 @@ class LandLegJumpStateOld(LandLegState):
                 return LandLegStates.IDLE
 
             return LandLegStates.WALK
+
+    def end(self) -> None:
+        super().end()
+
+        # Reset the actor jump force for the next jump.
+        self.actor.jump_force = 0.0
 
     def on_animation_end(self) -> None:
         self.__animation_ended = True

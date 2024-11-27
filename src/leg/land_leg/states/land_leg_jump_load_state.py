@@ -39,6 +39,8 @@ class LandLegJumpLoadState(LandLegState):
         # Time (in seconds) before the player can release the jump.
         self.__release_threshold: float = 1.0
         self.__animation_ended: bool = False
+
+        self.__jump_force_step: float = 500.0
         ########################
         ########################
 
@@ -58,6 +60,9 @@ class LandLegJumpLoadState(LandLegState):
             self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.buttons.get("b", False)
             self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
 
+    def __can_release(self) -> bool:
+        return self.__animation_ended or self.__elapsed > self.__release_threshold
+
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
@@ -66,16 +71,14 @@ class LandLegJumpLoadState(LandLegState):
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
 
         self.__elapsed += dt
+        self.actor.jump_force += self.__jump_force_step * dt
 
         # Check for state changes.
         if not self.__jump:
-            if self.can_release():
+            if self.__can_release():
                 return LandLegStates.JUMP
 
             return LandLegStates.IDLE
-
-    def can_release(self) -> bool:
-        return self.__animation_ended or self.__elapsed > self.__release_threshold
 
     def on_animation_end(self) -> None:
         super().on_animation_end()
