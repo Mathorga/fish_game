@@ -57,7 +57,7 @@ class LandLegJumpLoadState(LandLegState):
         """
 
         if self.input_enabled:
-            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.buttons.get("b", False)
+            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(button = "b")
             self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
 
     def __can_release(self) -> bool:
@@ -72,6 +72,9 @@ class LandLegJumpLoadState(LandLegState):
 
         self.__elapsed += dt
         self.actor.jump_force += self.__jump_force_step * dt
+
+        # Make sure the jump force does not exceed its maximum possible value.
+        self.actor.jump_force = pm.clamp(self.actor.jump_force, 0.0, self.actor.max_jump_force)
 
         # Check for state changes.
         if not self.__jump:
