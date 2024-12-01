@@ -105,12 +105,12 @@ class SceneComposerNode():
         assert "name" in child_data.keys()
 
         match child_data["name"]:
-            # case "fish_node":
-            #     return FishNode(
-            #         x = child_data["x"],
-            #         y = child_data["y"],
-            #         batch = self.scene.world_batch
-            #     )
+            case "fish_node":
+                return FishNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
+                    batch = self.scene.world_batch
+                )
             case "leg_node":
                 return LegNode(
                     x = child_data["x"],

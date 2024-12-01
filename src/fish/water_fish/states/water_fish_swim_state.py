@@ -29,8 +29,8 @@ class WaterFishSwimState(WaterFishState):
         """
 
         if self.input_enabled:
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
-            self.__dash = controllers.INPUT_CONTROLLER.get_sprint()
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec(controller_index = 1)
+            self.__dash = controllers.INPUT_CONTROLLER.get_sprint(controller_index = 1)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

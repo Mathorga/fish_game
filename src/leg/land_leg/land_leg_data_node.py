@@ -35,6 +35,7 @@ class LandLegDataNode(PositionNode):
         "roofed",
         "__hor_facing",
         "jump_force",
+        "max_jump_force",
         "sprite",
         "__collider",
         "__ground_sensor",
@@ -86,6 +87,7 @@ class LandLegDataNode(PositionNode):
 
         self.__hor_facing: int = 1
         self.jump_force: float = 0.0
+        self.max_jump_force: float = 500.0
 
 
         ################################
