@@ -1,3 +1,4 @@
+from amonite.input_controller import ControllerStick
 import pyglet
 import pyglet.math as pm
 
@@ -40,7 +41,7 @@ class LandLegJumpState(LandLegState):
         """
 
         if self.input_enabled:
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
+            self.__move_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

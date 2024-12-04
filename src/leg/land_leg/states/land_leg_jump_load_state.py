@@ -1,3 +1,4 @@
+from amonite.input_controller import ControllerButton, ControllerStick
 import pyglet
 import pyglet.math as pm
 
@@ -57,8 +58,8 @@ class LandLegJumpLoadState(LandLegState):
         """
 
         if self.input_enabled:
-            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(button = "b")
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec()
+            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(button = ControllerButton.DOWN)
+            self.__move_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize()
 
     def __can_release(self) -> bool:
         return self.__animation_ended or self.__elapsed > self.__release_threshold

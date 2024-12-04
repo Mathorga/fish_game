@@ -1,3 +1,5 @@
+from amonite.input_controller import ControllerButton, ControllerStick
+import pyglet
 import pyglet.math as pm
 
 from amonite.animation import Animation
@@ -29,8 +31,8 @@ class LandLegIdleState(LandLegState):
         """
 
         if self.input_enabled:
-            self.__move = controllers.INPUT_CONTROLLER.get_movement()
-            self.__jump = controllers.INPUT_CONTROLLER.get_sprint()
+            self.__move = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize().mag > 0.0
+            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(ControllerButton.DOWN)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
