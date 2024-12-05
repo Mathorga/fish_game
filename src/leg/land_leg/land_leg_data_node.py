@@ -136,9 +136,7 @@ class LandLegDataNode(PositionNode):
             collision_type = CollisionType.DYNAMIC,
             sensor = True,
             active_tags = [
-                collision_tags.PLAYER_COLLISION,
-                collision_tags.PLAYER_SENSE,
-                collision_tags.FALL
+                collision_tags.PLAYER_COLLISION
             ],
             passive_tags = [],
             collision_method = CollisionMethod.PASSIVE,
@@ -159,9 +157,7 @@ class LandLegDataNode(PositionNode):
             collision_type = CollisionType.DYNAMIC,
             sensor = True,
             active_tags = [
-                collision_tags.PLAYER_COLLISION,
-                collision_tags.PLAYER_SENSE,
-                collision_tags.FALL
+                collision_tags.PLAYER_COLLISION
             ],
             passive_tags = [],
             collision_method = CollisionMethod.PASSIVE,

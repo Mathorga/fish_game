@@ -13,6 +13,7 @@ from amonite.map_cursor_node import MapCursorNode
 
 from editor_tools.editor_tool import EditorTool
 from editor_tools.place_wall_tool import PlaceWallTool
+from editor_tools.place_water_tool import PlaceWaterTool
 
 class ActionSign(PositionNode):
     def __init__(
@@ -236,6 +237,15 @@ class PropPlacementScene(Node):
         # All tools are in this dictionary.
         self.__tools: list[EditorTool] = [
             PlaceWallTool(
+                view_width = self.__view_width,
+                view_height = self.__view_height,
+                tile_size = self.__tile_size,
+                scene_name = scene_name,
+                on_icon_changed = self.__update_cursor_icon,
+                world_batch = uniques.ACTIVE_SCENE.world_batch,
+                ui_batch = uniques.ACTIVE_SCENE.ui_batch
+            ),
+            PlaceWaterTool(
                 view_width = self.__view_width,
                 view_height = self.__view_height,
                 tile_size = self.__tile_size,

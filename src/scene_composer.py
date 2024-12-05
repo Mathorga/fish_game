@@ -11,6 +11,7 @@ from amonite.wall_node import WallNode
 from amonite.utils.walls_loader import WallsLoader
 
 from fish.fish_node import FishNode
+from hittables_loader import HittableNode, HittablesLoader
 from leg.leg_node import LegNode
 
 class SceneComposerNode():
@@ -78,8 +79,15 @@ class SceneComposerNode():
 
 
         ################################
-        # Read walls.
+        # Read hittables.
         ################################
+        self.__waters: list[HittableNode] = []
+        if self.config_data["waters"] is not None:
+            self.__waters = HittablesLoader.fetch(
+                source = self.config_data["waters"],
+                sensor = True,
+                batch = self.scene.world_batch
+            )
         self.__walls: list[WallNode] = []
         if self.config_data["walls"] is not None:
             self.__walls = WallsLoader.fetch(
@@ -92,7 +100,10 @@ class SceneComposerNode():
 
         self.scene.add_children(tilemaps)
         self.scene.add_children(self.children)
+        self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
+
+        # Add a camera target.
         self.scene.add_child(
             PositionNode(
                 x = 500.0,

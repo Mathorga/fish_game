@@ -2,6 +2,7 @@
     "title": "0_0_0",
     "tilemap": "tilemaps/0_0_0.tmx",
     "walls": "wallmaps/0_0_0.json",
+    "waters": "watermaps/0_0_0.json",
     "children": [
         {
             "name": "fish_node",
