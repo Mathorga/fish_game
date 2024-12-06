@@ -7,6 +7,8 @@ from amonite.shapes.rect_node import RectNode
 from editor_tools.editor_tool import EditorTool
 from amonite.text_node import TextNode
 from amonite.utils.utils import point_in_rect
+from amonite.utils.hittables_loader import HittableNode
+from amonite.utils.hittables_loader import HittablesLoader
 
 from constants import collision_tags
 from constants import uniques

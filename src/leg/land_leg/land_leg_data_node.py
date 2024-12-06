@@ -117,9 +117,7 @@ class LandLegDataNode(PositionNode):
                 collision_tags.PLAYER_SENSE,
                 collision_tags.FALL
             ],
-            passive_tags = [
-                collision_tags.DAMAGE
-            ],
+            passive_tags = [],
             shape = CollisionRect(
                 x = x,
                 y = y,

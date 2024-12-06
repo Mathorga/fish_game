@@ -76,7 +76,6 @@ class WaterFishDataNode(PositionNode):
                 collision_tags.FALL
             ],
             passive_tags = [
-                collision_tags.DAMAGE
             ],
             shape = CollisionRect(
                 x = x,

@@ -9,9 +9,10 @@ from amonite.scene_node import SceneNode
 from amonite.tilemap_node import TilemapNode
 from amonite.wall_node import WallNode
 from amonite.utils.walls_loader import WallsLoader
+from amonite.utils.hittables_loader import HittableNode
+from amonite.utils.hittables_loader import HittablesLoader
 
 from fish.fish_node import FishNode
-from hittables_loader import HittableNode, HittablesLoader
 from leg.leg_node import LegNode
 
 class SceneComposerNode():
@@ -88,9 +89,9 @@ class SceneComposerNode():
                 sensor = True,
                 batch = self.scene.world_batch
             )
-        self.__walls: list[WallNode] = []
+        self.__walls: list[HittableNode] = []
         if self.config_data["walls"] is not None:
-            self.__walls = WallsLoader.fetch(
+            self.__walls = HittablesLoader.fetch(
                 source = self.config_data["walls"],
                 batch = self.scene.world_batch
             )
