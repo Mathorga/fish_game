@@ -10,5 +10,5 @@ PLAYER_INTERACTION = "player_interaction"
 # All fall-related collisions.
 FALL = "fall"
 
-# All damage-related collisions.
-DAMAGE = "damage"
+# Water interactions.
+WATER = "water"
