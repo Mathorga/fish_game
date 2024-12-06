@@ -5,21 +5,21 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
-from leg.land_leg.land_leg_data_node import LandLegDataNode
-from leg.land_leg.states.land_leg_state import LandLegStates
-from leg.land_leg.states.land_leg_state import LandLegState
+from leg.leg_data_node import LegDataNode
+from leg.states.leg_state import LegStates
+from leg.states.leg_state import LegState
 
-class LandLegJumpLoadState(LandLegState):
+class LegJumpLoadState(LegState):
     def __init__(
         self,
-        actor: LandLegDataNode
+        actor: LegDataNode
     ) -> None:
         super().__init__(actor = actor)
 
         ########################
         # Animation.
         ########################
-        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_jump_load.json")
+        self.__animation: Animation = Animation(source = "sprites/leg/leg_jump_load.json")
         ########################
         ########################
 
@@ -80,9 +80,9 @@ class LandLegJumpLoadState(LandLegState):
         # Check for state changes.
         if not self.__jump:
             if self.__can_release():
-                return LandLegStates.JUMP
+                return LegStates.JUMP
 
-            return LandLegStates.IDLE
+            return LegStates.IDLE
 
     def on_animation_end(self) -> None:
         super().on_animation_end()

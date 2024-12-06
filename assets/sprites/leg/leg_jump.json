@@ -1,6 +1,6 @@
 {
-    "name": "land_leg_jump",
-    "path": "sprites/leg/land_leg/land_leg_jump.png",
+    "name": "leg_jump",
+    "path": "sprites/leg/leg_jump.png",
     "rows": 1,
     "columns": 13,
     "center_x": true,

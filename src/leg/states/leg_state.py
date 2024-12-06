@@ -1,8 +1,8 @@
 from enum import Enum
 from amonite.state_machine import State
-from leg.land_leg.land_leg_data_node import LandLegDataNode
+from leg.leg_data_node import LegDataNode
 
-class LandLegStates(str, Enum):
+class LegStates(str, Enum):
     """
     All possible states for land leg.
     """
@@ -11,20 +11,23 @@ class LandLegStates(str, Enum):
     WALK = "walk"
     JUMP_LOAD = "jump_load"
     JUMP = "jump"
+    WATER_IDLE = "water_idle"
+    WATER_WALK = "water_walk"
+    WATER_JUMP = "water_jump"
 
-class LandLegState(State):
+class LegState(State):
     """
     Base class for land leg states.
     """
 
     def __init__(
         self,
-        actor: LandLegDataNode
+        actor: LegDataNode
     ) -> None:
         super().__init__()
 
         self.input_enabled: bool = True
-        self.actor: LandLegDataNode = actor
+        self.actor: LegDataNode = actor
 
     def enable_input(self) -> None:
         """

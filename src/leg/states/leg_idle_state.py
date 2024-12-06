@@ -5,25 +5,31 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
-from leg.land_leg.land_leg_data_node import LandLegDataNode
-from leg.land_leg.states.land_leg_state import LandLegStates
-from leg.land_leg.states.land_leg_state import LandLegState
+from constants import collision_tags
+from leg.leg_data_node import LegDataNode
+from leg.states.leg_state import LegStates
+from leg.states.leg_state import LegState
 
-class LandLegIdleState(LandLegState):
+class LegIdleState(LegState):
     def __init__(
         self,
-        actor: LandLegDataNode
+        actor: LegDataNode
     ) -> None:
         super().__init__(actor = actor)
 
-        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_idle.json")
+        self.__animation: Animation = Animation(source = "sprites/leg/leg_idle.json")
 
         # Inputs.
         self.__move: bool = False
         self.__jump: bool = False
 
+        # Other.
+        self.__in_water: bool = False
+
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
+        self.actor.dampening = 1.0
+        self.__in_water = False
 
     def __fetch_input(self) -> None:
         """
@@ -44,8 +50,17 @@ class LandLegIdleState(LandLegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        if self.__in_water:
+            return LegStates.WATER_IDLE
+
         if self.__move:
-            return LandLegStates.WALK
+            return LegStates.WALK
 
         if self.__jump and self.actor.grounded:
-            return LandLegStates.JUMP_LOAD
+            return LegStates.JUMP_LOAD
+
+    def on_collision(self, tags: list[str], enter: bool) -> None:
+        super().on_collision(tags, enter)
+
+        if enter and collision_tags.WATER:
+            self.__in_water = True

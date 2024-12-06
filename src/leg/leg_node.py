@@ -1,13 +1,20 @@
 import pyglet
 
 from amonite.node import PositionNode
+from amonite.state_machine import StateMachine
 
-from leg.land_leg.land_leg_node import LandLegNode
+from leg.leg_data_node import LegDataNode
+from leg.states.leg_idle_state import LegIdleState
+from leg.states.leg_jump_load_state import LegJumpLoadState
+from leg.states.leg_jump_state import LegJumpState
+from leg.states.leg_walk_state import LegWalkState
+from leg.states.leg_state import LegStates
+from leg.states.leg_water_idle_state import LegWaterIdleState
 
 class LegNode(PositionNode):
-    __slots__ = (
-        "__land_leg"
-    )
+    """
+    Handles
+    """
 
     def __init__(
         self,
@@ -22,23 +29,38 @@ class LegNode(PositionNode):
             z = z
         )
 
-        self.__land_leg: LandLegNode | None = LandLegNode(
+        # Data node, responsible for all content handling.
+        self.__data: LegDataNode = LegDataNode(
             x = x,
             y = y,
             z = z,
+            on_sprite_animation_end = self.on_sprite_animation_end,
+            on_collision = self.on_collision,
             batch = batch
         )
 
+        # State machine.
+        self.__state_machine: StateMachine = StateMachine(
+            states = {
+                LegStates.IDLE: LegIdleState(actor = self.__data),
+                LegStates.WALK: LegWalkState(actor = self.__data),
+                LegStates.JUMP_LOAD: LegJumpLoadState(actor = self.__data),
+                LegStates.JUMP: LegJumpState(actor = self.__data),
+                LegStates.WATER_IDLE: LegWaterIdleState(actor = self.__data),
+                LegStates.WATER_WALK: LegWaterIdleState(actor = self.__data),
+                LegStates.WATER_JUMP: LegWaterIdleState(actor = self.__data)
+            }
+        )
+
     def update(self, dt: float) -> None:
-        super().update(dt)
+        super().update(dt = dt)
+        
+        self.__state_machine.update(dt = dt)
 
-        if self.__land_leg is not None:
-            self.__land_leg.update(dt = dt)
+        self.__data.update(dt = dt)
 
-    def delete(self) -> None:
-        # Delete water fish node.
-        if self.__land_leg is not None:
-            self.__land_leg.delete()
-            self.__land_leg = None
+    def on_sprite_animation_end(self):
+        self.__state_machine.on_animation_end()
 
-        super().delete()
+    def on_collision(self, tags: list[str], collider_id: int, entered: bool):
+        self.__state_machine.on_collision(tags = tags, enter = entered)

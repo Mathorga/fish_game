@@ -5,19 +5,20 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
-from leg.land_leg.land_leg_data_node import LandLegDataNode
-from leg.land_leg.states.land_leg_state import LandLegStates
-from leg.land_leg.states.land_leg_state import LandLegState
+import constants.collision_tags as collision_tags
+from leg.leg_data_node import LegDataNode
+from leg.states.leg_state import LegStates
+from leg.states.leg_state import LegState
 
-class LandLegJumpState(LandLegState):
+class LegJumpState(LegState):
     def __init__(
         self,
-        actor: LandLegDataNode
+        actor: LegDataNode
     ) -> None:
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/leg/land_leg/land_leg_jump.json")
+        self.__animation: Animation = Animation(source = "sprites/leg/leg_jump.json")
         self.__animation_ended: bool = False
 
         # Input.
@@ -26,14 +27,15 @@ class LandLegJumpState(LandLegState):
         # Other.
         self.__jump_force: float = 500.0
         self.__startup: bool = True
+        self.__in_water: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        # self.__jump_force = 500.0
         self.__jump_force = self.actor.jump_force
         self.__startup = True
+        self.__in_water = False
 
     def __fetch_input(self) -> None:
         """
@@ -58,11 +60,13 @@ class LandLegJumpState(LandLegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        if self.__in_water:
+            return LegStates.WATER_JUMP
         if self.actor.grounded:
             if self.actor.move_vec.mag <= 0.0:
-                return LandLegStates.IDLE
+                return LegStates.IDLE
 
-            return LandLegStates.WALK
+            return LegStates.WALK
 
     def end(self) -> None:
         super().end()
@@ -72,3 +76,9 @@ class LandLegJumpState(LandLegState):
 
     def on_animation_end(self) -> None:
         self.__animation_ended = True
+
+    def on_collision(self, tags: list[str], enter: bool) -> None:
+        super().on_collision(tags, enter)
+
+        if enter and collision_tags.WATER:
+            self.__in_water = True

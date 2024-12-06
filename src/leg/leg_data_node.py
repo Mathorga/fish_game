@@ -4,6 +4,7 @@ from typing import Callable
 import pyglet
 import pyglet.math as pm
 import amonite.controllers as controllers
+
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
 from amonite.animation import Animation
@@ -14,14 +15,16 @@ from amonite.collision.collision_node import CollisionMethod
 from amonite.settings import SETTINGS
 from amonite.settings import GLOBALS
 from amonite.settings import Keys
+
 from constants import collision_tags
 
 
-class LandLegDataNode(PositionNode):
+class LegDataNode(PositionNode):
     """
     """
 
     __slots__ = (
+        "__on_collision",
         "__batch",
         "move_vec",
         "max_move_speed",
@@ -36,8 +39,10 @@ class LandLegDataNode(PositionNode):
         "__hor_facing",
         "jump_force",
         "max_jump_force",
+        "dampening",
         "sprite",
         "__collider",
+        "__water_sensor",
         "__ground_sensor",
         "__roof_sensor"
     )
@@ -48,10 +53,12 @@ class LandLegDataNode(PositionNode):
         y: float = 0.0,
         z: float = 0.0,
         on_sprite_animation_end: Callable | None = None,
+        on_collision: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         super().__init__(x, y, z)
 
+        self.__on_collision: Callable | None = on_collision
         self.__batch: pyglet.graphics.Batch | None = batch
 
 
@@ -88,13 +95,14 @@ class LandLegDataNode(PositionNode):
         self.__hor_facing: int = 1
         self.jump_force: float = 0.0
         self.max_jump_force: float = 500.0
+        self.dampening: float = 1.0
 
 
         ################################
         # Sprite.
         ################################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/leg/land_leg/land_leg_idle.json").content,
+            resource = Animation(source = "sprites/leg/leg_idle.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             y_sort = False,
@@ -128,16 +136,36 @@ class LandLegDataNode(PositionNode):
                 batch = batch
             )
         )
+        self.__water_sensor: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
+            active_tags = [
+                collision_tags.WATER
+            ],
+            passive_tags = [],
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 6,
+                anchor_y = 16,
+                width = 12,
+                height = 28,
+                batch = batch
+            ),
+            on_triggered = self.on_water_collision
+        )
         self.__ground_sensor: CollisionNode = CollisionNode(
             x = x,
             y = y,
             collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             active_tags = [
                 collision_tags.PLAYER_COLLISION
             ],
             passive_tags = [],
-            collision_method = CollisionMethod.PASSIVE,
             shape = CollisionRect(
                 x = x,
                 y = y,
@@ -153,12 +181,12 @@ class LandLegDataNode(PositionNode):
             x = x,
             y = y,
             collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             active_tags = [
                 collision_tags.PLAYER_COLLISION
             ],
             passive_tags = [],
-            collision_method = CollisionMethod.PASSIVE,
             shape = CollisionRect(
                 x = x,
                 y = y,
@@ -171,10 +199,16 @@ class LandLegDataNode(PositionNode):
             on_triggered = self.on_roof_collision
         )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__water_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
         ################################
         ################################
+
+    def on_water_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+        print(tags, entered)
+        if self.__on_collision is not None:
+            self.__on_collision(tags, collider_id, entered)
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
@@ -222,6 +256,7 @@ class LandLegDataNode(PositionNode):
         self.sprite.set_position(self.get_position())
 
         # Update sensors position
+        self.__water_sensor.set_position(self.get_position())
         self.__ground_sensor.set_position(self.get_position())
         self.__roof_sensor.set_position(self.get_position())
 
@@ -248,14 +283,14 @@ class LandLegDataNode(PositionNode):
 
         if move_vec.mag < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            current_speed += self.move_accel * dt
+            current_speed += self.move_accel * self.dampening * dt
         else:
         # elif move_vec.mag > target_speed:
             # Decelerate otherwise.
-            current_speed -= self.move_accel * dt
+            current_speed -= self.move_accel * self.dampening * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(current_speed, 0.0, self.max_move_speed),
+            pm.clamp(current_speed, 0.0, self.max_move_speed * self.dampening),
             target_heading
         )
 
@@ -264,7 +299,7 @@ class LandLegDataNode(PositionNode):
             return
 
         # Accelerate when not grounded.
-        self.gravity_vec += self.gravity_accel * dt
+        self.gravity_vec += self.gravity_accel * self.dampening * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
             round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
