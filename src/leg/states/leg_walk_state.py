@@ -24,12 +24,8 @@ class LegWalkState(LegState):
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         self.__jump: bool = False
 
-        # Other.
-        self.__in_water: bool = False
-
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
-        self.__in_water = False
 
     def __fetch_input(self) -> None:
         """
@@ -51,17 +47,8 @@ class LegWalkState(LegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
-        if self.__in_water:
-            return LegStates.WATER_WALK
-
         if self.__jump and self.actor.grounded:
             return LegStates.JUMP_LOAD
 
         if self.actor.move_vec.mag <= 0.0:
             return LegStates.IDLE
-
-    def on_collision(self, tags: list[str], enter: bool) -> None:
-        super().on_collision(tags, enter)
-
-        if enter and collision_tags.WATER:
-            self.__in_water = True

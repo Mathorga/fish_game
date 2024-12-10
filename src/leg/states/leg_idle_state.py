@@ -23,13 +23,8 @@ class LegIdleState(LegState):
         self.__move: bool = False
         self.__jump: bool = False
 
-        # Other.
-        self.__in_water: bool = False
-
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
-        self.actor.dampening = 1.0
-        self.__in_water = False
 
     def __fetch_input(self) -> None:
         """
@@ -50,17 +45,8 @@ class LegIdleState(LegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
-        if self.__in_water:
-            return LegStates.WATER_IDLE
-
         if self.__move:
             return LegStates.WALK
 
         if self.__jump and self.actor.grounded:
             return LegStates.JUMP_LOAD
-
-    def on_collision(self, tags: list[str], enter: bool) -> None:
-        super().on_collision(tags, enter)
-
-        if enter and collision_tags.WATER:
-            self.__in_water = True

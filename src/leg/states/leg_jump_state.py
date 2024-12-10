@@ -27,7 +27,6 @@ class LegJumpState(LegState):
         # Other.
         self.__jump_force: float = 500.0
         self.__startup: bool = True
-        self.__in_water: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -35,7 +34,6 @@ class LegJumpState(LegState):
         self.__animation_ended = False
         self.__jump_force = self.actor.jump_force
         self.__startup = True
-        self.__in_water = False
 
     def __fetch_input(self) -> None:
         """
@@ -60,8 +58,6 @@ class LegJumpState(LegState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
-        if self.__in_water:
-            return LegStates.WATER_JUMP
         if self.actor.grounded:
             if self.actor.move_vec.mag <= 0.0:
                 return LegStates.IDLE
@@ -76,9 +72,3 @@ class LegJumpState(LegState):
 
     def on_animation_end(self) -> None:
         self.__animation_ended = True
-
-    def on_collision(self, tags: list[str], enter: bool) -> None:
-        super().on_collision(tags, enter)
-
-        if enter and collision_tags.WATER:
-            self.__in_water = True

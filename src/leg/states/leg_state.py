@@ -11,9 +11,6 @@ class LegStates(str, Enum):
     WALK = "walk"
     JUMP_LOAD = "jump_load"
     JUMP = "jump"
-    WATER_IDLE = "water_idle"
-    WATER_WALK = "water_walk"
-    WATER_JUMP = "water_jump"
 
 class LegState(State):
     """

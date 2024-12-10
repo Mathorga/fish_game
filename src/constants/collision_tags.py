@@ -1,14 +1,14 @@
 # Actual player collisions, used for collision resolution.
-PLAYER_COLLISION = "player_collision"
+PLAYER_COLLISION: str = "player_collision"
 
 # Used for non solid collisions (e.g. sensors).
-PLAYER_SENSE = "player_sense"
+PLAYER_SENSE: str = "player_sense"
 
 # Player interaction, used to know when to display interaction signals.
-PLAYER_INTERACTION = "player_interaction"
+PLAYER_INTERACTION: str = "player_interaction"
 
 # All fall-related collisions.
-FALL = "fall"
+FALL: str = "fall"
 
 # Water interactions.
-WATER = "water"
+WATER: str = "water"

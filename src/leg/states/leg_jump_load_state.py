@@ -1,9 +1,10 @@
-from amonite.input_controller import ControllerButton, ControllerStick
 import pyglet
 import pyglet.math as pm
 
 from amonite.animation import Animation
-import amonite.controllers as controllers
+from amonite import controllers
+from amonite.input_controller import ControllerButton
+from amonite.input_controller import ControllerStick
 
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_state import LegStates
@@ -75,7 +76,7 @@ class LegJumpLoadState(LegState):
         self.actor.jump_force += self.__jump_force_step * dt
 
         # Make sure the jump force does not exceed its maximum possible value.
-        self.actor.jump_force = pm.clamp(self.actor.jump_force, 0.0, self.actor.max_jump_force)
+        self.actor.jump_force = pm.clamp(self.actor.jump_force, 0.0, self.actor.get_max_jump_force())
 
         # Check for state changes.
         if not self.__jump:

@@ -18,7 +18,6 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 
-
 class LegDataNode(PositionNode):
     """
     """
@@ -34,18 +33,20 @@ class LegDataNode(PositionNode):
         "gravity_accel",
         "__ground_collision_ids",
         "__roof_collision_ids",
+        "__water_collision_ids",
         "grounded",
         "roofed",
+        "in_water",
         "__hor_facing",
         "jump_force",
-        "max_jump_force",
-        "dampening",
         "sprite",
         "__collider",
-        "__water_sensor",
         "__ground_sensor",
         "__roof_sensor"
     )
+    water_dampening: float = 0.5
+    land_dampening: float = 1.0
+    max_jump_force: float = 500.0
 
     def __init__(
         self,
@@ -86,16 +87,16 @@ class LegDataNode(PositionNode):
         ################################
         self.__ground_collision_ids: set[int] = set()
         self.__roof_collision_ids: set[int] = set()
+        self.__water_collision_ids: set[int] = set()
         self.grounded: bool = False
         self.roofed: bool = False
+        self.in_water: bool = False
         ################################
         ################################
 
 
         self.__hor_facing: int = 1
         self.jump_force: float = 0.0
-        self.max_jump_force: float = 500.0
-        self.dampening: float = 1.0
 
 
         ################################
@@ -123,25 +124,7 @@ class LegDataNode(PositionNode):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
-                collision_tags.FALL
-            ],
-            passive_tags = [],
-            shape = CollisionRect(
-                x = x,
-                y = y,
-                anchor_x = 6,
-                anchor_y = 16,
-                width = 12,
-                height = 28,
-                batch = batch
-            )
-        )
-        self.__water_sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
-            collision_type = CollisionType.DYNAMIC,
-            collision_method = CollisionMethod.PASSIVE,
-            active_tags = [
+                collision_tags.FALL,
                 collision_tags.WATER
             ],
             passive_tags = [],
@@ -154,7 +137,7 @@ class LegDataNode(PositionNode):
                 height = 28,
                 batch = batch
             ),
-            on_triggered = self.on_water_collision
+            on_triggered = self.on_collision
         )
         self.__ground_sensor: CollisionNode = CollisionNode(
             x = x,
@@ -199,16 +182,25 @@ class LegDataNode(PositionNode):
             on_triggered = self.on_roof_collision
         )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
-        controllers.COLLISION_CONTROLLER.add_collider(self.__water_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
         ################################
         ################################
 
-    def on_water_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        print(tags, entered)
-        if self.__on_collision is not None:
-            self.__on_collision(tags, collider_id, entered)
+    def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+        if not collision_tags.WATER in tags:
+            return
+
+        if entered:
+            self.__water_collision_ids.add(collider_id)
+        else:
+            if collider_id in self.__water_collision_ids:
+                self.__water_collision_ids.remove(collider_id)
+
+        if len(self.__water_collision_ids) > 0:
+            self.in_water = True
+        else:
+            self.in_water = False
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
@@ -243,6 +235,12 @@ class LegDataNode(PositionNode):
             self.gravity_vec *= 0.0
             self.roofed = False
 
+    def get_dampening(self) -> float:
+        return self.water_dampening if self.in_water else self.land_dampening
+
+    def get_max_jump_force(self) -> float:
+        return self.max_jump_force * self.get_dampening()
+
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
@@ -256,7 +254,7 @@ class LegDataNode(PositionNode):
         self.sprite.set_position(self.get_position())
 
         # Update sensors position
-        self.__water_sensor.set_position(self.get_position())
+        # self.__water_sensor.set_position(self.get_position())
         self.__ground_sensor.set_position(self.get_position())
         self.__roof_sensor.set_position(self.get_position())
 
@@ -283,14 +281,14 @@ class LegDataNode(PositionNode):
 
         if move_vec.mag < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            current_speed += self.move_accel * self.dampening * dt
+            current_speed += self.move_accel * self.get_dampening() * dt
         else:
         # elif move_vec.mag > target_speed:
             # Decelerate otherwise.
-            current_speed -= self.move_accel * self.dampening * dt
+            current_speed -= self.move_accel * self.get_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(current_speed, 0.0, self.max_move_speed * self.dampening),
+            pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_dampening()),
             target_heading
         )
 
@@ -299,7 +297,7 @@ class LegDataNode(PositionNode):
             return
 
         # Accelerate when not grounded.
-        self.gravity_vec += self.gravity_accel * self.dampening * dt
+        self.gravity_vec += self.gravity_accel * self.get_dampening() * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
             round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),

@@ -9,7 +9,6 @@ from leg.states.leg_jump_load_state import LegJumpLoadState
 from leg.states.leg_jump_state import LegJumpState
 from leg.states.leg_walk_state import LegWalkState
 from leg.states.leg_state import LegStates
-from leg.states.leg_water_idle_state import LegWaterIdleState
 
 class LegNode(PositionNode):
     """
@@ -45,10 +44,7 @@ class LegNode(PositionNode):
                 LegStates.IDLE: LegIdleState(actor = self.__data),
                 LegStates.WALK: LegWalkState(actor = self.__data),
                 LegStates.JUMP_LOAD: LegJumpLoadState(actor = self.__data),
-                LegStates.JUMP: LegJumpState(actor = self.__data),
-                LegStates.WATER_IDLE: LegWaterIdleState(actor = self.__data),
-                LegStates.WATER_WALK: LegWaterIdleState(actor = self.__data),
-                LegStates.WATER_JUMP: LegWaterIdleState(actor = self.__data)
+                LegStates.JUMP: LegJumpState(actor = self.__data)
             }
         )
 
