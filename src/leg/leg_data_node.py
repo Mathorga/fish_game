@@ -199,6 +199,7 @@ class LegDataNode(PositionNode):
 
         if len(self.__water_collision_ids) > 0:
             self.in_water = True
+            self.gravity_vec *= 0.0
         else:
             self.in_water = False
 
