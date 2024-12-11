@@ -48,6 +48,7 @@ class LegJumpLoadState(LegState):
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
+        self.actor.jump_force = 0.0
         self.__jump = False
         self.__elapsed = 0.0
         self.__release_threshold = 1.0

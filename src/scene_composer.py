@@ -94,7 +94,6 @@ class SceneComposerNode():
                 source = self.config_data["walls"],
                 batch = self.scene.world_batch
             )
-
         ################################
         ################################
 
@@ -103,11 +102,13 @@ class SceneComposerNode():
         self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
 
+        print(tilemap_width, tilemap_height, self.__tile_size)
+
         # Add a camera target.
         self.scene.add_child(
             PositionNode(
-                x = 500.0,
-                y = 200.0
+                x = tilemap_width * self.__tile_size / 2,
+                y = tilemap_height * self.__tile_size / 2
             ),
             cam_target = True
         )
