@@ -1,19 +1,70 @@
 import json
 from typing import Any
 import pyglet
+from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
 from amonite.node import Node
 from amonite.node import PositionNode
+from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
 from amonite.tilemap_node import TilemapNode
-from amonite.wall_node import WallNode
-from amonite.utils.walls_loader import WallsLoader
 from amonite.utils.hittables_loader import HittableNode
 from amonite.utils.hittables_loader import HittablesLoader
 
 from fish.fish_node import FishNode
 from leg.leg_node import LegNode
+
+class WaterHittableNode(HittableNode):
+    def __init__(
+        self,
+        x: float = 0,
+        y: float = 0,
+        z: float = 0,
+        width: int = 8,
+        height: int = 8,
+        sensor: bool = False,
+        color: tuple[int, int, int, int] = (0x7F, 0xDF, 0xFF, 0x7F),
+        tags: list[str] | None = None,
+        batch: Batch | None = None
+    ) -> None:
+        super().__init__(
+            x = x,
+            y = y,
+            z = z,
+            width = width,
+            height = height,
+            sensor = sensor,
+            color = color,
+            tags = tags,
+            batch = batch
+        )
+
+        self.shape: RectNode = RectNode(
+            x = x,
+            y = y,
+            z = z,
+            width = width,
+            height = height,
+            color = color,
+            batch = batch
+        )
+
+    @staticmethod
+    def from_hittable(
+        hittable: HittableNode,
+        batch: Batch | None = None
+    ):
+        return WaterHittableNode(
+            x = hittable.x,
+            y = hittable.y,
+            z = hittable.z,
+            width = hittable.width,
+            height = hittable.height,
+            tags = hittable.tags,
+            sensor = hittable.sensor,
+            batch = batch
+        )
 
 class SceneComposerNode():
     """
@@ -82,11 +133,19 @@ class SceneComposerNode():
         ################################
         # Read hittables.
         ################################
-        self.__waters: list[HittableNode] = []
+        self.__waters: list[WaterHittableNode] = []
         if self.config_data["waters"] is not None:
-            self.__waters = HittablesLoader.fetch(
-                source = self.config_data["waters"],
-                batch = self.scene.world_batch
+            self.__waters = list(
+                    map(
+                    lambda hittable: WaterHittableNode.from_hittable(
+                        hittable = hittable,
+                        batch = self.scene.world_batch
+                    ),
+                    HittablesLoader.fetch(
+                        source = self.config_data["waters"],
+                        batch = self.scene.world_batch
+                    )
+                )
             )
         self.__walls: list[HittableNode] = []
         if self.config_data["walls"] is not None:
