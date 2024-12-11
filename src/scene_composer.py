@@ -86,7 +86,6 @@ class SceneComposerNode():
         if self.config_data["waters"] is not None:
             self.__waters = HittablesLoader.fetch(
                 source = self.config_data["waters"],
-                sensor = True,
                 batch = self.scene.world_batch
             )
         self.__walls: list[HittableNode] = []

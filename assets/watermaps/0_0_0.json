@@ -4,6 +4,7 @@
             "tags": [
                 "water"
             ],
+            "sensor": true,
             "positions": [
                 "304,0"
             ],

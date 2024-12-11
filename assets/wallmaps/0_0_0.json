@@ -4,6 +4,7 @@
             "tags": [
                 "player_collision"
             ],
+            "sensor": false,
             "positions": [
                 "0,0",
                 "0,32",
