@@ -192,16 +192,13 @@ class LegDataNode(PositionNode):
             return
 
         if entered:
-            self.__water_collision_ids.add(collider_id)
-        else:
-            if collider_id in self.__water_collision_ids:
-                self.__water_collision_ids.remove(collider_id)
-
-        if len(self.__water_collision_ids) > 0:
             self.in_water = True
-            self.gravity_vec *= 0.0
         else:
             self.in_water = False
+
+        # Clear gravity vector on collision.
+        if self.in_water:
+            self.gravity_vec *= 0.0
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
