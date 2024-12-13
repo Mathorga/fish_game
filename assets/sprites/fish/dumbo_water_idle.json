@@ -1,6 +1,6 @@
 {
-    "name": "dumbo_idle",
-    "path": "sprites/fish/water_fish/dumbo_idle.png",
+    "name": "dumbo_water_idle",
+    "path": "sprites/fish/dumbo_water_idle.png",
     "rows": 1,
     "columns": 4,
     "center_x": true,

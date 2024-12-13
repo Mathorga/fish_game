@@ -14,9 +14,8 @@ class FishIdleState(FishState):
     ) -> None:
         super().__init__(actor = actor)
 
-        # self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_idle.json")
-        self.__water_animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_water_idle.json")
-        self.__land_animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_land_idle.json")
+        self.__water_animation: Animation = Animation(source = "sprites/fish/dumbo_water_idle.json")
+        self.__land_animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
 
         # Inputs.
         self.__move: bool = False

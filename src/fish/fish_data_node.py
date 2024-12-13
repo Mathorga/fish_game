@@ -63,7 +63,7 @@ class FishDataNode(PositionNode):
         # Gravity movement.
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
-        self.target_gravity_speed: float = float(math.inf)
+        self.target_gravity_speed: float = math.inf
         self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -1200.0)
         ################################
         ################################
@@ -73,10 +73,7 @@ class FishDataNode(PositionNode):
         # Collision flags.
         ################################
         self.__ground_collision_ids: set[int] = set()
-        # self.__roof_collision_ids: set[int] = set()
-        # self.__water_collision_ids: set[int] = set()
         self.grounded: bool = False
-        # self.roofed: bool = False
         self.in_water: bool = False
         ################################
         ################################
@@ -86,7 +83,7 @@ class FishDataNode(PositionNode):
         # Sprite
         ################################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/fish/water_fish/water_fish_swim.json").content,
+            resource = Animation(source = "sprites/fish/dumbo_swim.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             y_sort = False,
@@ -162,7 +159,7 @@ class FishDataNode(PositionNode):
         if self.in_water:
             self.target_gravity_speed = 0.0
         else:
-            self.target_gravity_speed = float(math.inf)
+            self.target_gravity_speed = math.inf
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
