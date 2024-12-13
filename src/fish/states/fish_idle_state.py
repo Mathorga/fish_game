@@ -1,25 +1,29 @@
+import pyglet.math as pm
+
 from amonite.animation import Animation
 import amonite.controllers as controllers
-from fish.water_fish.water_fish_data_node import WaterFishDataNode
-from fish.water_fish.states.water_fish_state import WaterFishStates
-from fish.water_fish.states.water_fish_state import WaterFishState
 
-class WaterFishIdleState(WaterFishState):
+from fish.fish_data_node import FishDataNode
+from fish.states.fish_state import FishStates
+from fish.states.fish_state import FishState
+
+class FishIdleState(FishState):
     def __init__(
         self,
-        actor: WaterFishDataNode
+        actor: FishDataNode
     ) -> None:
         super().__init__(actor = actor)
 
         # self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_idle.json")
-        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_water_idle.json")
+        self.__water_animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_water_idle.json")
+        self.__land_animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_land_idle.json")
 
         # Inputs.
         self.__move: bool = False
         self.__dash: bool = False
 
     def start(self) -> None:
-        self.actor.set_animation(self.__animation)
+        self.actor.set_animation(self.__water_animation if self.actor.in_water else self.__land_animation)
 
     def __fetch_input(self) -> None:
         """
@@ -34,9 +38,14 @@ class WaterFishIdleState(WaterFishState):
         # Read inputs.
         self.__fetch_input()
 
+        self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
+        self.actor.compute_gravity_speed(dt = dt)
+
+        self.actor.move(dt = dt)
+
         # Check for state changes.
         if self.__move:
-            return WaterFishStates.SWIM
+            return FishStates.SWIM if self.actor.in_water else FishStates.CRAWL
 
         if self.__dash:
-            return WaterFishStates.DASH
+            return FishStates.DASH

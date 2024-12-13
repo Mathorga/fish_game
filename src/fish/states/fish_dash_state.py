@@ -1,17 +1,17 @@
 from amonite.animation import Animation
-from fish.water_fish.water_fish_data_node import WaterFishDataNode
-from fish.water_fish.states.water_fish_state import WaterFishStates
-from fish.water_fish.states.water_fish_state import WaterFishState
+from fish.fish_data_node import FishDataNode
+from fish.states.fish_state import FishStates
+from fish.states.fish_state import FishState
 
-class WaterFishDashState(WaterFishState):
+class FishDashState(FishState):
     def __init__(
         self,
-        actor: WaterFishDataNode
+        actor: FishDataNode
     ) -> None:
         super().__init__(actor = actor)
 
         # Animation.
-        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_dash.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_swim_dash.json")
         self.__startup: bool = False
         self.__animation_ended: bool = False
 
@@ -24,9 +24,9 @@ class WaterFishDashState(WaterFishState):
         # Handle animation end.
         if self.__animation_ended:
             if self.actor.speed <= 0.0:
-                return WaterFishStates.IDLE
+                return FishStates.IDLE
             else:
-                return WaterFishStates.SWIM
+                return FishStates.SWIM
 
         if self.__startup:
             self.actor.speed = self.actor.max_speed * 2
@@ -39,7 +39,7 @@ class WaterFishDashState(WaterFishState):
 
         # Check for state changes.
         if self.actor.speed <= 0.0:
-            return WaterFishStates.IDLE
+            return FishStates.IDLE
 
     def on_animation_end(self) -> None:
         self.__animation_ended = True
