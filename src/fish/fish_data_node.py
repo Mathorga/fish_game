@@ -136,9 +136,9 @@ class FishDataNode(PositionNode):
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 6,
+                anchor_x = 5,
                 anchor_y = 8,
-                width = 12,
+                width = 10,
                 height = 2,
                 batch = batch
             ),
