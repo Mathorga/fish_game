@@ -53,12 +53,13 @@ class WaterHittableNode(HittableNode):
     @staticmethod
     def from_hittable(
         hittable: HittableNode,
+        z: float | None = None,
         batch: Batch | None = None
     ):
         return WaterHittableNode(
             x = hittable.x,
             y = hittable.y,
-            z = hittable.z,
+            z = z if z is not None else hittable.z,
             width = hittable.width,
             height = hittable.height,
             tags = hittable.tags,
@@ -139,6 +140,7 @@ class SceneComposerNode():
                     map(
                     lambda hittable: WaterHittableNode.from_hittable(
                         hittable = hittable,
+                        z = 200,
                         batch = self.scene.world_batch
                     ),
                     HittablesLoader.fetch(
@@ -176,18 +178,18 @@ class SceneComposerNode():
         assert "name" in child_data.keys()
 
         match child_data["name"]:
-            # case "fish_node":
-            #     return FishNode(
-            #         x = child_data["x"],
-            #         y = child_data["y"],
-            #         batch = self.scene.world_batch
-            #     )
-            case "leg_node":
-                return LegNode(
+            case "fish_node":
+                return FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
                     batch = self.scene.world_batch
                 )
+            # case "leg_node":
+            #     return LegNode(
+            #         x = child_data["x"],
+            #         y = child_data["y"],
+            #         batch = self.scene.world_batch
+            #     )
             case "tilemap":
                 return Node()
             case _:

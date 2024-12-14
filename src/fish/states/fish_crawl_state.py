@@ -1,20 +1,19 @@
 import pyglet
 from amonite.animation import Animation
 import amonite.controllers as controllers
-from fish.water_fish.water_fish_data_node import WaterFishDataNode
-from fish.water_fish.states.water_fish_state import WaterFishState
-from fish.water_fish.states.water_fish_state import WaterFishStates
+from fish.fish_data_node import FishDataNode
+from fish.states.fish_state import FishState
+from fish.states.fish_state import FishStates
 
-class WaterFishSwimState(WaterFishState):
+class FishCrawlState(FishState):
     def __init__(
         self,
-        actor: WaterFishDataNode
+        actor: FishDataNode
     ) -> None:
         super().__init__(actor = actor)
 
         # Animation.
-        # self.__animation: Animation = Animation(source = "sprites/fish/water_fish/water_fish_swim.json")
-        self.__animation: Animation = Animation(source = "sprites/fish/water_fish/dumbo_swim.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
@@ -36,14 +35,15 @@ class WaterFishSwimState(WaterFishState):
         # Read inputs.
         self.__fetch_input()
 
-        self.actor.compute_speed(move_vec = self.__move_vec, dt = dt)
+        self.actor.compute_move_speed(move_vec = self.__move_vec, dt = dt)
+        self.actor.compute_gravity_speed(dt = dt)
 
         # Move the player.
         self.actor.move(dt = dt)
 
         # Check for state changes.
         if self.__dash:
-            return WaterFishStates.DASH
+            return FishStates.DASH
 
-        if self.actor.speed <= 0.0:
-            return WaterFishStates.IDLE
+        if self.actor.move_vec.mag <= 0.0:
+            return FishStates.IDLE

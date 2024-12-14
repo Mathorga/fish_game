@@ -1,29 +1,32 @@
 from enum import Enum
-from amonite.state_machine import State
-from fish.water_fish.water_fish_data_node import WaterFishDataNode
 
-class WaterFishStates(str, Enum):
+from amonite.state_machine import State
+
+from fish.fish_data_node import FishDataNode
+
+class FishStates(str, Enum):
     """
-    All possible states for water fish.
+    All possible states for fish.
     """
 
     IDLE = "idle"
     SWIM = "swim"
     DASH = "dash"
+    CRAWL = "crawl"
 
-class WaterFishState(State):
+class FishState(State):
     """
     Base class for water fish states.
     """
 
     def __init__(
         self,
-        actor: WaterFishDataNode
+        actor: FishDataNode
     ) -> None:
         super().__init__()
 
         self.input_enabled: bool = True
-        self.actor: WaterFishDataNode = actor
+        self.actor: FishDataNode = actor
 
     def enable_input(self) -> None:
         """
