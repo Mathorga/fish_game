@@ -1,6 +1,8 @@
 import pyglet
+
 from amonite.animation import Animation
-import amonite.controllers as controllers
+from amonite import controllers
+
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishState
 from fish.states.fish_state import FishStates
@@ -43,6 +45,9 @@ class FishSwimState(FishState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        if not self.actor.in_water:
+            return FishStates.CRAWL
+
         if self.__dash:
             return FishStates.DASH
 

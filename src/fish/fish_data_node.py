@@ -79,6 +79,9 @@ class FishDataNode(PositionNode):
         ################################
 
 
+        self.dash_force: float = self.max_move_speed * 5
+
+
         ################################
         # Sprite
         ################################
@@ -209,7 +212,12 @@ class FishDataNode(PositionNode):
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)
 
-    def compute_move_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
+    def compute_move_speed(
+        self,
+        move_vec: pyglet.math.Vec2,
+        dt: float,
+        max_speed: float | None = None,
+    ) -> None:
         target_speed: float = 0.0
         target_heading: float = self.move_vec.heading
 
@@ -227,7 +235,11 @@ class FishDataNode(PositionNode):
             current_speed -= self.move_accel * self.get_move_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_move_dampening()),
+            pm.clamp(
+                current_speed,
+                0.0,
+                (max_speed if max_speed is not None else self.max_move_speed) * self.get_move_dampening()
+            ),
             target_heading
         )
 
