@@ -50,8 +50,6 @@ class FishDashState(FishState):
         if self.__startup:
             self.actor.move_vec += pm.Vec2.from_polar(self.actor.max_move_speed * 5, self.actor.move_vec.heading)
             self.__startup = False
-        # else:
-        #     self.actor.move_vec = pm.Vec2.from_polar(self.actor.move_vec.mag - self.actor.move_accel / 2 * dt, self.actor.move_vec.heading)
 
         self.actor.compute_move_speed(dt = dt, move_vec = self.__move_vec, max_speed = self.actor.dash_force)
         self.actor.compute_gravity_speed(dt = dt)
@@ -60,6 +58,9 @@ class FishDashState(FishState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        # Make sure the state ends when there's no more movement.
+        # TODO Maybe animation end is enough for state change, since keeping the animation going
+        # on movement exhaustion is probably better UX than cutting the animation abruptly.
         if self.actor.move_vec.mag <= 0.0:
             return FishStates.IDLE
 
