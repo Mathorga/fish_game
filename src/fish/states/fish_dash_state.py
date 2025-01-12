@@ -39,7 +39,7 @@ class FishDashState(FishState):
     def update(self, dt: float) -> str | None:
         # Handle animation end.
         if self.__animation_ended:
-            if self.actor.move_vec.mag <= 0.0:
+            if self.actor.move_vec.length() <= 0.0:
                 return FishStates.IDLE
             else:
                 return FishStates.SWIM
@@ -48,7 +48,7 @@ class FishDashState(FishState):
         self.__fetch_input()
 
         if self.__startup:
-            self.actor.move_vec += pm.Vec2.from_polar(self.actor.max_move_speed * 5, self.actor.move_vec.heading)
+            self.actor.move_vec += pm.Vec2.from_polar(self.actor.max_move_speed * 5, self.actor.move_vec.heading())
             self.__startup = False
 
         self.actor.compute_move_speed(dt = dt, move_vec = self.__move_vec, max_speed = self.actor.dash_force)
@@ -61,7 +61,7 @@ class FishDashState(FishState):
         # Make sure the state ends when there's no more movement.
         # TODO Maybe animation end is enough for state change, since keeping the animation going
         # on movement exhaustion is probably better UX than cutting the animation abruptly.
-        if self.actor.move_vec.mag <= 0.0:
+        if self.actor.move_vec.length() <= 0.0:
             return FishStates.IDLE
 
     def on_animation_end(self) -> None:

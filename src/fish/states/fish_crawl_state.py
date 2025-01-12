@@ -49,5 +49,5 @@ class FishCrawlState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
 
-        if self.actor.move_vec.mag <= 0.0:
+        if self.actor.move_vec.length() <= 0.0:
             return FishStates.IDLE

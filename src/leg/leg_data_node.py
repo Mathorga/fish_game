@@ -271,13 +271,13 @@ class LegDataNode(PositionNode):
         target_speed: float = 0.0
         target_heading: float = self.move_vec.heading
 
-        current_speed: float = self.move_vec.mag
+        current_speed: float = self.move_vec.length()
 
-        if move_vec.mag > 0.0:
+        if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
             target_heading = move_vec.heading
 
-        if move_vec.mag < target_speed:
+        if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
             current_speed += self.move_accel * self.get_dampening() * dt
         else:
@@ -297,7 +297,7 @@ class LegDataNode(PositionNode):
         self.gravity_vec += self.gravity_accel * self.get_dampening() * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
-            round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
+            round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
             self.gravity_vec.heading
         )
 

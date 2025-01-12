@@ -190,7 +190,7 @@ class FishDataNode(PositionNode):
         super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.move_vec.heading)
+        dir_cos: float = math.cos(self.move_vec.heading())
         dir_len: float = abs(dir_cos)
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
@@ -219,15 +219,15 @@ class FishDataNode(PositionNode):
         max_speed: float | None = None,
     ) -> None:
         target_speed: float = 0.0
-        target_heading: float = self.move_vec.heading
+        target_heading: float = self.move_vec.heading()
 
-        current_speed: float = self.move_vec.mag
+        current_speed: float = self.move_vec.length()
 
-        if move_vec.mag > 0.0:
+        if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
-            target_heading = move_vec.heading
+            target_heading = move_vec.heading()
 
-        if move_vec.mag < target_speed:
+        if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
             current_speed += self.move_accel * self.get_move_dampening() * dt
         else:
@@ -235,27 +235,27 @@ class FishDataNode(PositionNode):
             current_speed -= self.move_accel * self.get_move_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(
+            length = pm.clamp(
                 current_speed,
                 0.0,
                 (max_speed if max_speed is not None else self.max_move_speed) * self.get_move_dampening()
             ),
-            target_heading
+            angle = target_heading
         )
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.grounded:
             return
 
-        if self.gravity_vec.mag < self.target_gravity_speed:
+        if self.gravity_vec.length() < self.target_gravity_speed:
             # Accelerate when not grounded.
             self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
-        elif self.gravity_vec.mag > self.target_gravity_speed:
+        elif self.gravity_vec.length() > self.target_gravity_speed:
             self.gravity_vec -= self.gravity_accel * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
-            round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
-            self.gravity_vec.heading
+            round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            self.gravity_vec.heading()
         )
 
     def move(self, dt: float) -> None:
