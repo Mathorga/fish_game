@@ -54,7 +54,11 @@ class FishDashState(FishState):
             )
             self.__startup = False
 
-        self.actor.compute_move_speed(dt = dt, move_vec = self.__move_vec, max_speed = self.actor.dash_force)
+        self.actor.compute_move_speed(
+            dt = dt,
+            move_vec = self.__move_vec,
+            max_speed = self.actor.dash_force
+        )
         self.actor.compute_gravity_speed(dt = dt)
 
         # Move the player.
@@ -64,7 +68,7 @@ class FishDashState(FishState):
         # Make sure the state ends when there's no more movement.
         # TODO Maybe animation end is enough for state change, since keeping the animation going
         # on movement exhaustion is probably better UX than cutting the animation abruptly.
-        if self.actor.move_vec.length() <= 0.0:
+        if self.actor.move_vec.length() <= 0.0 or self.actor.grounded:
             return FishStates.IDLE
 
     def on_animation_end(self) -> None:

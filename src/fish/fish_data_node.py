@@ -251,7 +251,8 @@ class FishDataNode(PositionNode):
             # Accelerate when not grounded.
             self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
         elif self.gravity_vec.length() > self.target_gravity_speed:
-            self.gravity_vec -= self.gravity_accel * self.get_gravity_dampening() * dt
+            # Gravity dampening is not applied during deceleration, in order to allow deceleration also when gravity dampening is 0.
+            self.gravity_vec -= self.gravity_accel * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
             length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
