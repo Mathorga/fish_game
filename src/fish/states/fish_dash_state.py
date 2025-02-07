@@ -49,7 +49,7 @@ class FishDashState(FishState):
 
         if self.__startup:
             self.actor.move_vec += pm.Vec2.from_polar(
-                length = self.actor.max_move_speed * 3,
+                length = self.actor.max_move_speed * 2,
                 angle = self.actor.move_vec.heading()
             )
             self.__startup = False
