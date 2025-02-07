@@ -64,7 +64,7 @@ class FishDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.target_gravity_speed: float = math.inf
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -1200.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -800.0)
         ################################
         ################################
 
