@@ -176,7 +176,7 @@ class FishDataNode(PositionNode):
             if collider_id in self.__ground_collision_ids:
                 self.__ground_collision_ids.remove(collider_id)
 
-        if len(self.__ground_collision_ids) > 0:
+        if not self.in_water and len(self.__ground_collision_ids) > 0:
             self.grounded = True
         else:
             self.grounded = False
