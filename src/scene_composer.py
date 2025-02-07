@@ -98,6 +98,7 @@ class SceneComposerNode():
             window = window,
             view_width = view_width,
             view_height = view_height,
+            curtain_z = 300.0,
             title = self.title,
         )
 

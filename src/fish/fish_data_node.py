@@ -89,6 +89,7 @@ class FishDataNode(PositionNode):
             resource = Animation(source = "sprites/fish/dumbo_swim.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            z = -100.0,
             y_sort = False,
             on_animation_end = on_sprite_animation_end,
             batch = batch
