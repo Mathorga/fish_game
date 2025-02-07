@@ -68,7 +68,7 @@ class FishDashState(FishState):
         # Make sure the state ends when there's no more movement.
         # TODO Maybe animation end is enough for state change, since keeping the animation going
         # on movement exhaustion is probably better UX than cutting the animation abruptly.
-        if self.actor.move_vec.length() <= 0.0 or self.actor.grounded:
+        if self.actor.move_vec.length() <= 0.0 or (self.actor.grounded and not self.actor.in_water):
             return FishStates.IDLE
 
     def on_animation_end(self) -> None:
