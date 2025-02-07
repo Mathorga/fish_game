@@ -32,8 +32,12 @@ class FishDataNode(PositionNode):
     #     "sprite",
     #     "__collider"
     # )
-    water_dampening: float = 1.0
-    land_dampening: float = 0.5
+
+    water_move_dampening: float = 1.0
+    land_move_dampening: float = 0.5
+
+    water_gravity_dampening: float = 0.2
+    land_gravity_dampening: float = 0.5
 
     def __init__(
         self,
@@ -182,10 +186,11 @@ class FishDataNode(PositionNode):
             self.gravity_vec *= 0.0
 
     def get_move_dampening(self) -> float:
-        return self.water_dampening if self.in_water else self.land_dampening
+        return self.water_move_dampening if self.in_water else self.land_move_dampening
 
     def get_gravity_dampening(self) -> float:
-        return 0.0 if self.in_water else self.water_dampening
+        # return self.water_dampening if self.in_water else self.land_dampening
+        return self.water_gravity_dampening if self.in_water else self.land_gravity_dampening
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -253,7 +258,11 @@ class FishDataNode(PositionNode):
             self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
         elif self.gravity_vec.length() > self.target_gravity_speed:
             # Gravity dampening is not applied during deceleration, in order to allow deceleration also when gravity dampening is 0.
-            self.gravity_vec -= self.gravity_accel * dt
+            self.gravity_vec -= self.gravity_accel * self.get_gravity_dampening() * dt
+
+            # Make sure to stop at 0.0.
+            if self.gravity_vec.y > 0.0:
+                self.gravity_vec *= 0.0
 
         self.gravity_vec = pm.Vec2.from_polar(
             length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
