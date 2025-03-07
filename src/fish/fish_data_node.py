@@ -32,8 +32,12 @@ class FishDataNode(PositionNode):
     #     "sprite",
     #     "__collider"
     # )
-    water_dampening: float = 1.0
-    land_dampening: float = 0.5
+
+    water_move_dampening: float = 1.0
+    land_move_dampening: float = 0.5
+
+    water_gravity_dampening: float = 0.2
+    land_gravity_dampening: float = 0.5
 
     def __init__(
         self,
@@ -64,7 +68,7 @@ class FishDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.target_gravity_speed: float = math.inf
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -1200.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -800.0)
         ################################
         ################################
 
@@ -79,6 +83,9 @@ class FishDataNode(PositionNode):
         ################################
 
 
+        self.dash_force: float = self.max_move_speed * 5
+
+
         ################################
         # Sprite
         ################################
@@ -86,6 +93,7 @@ class FishDataNode(PositionNode):
             resource = Animation(source = "sprites/fish/dumbo_swim.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            z = -100.0,
             y_sort = False,
             on_animation_end = on_sprite_animation_end,
             batch = batch
@@ -178,16 +186,17 @@ class FishDataNode(PositionNode):
             self.gravity_vec *= 0.0
 
     def get_move_dampening(self) -> float:
-        return self.water_dampening if self.in_water else self.land_dampening
+        return self.water_move_dampening if self.in_water else self.land_move_dampening
 
     def get_gravity_dampening(self) -> float:
-        return 0.0 if self.in_water else self.water_dampening
+        # return self.water_dampening if self.in_water else self.land_dampening
+        return self.water_gravity_dampening if self.in_water else self.land_gravity_dampening
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.move_vec.heading)
+        dir_cos: float = math.cos(self.move_vec.heading())
         dir_len: float = abs(dir_cos)
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
@@ -209,17 +218,22 @@ class FishDataNode(PositionNode):
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)
 
-    def compute_move_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
+    def compute_move_speed(
+        self,
+        move_vec: pyglet.math.Vec2,
+        dt: float,
+        max_speed: float | None = None,
+    ) -> None:
         target_speed: float = 0.0
-        target_heading: float = self.move_vec.heading
+        target_heading: float = self.move_vec.heading()
 
-        current_speed: float = self.move_vec.mag
+        current_speed: float = self.move_vec.length()
 
-        if move_vec.mag > 0.0:
+        if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
-            target_heading = move_vec.heading
+            target_heading = move_vec.heading()
 
-        if move_vec.mag < target_speed:
+        if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
             current_speed += self.move_accel * self.get_move_dampening() * dt
         else:
@@ -227,23 +241,32 @@ class FishDataNode(PositionNode):
             current_speed -= self.move_accel * self.get_move_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_move_dampening()),
-            target_heading
+            length = pm.clamp(
+                current_speed,
+                0.0,
+                (max_speed if max_speed is not None else self.max_move_speed) * self.get_move_dampening()
+            ),
+            angle = target_heading
         )
 
     def compute_gravity_speed(self, dt: float) -> None:
         if self.grounded:
             return
 
-        if self.gravity_vec.mag < self.target_gravity_speed:
+        if self.gravity_vec.length() < self.target_gravity_speed:
             # Accelerate when not grounded.
             self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
-        elif self.gravity_vec.mag > self.target_gravity_speed:
-            self.gravity_vec -= self.gravity_accel * dt
+        elif self.gravity_vec.length() > self.target_gravity_speed:
+            # Gravity dampening is not applied during deceleration, in order to allow deceleration also when gravity dampening is 0.
+            self.gravity_vec -= self.gravity_accel * self.get_gravity_dampening() * dt
+
+            # Make sure to stop at 0.0.
+            if self.gravity_vec.y > 0.0:
+                self.gravity_vec *= 0.0
 
         self.gravity_vec = pm.Vec2.from_polar(
-            round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
-            self.gravity_vec.heading
+            length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            angle = self.gravity_vec.heading()
         )
 
     def move(self, dt: float) -> None:

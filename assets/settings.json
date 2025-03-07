@@ -7,7 +7,7 @@
     "font_name": "rughai",
     "view_width": 960,
     "view_height": 320,
-    "pixel_perfect": false,
+    "pixel_perfect": true,
     "window_width": 1920,
     "window_height": 640,
     "fullscreen": true,

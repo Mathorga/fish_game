@@ -243,7 +243,7 @@ class LegDataNode(PositionNode):
         super().update(dt = dt)
 
         # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.move_vec.heading)
+        dir_cos: float = math.cos(self.move_vec.heading())
         dir_len: float = abs(dir_cos)
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
@@ -269,15 +269,15 @@ class LegDataNode(PositionNode):
 
     def compute_move_speed(self, move_vec: pyglet.math.Vec2, dt: float) -> None:
         target_speed: float = 0.0
-        target_heading: float = self.move_vec.heading
+        target_heading: float = self.move_vec.heading()
 
-        current_speed: float = self.move_vec.mag
+        current_speed: float = self.move_vec.length()
 
-        if move_vec.mag > 0.0:
+        if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
-            target_heading = move_vec.heading
+            target_heading = move_vec.heading()
 
-        if move_vec.mag < target_speed:
+        if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
             current_speed += self.move_accel * self.get_dampening() * dt
         else:
@@ -285,8 +285,8 @@ class LegDataNode(PositionNode):
             current_speed -= self.move_accel * self.get_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_dampening()),
-            target_heading
+            length = pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_dampening()),
+            angle = target_heading
         )
 
     def compute_gravity_speed(self, dt: float) -> None:
@@ -297,8 +297,8 @@ class LegDataNode(PositionNode):
         self.gravity_vec += self.gravity_accel * self.get_dampening() * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
-            round(self.gravity_vec.mag, GLOBALS[Keys.FLOAT_ROUNDING]),
-            self.gravity_vec.heading
+            length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            angle = self.gravity_vec.heading()
         )
 
     def move(self, dt: float) -> None:

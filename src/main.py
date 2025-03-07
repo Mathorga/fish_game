@@ -58,6 +58,8 @@ class FishGame:
         pyglet.resource.path = [f"{os.path.dirname(__file__)}/../assets"]
         pyglet.resource.reindex()
 
+        pyglet.options.dpi_scaling = "stretch"
+
         # Load font files.
         pyglet.font.add_file(f"{pyglet.resource.path[0]}/fonts/I-pixel-u.ttf")
         pyglet.font.add_file(f"{pyglet.resource.path[0]}/fonts/rughai.ttf")
