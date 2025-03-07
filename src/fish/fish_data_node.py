@@ -163,9 +163,15 @@ class FishDataNode(PositionNode):
         else:
             self.in_water = False
 
-        # Clear gravity vector on collision.
         if self.in_water:
+            # Clear gravity vector on collision.
             self.target_gravity_speed = 0.0
+
+            # Remove vertical movement.
+            self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
+
+            # Fix vertical gravity vector.
+            self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
         else:
             self.target_gravity_speed = math.inf
 
