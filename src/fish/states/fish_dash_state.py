@@ -48,15 +48,19 @@ class FishDashState(FishState):
         self.__fetch_input()
 
         if self.__startup:
-            self.actor.move_vec += pm.Vec2.from_polar(
-                length = self.actor.max_move_speed * 2,
-                angle = self.actor.move_vec.heading()
-            )
+            # self.actor.move_vec += pm.Vec2.from_polar(
+            #     length = self.actor.max_move_speed * 3,
+            #     angle = self.__move_vec.heading()
+            # )
+            self.actor.move_vec = self.__move_vec * 3 * self.actor.max_move_speed
             self.__startup = False
 
         self.actor.compute_move_speed(
             dt = dt,
-            move_vec = self.__move_vec,
+            move_vec = pm.Vec2.from_polar(
+                length = self.actor.move_vec.length(),
+                angle = self.actor.heading,
+            ),
             max_speed = self.actor.dash_force
         )
         self.actor.compute_gravity_speed(dt = dt)
