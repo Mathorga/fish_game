@@ -51,6 +51,7 @@ class FishDataNode(PositionNode):
 
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__hor_facing: int = 1
+        self.heading: float = 0.0
 
 
         ################################
@@ -115,8 +116,7 @@ class FishDataNode(PositionNode):
                 collision_tags.FALL,
                 collision_tags.WATER
             ],
-            passive_tags = [
-            ],
+            passive_tags = [],
             shape = CollisionRect(
                 x = x,
                 y = y,
@@ -163,17 +163,20 @@ class FishDataNode(PositionNode):
         else:
             self.in_water = False
 
+        # Remove vertical movement.
+        self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
+
         if self.in_water:
             # Clear gravity vector on collision.
             self.target_gravity_speed = 0.0
-
-            # Remove vertical movement.
-            self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
 
             # Fix vertical gravity vector.
             self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
         else:
             self.target_gravity_speed = math.inf
+
+            # Fix vertical gravity vector.
+            self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
@@ -279,8 +282,12 @@ class FishDataNode(PositionNode):
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
+        velocity: pm.Vec2 = self.move_vec + self.gravity_vec
+        if velocity.length() > 0.0:
+            self.heading = velocity.heading()
+
         # Compute and apply velocity for the next step.
-        self.set_velocity(velocity = self.move_vec + self.gravity_vec)
+        self.set_velocity(velocity = velocity)
 
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
