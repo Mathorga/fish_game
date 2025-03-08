@@ -12,6 +12,7 @@ from amonite.tilemap_node import TilemapNode
 from amonite.utils.hittables_loader import HittableNode
 from amonite.utils.hittables_loader import HittablesLoader
 
+from constants import uniques
 from fish.fish_node import FishNode
 from leg.leg_node import LegNode
 
@@ -164,33 +165,26 @@ class SceneComposerNode():
         self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
 
-        print(tilemap_width, tilemap_height, self.__tile_size)
-
-        # Add a camera target.
-        self.scene.add_child(
-            PositionNode(
-                x = tilemap_width * self.__tile_size / 2,
-                y = tilemap_height * self.__tile_size / 2
-            ),
-            cam_target = True
-        )
-
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()
 
         match child_data["name"]:
             case "fish_node":
-                return FishNode(
+                uniques.FISH = FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
+                    enabled = False,
                     batch = self.scene.world_batch
                 )
-            # case "leg_node":
-            #     return LegNode(
-            #         x = child_data["x"],
-            #         y = child_data["y"],
-            #         batch = self.scene.world_batch
-            #     )
+                return uniques.FISH
+            case "leg_node":
+                uniques.LEG = LegNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
+                    enabled = True,
+                    batch = self.scene.world_batch
+                )
+                return uniques.LEG
             case "tilemap":
                 return Node()
             case _:

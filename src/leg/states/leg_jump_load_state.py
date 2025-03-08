@@ -13,9 +13,13 @@ from leg.states.leg_state import LegState
 class LegJumpLoadState(LegState):
     def __init__(
         self,
-        actor: LegDataNode
+        actor: LegDataNode,
+        input_enabled: bool = True
     ) -> None:
-        super().__init__(actor = actor)
+        super().__init__(
+            actor = actor,
+            input_enabled = input_enabled
+        )
 
         ########################
         # Animation.

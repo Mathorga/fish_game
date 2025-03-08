@@ -20,6 +20,7 @@ class LegNode(PositionNode):
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
+        enabled: bool = True,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         super().__init__(
@@ -41,10 +42,10 @@ class LegNode(PositionNode):
         # State machine.
         self.__state_machine: StateMachine = StateMachine(
             states = {
-                LegStates.IDLE: LegIdleState(actor = self.__data),
-                LegStates.WALK: LegWalkState(actor = self.__data),
-                LegStates.JUMP_LOAD: LegJumpLoadState(actor = self.__data),
-                LegStates.JUMP: LegJumpState(actor = self.__data)
+                LegStates.IDLE: LegIdleState(actor = self.__data, input_enabled = enabled),
+                LegStates.WALK: LegWalkState(actor = self.__data, input_enabled = enabled),
+                LegStates.JUMP_LOAD: LegJumpLoadState(actor = self.__data, input_enabled = enabled),
+                LegStates.JUMP: LegJumpState(actor = self.__data, input_enabled = enabled)
             }
         )
 
@@ -54,6 +55,8 @@ class LegNode(PositionNode):
         self.__state_machine.update(dt = dt)
 
         self.__data.update(dt = dt)
+
+        self.set_position(self.__data.get_position())
 
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()
