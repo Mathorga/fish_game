@@ -1,5 +1,4 @@
 import math
-import time
 from typing import Callable
 import pyglet
 import pyglet.math as pm
@@ -17,6 +16,7 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
+from constants import uniques
 
 class LegDataNode(PositionNode):
     """
@@ -25,6 +25,7 @@ class LegDataNode(PositionNode):
     __slots__ = (
         "__on_collision",
         "__batch",
+        "__button_offset",
         "move_vec",
         "max_move_speed",
         "move_accel",
@@ -40,6 +41,7 @@ class LegDataNode(PositionNode):
         "__hor_facing",
         "jump_force",
         "sprite",
+        "__grab_button",
         "__collider",
         "__ground_sensor",
         "__roof_sensor"
@@ -61,6 +63,7 @@ class LegDataNode(PositionNode):
 
         self.__on_collision: Callable | None = on_collision
         self.__batch: pyglet.graphics.Batch | None = batch
+        self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
 
 
         ################################
@@ -110,6 +113,7 @@ class LegDataNode(PositionNode):
             on_animation_end = on_sprite_animation_end,
             batch = batch
         )
+        self.__grab_button: SpriteNode | None = None
         ################################
         ################################
 
@@ -239,8 +243,29 @@ class LegDataNode(PositionNode):
     def get_max_jump_force(self) -> float:
         return self.max_jump_force * self.get_dampening()
 
+    def __build_grab_button(self) -> SpriteNode:
+        return SpriteNode(
+            resource = Animation(source = "sprites/press_button/press_button.json").content,
+            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
+            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            y_sort = False,
+            batch = self.__batch
+        )
+
     def update(self, dt: float) -> None:
         super().update(dt = dt)
+
+        if uniques.FISH is not None:
+            fish_position: tuple[float, float] = uniques.FISH.get_position()
+            position: tuple[float, float] = self.get_position()
+            distance: float = pm.Vec2(position[0] - fish_position[0], position[1] - fish_position[1]).length()
+            if distance < 24 and self.__grab_button is None:
+                self.__grab_button = self.__build_grab_button()
+                uniques.ACTIVE_SCENE.add_child(self.__grab_button)
+            elif distance >= 24 and self.__grab_button is not None:
+                uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
+                self.__grab_button.delete()
+                self.__grab_button = None
 
         # Only update facing if there's any horizontal movement.
         dir_cos: float = math.cos(self.move_vec.heading())
@@ -250,6 +275,15 @@ class LegDataNode(PositionNode):
 
         # Update sprite position.
         self.sprite.set_position(self.get_position())
+
+        if self.__grab_button is not None:
+            position: tuple[float, float] = self.get_position()
+            self.__grab_button.set_position(
+                position = (
+                    position[0] + self.__button_offset.x,
+                    position[1] + self.__button_offset.y
+                )
+            )
 
         # Update sensors position
         # self.__water_sensor.set_position(self.get_position())
@@ -262,6 +296,8 @@ class LegDataNode(PositionNode):
     def delete(self) -> None:
         self.sprite.delete()
         self.__collider.delete()
+        if self.__grab_button is not None:
+            self.__grab_button.delete()
         super().delete()
 
     def set_animation(self, animation: Animation) -> None:

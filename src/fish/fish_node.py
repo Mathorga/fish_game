@@ -20,6 +20,7 @@ class FishNode(PositionNode):
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
+        enabled: bool = True,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         super().__init__(
@@ -40,10 +41,10 @@ class FishNode(PositionNode):
         # State machine.
         self.__state_machine: StateMachine = StateMachine(
             states = {
-                FishStates.IDLE: FishIdleState(actor = self.__data),
-                FishStates.SWIM: FishSwimState(actor = self.__data),
-                FishStates.DASH: FishDashState(actor = self.__data),
-                FishStates.CRAWL: FishCrawlState(actor = self.__data)
+                FishStates.IDLE: FishIdleState(actor = self.__data, input_enabled = enabled),
+                FishStates.SWIM: FishSwimState(actor = self.__data, input_enabled = enabled),
+                FishStates.DASH: FishDashState(actor = self.__data, input_enabled = enabled),
+                FishStates.CRAWL: FishCrawlState(actor = self.__data, input_enabled = enabled)
             }
         )
 
@@ -53,6 +54,8 @@ class FishNode(PositionNode):
         self.__state_machine.update(dt = dt)
 
         self.__data.update(dt = dt)
+
+        self.set_position(self.__data.get_position())
 
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()

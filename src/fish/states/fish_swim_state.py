@@ -10,9 +10,13 @@ from fish.states.fish_state import FishStates
 class FishSwimState(FishState):
     def __init__(
         self,
-        actor: FishDataNode
+        actor: FishDataNode,
+        input_enabled: bool = True
     ) -> None:
-        super().__init__(actor = actor)
+        super().__init__(
+            actor = actor,
+            input_enabled = input_enabled
+        )
 
         # Animation.
         # self.__animation: Animation = Animation(source = "sprites/fish/_swim.json")

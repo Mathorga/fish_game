@@ -21,11 +21,12 @@ class FishState(State):
 
     def __init__(
         self,
-        actor: FishDataNode
+        actor: FishDataNode,
+        input_enabled: bool = True
     ) -> None:
         super().__init__()
 
-        self.input_enabled: bool = True
+        self.input_enabled: bool = input_enabled
         self.actor: FishDataNode = actor
 
     def enable_input(self) -> None:

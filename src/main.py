@@ -12,6 +12,7 @@ from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
 from fish.fish_node import FishNode
+from mid_camera_node import MidCameraNode
 from scene_composer import SceneComposerNode
 
 
@@ -97,19 +98,22 @@ class FishGame:
         )
 
         # Create a scene.
-        # uniques.ACTIVE_SCENE = SceneNode(
-        #     window = self.__window,
-        #     view_width = SETTINGS[Keys.VIEW_WIDTH],
-        #     view_height = SETTINGS[Keys.VIEW_HEIGHT],
-        #     default_cam_speed = SETTINGS[Keys.CAMERA_SPEED],
-        #     title = "fish_game"
-        # )
         uniques.ACTIVE_SCENE = SceneComposerNode(
             window = self.__window,
             view_width = SETTINGS[Keys.VIEW_WIDTH],
             view_height = SETTINGS[Keys.VIEW_HEIGHT],
             config_file_path = "scenes/0_0_0.json"
         ).scene
+
+        uniques.ACTIVE_SCENE.add_child(
+            MidCameraNode(
+                targets = [
+                    uniques.LEG,
+                    uniques.FISH
+                ]
+            ),
+            cam_target = True
+        )
 
         ########################
         # Scene content.

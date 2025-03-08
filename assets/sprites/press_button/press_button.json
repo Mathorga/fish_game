@@ -1,0 +1,9 @@
+{
+    "name": "press_button",
+    "path": "sprites/press_button/press_button.png",
+    "rows": 1,
+    "columns": 2,
+    "center_x": true,
+    "center_y": true,
+    "duration": 0.30
+}

@@ -11,9 +11,13 @@ from fish.states.fish_state import FishState
 class FishDashState(FishState):
     def __init__(
         self,
-        actor: FishDataNode
+        actor: FishDataNode,
+        input_enabled: bool = True
     ) -> None:
-        super().__init__(actor = actor)
+        super().__init__(
+            actor = actor,
+            input_enabled = input_enabled
+        )
 
         # Animation.
         self.__animation: Animation = Animation(source = "sprites/fish/dumbo_swim_dash.json")
@@ -48,10 +52,6 @@ class FishDashState(FishState):
         self.__fetch_input()
 
         if self.__startup:
-            # self.actor.move_vec += pm.Vec2.from_polar(
-            #     length = self.actor.max_move_speed * 3,
-            #     angle = self.__move_vec.heading()
-            # )
             self.actor.move_vec = self.__move_vec * 3 * self.actor.max_move_speed
             self.__startup = False
 

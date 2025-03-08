@@ -19,11 +19,12 @@ class LegState(State):
 
     def __init__(
         self,
-        actor: LegDataNode
+        actor: LegDataNode,
+        input_enabled: bool = True
     ) -> None:
         super().__init__()
 
-        self.input_enabled: bool = True
+        self.input_enabled: bool = input_enabled
         self.actor: LegDataNode = actor
 
     def enable_input(self) -> None:
