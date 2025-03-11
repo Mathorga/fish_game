@@ -165,6 +165,9 @@ class SceneComposerNode():
         self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
 
+        # Set scene cam bounds.
+        self.scene.set_cam_bounds(bounds = cam_bounds)
+
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()
 
