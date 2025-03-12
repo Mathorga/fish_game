@@ -5,7 +5,6 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
-import constants.collision_tags as collision_tags
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_state import LegStates
 from leg.states.leg_state import LegState

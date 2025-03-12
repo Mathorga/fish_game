@@ -84,7 +84,7 @@ class FishDataNode(PositionNode):
         ################################
 
 
-        self.dash_force: float = self.max_move_speed * 5
+        self.dash_force: float = self.max_move_speed * 3
 
 
         ################################
