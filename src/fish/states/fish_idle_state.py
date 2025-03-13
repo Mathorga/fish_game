@@ -47,8 +47,11 @@ class FishIdleState(FishState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        if self.actor.in_water:
+            return FishStates.SWIM
+
         if self.__move:
-            return FishStates.SWIM if self.actor.in_water else FishStates.CRAWL
+            return FishStates.CRAWL
 
         if self.__dash:
             return FishStates.DASH

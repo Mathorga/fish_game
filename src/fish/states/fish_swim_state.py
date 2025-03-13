@@ -54,6 +54,3 @@ class FishSwimState(FishState):
 
         if self.__dash:
             return FishStates.DASH
-
-        if self.actor.move_vec.length() <= 0.0:
-            return FishStates.IDLE
