@@ -104,7 +104,7 @@ class FishDataNode(PositionNode):
 
 
         ################################
-        # Collider
+        # Colliders
         ################################
         self.__collider: CollisionNode = CollisionNode(
             x = x,
@@ -149,8 +149,29 @@ class FishDataNode(PositionNode):
             ),
             on_triggered = self.on_ground_collision
         )
+        self.__grab_trigger: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.STATIC,
+            collision_method = CollisionMethod.PASSIVE,
+            sensor = True,
+            active_tags = [],
+            passive_tags = [
+                collision_tags.GRABBABLE
+            ],
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 20,
+                anchor_y = 45,
+                width = 40,
+                height = 40,
+                batch = batch
+            )
+        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
         ################################
         ################################
 

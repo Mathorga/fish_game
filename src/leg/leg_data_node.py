@@ -44,7 +44,8 @@ class LegDataNode(PositionNode):
         "__grab_button",
         "__collider",
         "__ground_sensor",
-        "__roof_sensor"
+        "__roof_sensor",
+        "__grab_sensor"
     )
     water_dampening: float = 0.5
     land_dampening: float = 1.0
@@ -185,9 +186,31 @@ class LegDataNode(PositionNode):
             ),
             on_triggered = self.on_roof_collision
         )
+        self.__grab_sensor: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
+            sensor = True,
+            active_tags = [
+                collision_tags.GRABBABLE
+            ],
+            passive_tags = [],
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            on_triggered = self.on_grabbable_found
+        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_sensor)
         ################################
         ################################
 
@@ -237,6 +260,15 @@ class LegDataNode(PositionNode):
             self.gravity_vec *= 0.0
             self.roofed = False
 
+    def on_grabbable_found(self, tags: list[str], collider_id: int, entered: bool) -> None:
+        if entered and self.__grab_button is None:
+            self.__grab_button = self.__build_grab_button()
+            uniques.ACTIVE_SCENE.add_child(self.__grab_button)
+        elif not entered and self.__grab_button is not None:
+            uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
+            self.__grab_button.delete()
+            self.__grab_button = None
+
     def get_dampening(self) -> float:
         return self.water_dampening if self.in_water else self.land_dampening
 
@@ -244,10 +276,11 @@ class LegDataNode(PositionNode):
         return self.max_jump_force * self.get_dampening()
 
     def __build_grab_button(self) -> SpriteNode:
+        position: tuple[float, float] = self.get_position()
         return SpriteNode(
             resource = Animation(source = "sprites/press_button/press_button.json").content,
-            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            x = position[0] + self.__button_offset.x,
+            y = position[1] + self.__button_offset.y,
             y_sort = False,
             batch = self.__batch
         )
@@ -255,17 +288,17 @@ class LegDataNode(PositionNode):
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
-        if uniques.FISH is not None:
-            fish_position: tuple[float, float] = uniques.FISH.get_position()
-            position: tuple[float, float] = self.get_position()
-            distance: float = pm.Vec2(position[0] - fish_position[0], position[1] - fish_position[1]).length()
-            if distance < 24 and self.__grab_button is None:
-                self.__grab_button = self.__build_grab_button()
-                uniques.ACTIVE_SCENE.add_child(self.__grab_button)
-            elif distance >= 24 and self.__grab_button is not None:
-                uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
-                self.__grab_button.delete()
-                self.__grab_button = None
+        # if uniques.FISH is not None:
+        #     fish_position: tuple[float, float] = uniques.FISH.get_position()
+        #     position: tuple[float, float] = self.get_position()
+        #     distance: float = pm.Vec2(position[0] - fish_position[0], position[1] - fish_position[1]).length()
+        #     if distance < 24 and self.__grab_button is None:
+        #         self.__grab_button = self.__build_grab_button()
+        #         uniques.ACTIVE_SCENE.add_child(self.__grab_button)
+        #     elif distance >= 24 and self.__grab_button is not None:
+        #         uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
+        #         self.__grab_button.delete()
+        #         self.__grab_button = None
 
         # Only update facing if there's any horizontal movement.
         dir_cos: float = math.cos(self.move_vec.heading())
@@ -289,6 +322,7 @@ class LegDataNode(PositionNode):
         # self.__water_sensor.set_position(self.get_position())
         self.__ground_sensor.set_position(self.get_position())
         self.__roof_sensor.set_position(self.get_position())
+        self.__grab_sensor.set_position(self.get_position())
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
