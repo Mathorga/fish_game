@@ -176,7 +176,7 @@ class SceneComposerNode():
                 uniques.FISH = FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = True,
+                    enabled = False,
                     batch = self.scene.world_batch
                 )
                 return uniques.FISH
@@ -184,7 +184,7 @@ class SceneComposerNode():
                 uniques.LEG = LegNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = False,
+                    enabled = True,
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
