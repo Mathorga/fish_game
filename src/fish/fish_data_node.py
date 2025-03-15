@@ -16,10 +16,10 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
-from gravitable import Gravitable
+from grabbable import Grabbable
 
 
-class FishDataNode(PositionNode, Gravitable):
+class FishDataNode(PositionNode, Grabbable):
     """
     """
 
@@ -49,7 +49,7 @@ class FishDataNode(PositionNode, Gravitable):
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         PositionNode.__init__(self, x, y, z)
-        Gravitable.__init__(self)
+        Grabbable.__init__(self)
 
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__hor_facing: int = 1
@@ -219,14 +219,15 @@ class FishDataNode(PositionNode, Gravitable):
         if self.grounded:
             self.gravity_vec *= 0.0
 
-    def toggle_gravity(self, toggle: bool) -> None:
-        Gravitable.toggle_gravity(self, toggle)
+    def toggle_grab(self, toggle: bool) -> None:
+        Grabbable.toggle_grab(self, toggle)
+
         if toggle:
             controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
         else:
             controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
 
-        if toggle:
+        if not toggle:
             # Clear gravity vector otherwise it builds up while being held.
             self.gravity_vec *= 0.0
 
@@ -321,7 +322,7 @@ class FishDataNode(PositionNode, Gravitable):
 
         velocity: pm.Vec2 = self.move_vec
 
-        if self.gravity_enabled:
+        if not self.grabbed:
             velocity += self.gravity_vec
 
         if velocity.length() > 0.0:

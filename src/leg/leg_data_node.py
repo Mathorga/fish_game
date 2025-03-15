@@ -17,7 +17,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
-from gravitable import Gravitable
+from grabbable import Grabbable
 
 class LegDataNode(PositionNode):
     """
@@ -287,13 +287,13 @@ class LegDataNode(PositionNode):
     def grab(self) -> None:
         if len(self.__grabbables) > 0:
             self.__grabbed = self.__grabbables[0]
-            if isinstance(self.__grabbed, Gravitable):
-                self.__grabbed.toggle_gravity(False)
+            if isinstance(self.__grabbed, Grabbable):
+                self.__grabbed.toggle_grab(True)
 
     def drop(self) -> None:
         if self.__grabbed is not None:
-            if isinstance(self.__grabbed, Gravitable):
-                self.__grabbed.toggle_gravity(True)
+            if isinstance(self.__grabbed, Grabbable):
+                self.__grabbed.toggle_grab(False)
             self.__grabbed = None
 
     def toggle_grab(self) -> None:
