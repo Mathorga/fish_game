@@ -17,6 +17,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
+from gravitable import Gravitable
 
 class LegDataNode(PositionNode):
     """
@@ -26,6 +27,7 @@ class LegDataNode(PositionNode):
         "__on_collision",
         "__batch",
         "__button_offset",
+        "__grabbable_offset",
         "move_vec",
         "max_move_speed",
         "move_accel",
@@ -38,6 +40,8 @@ class LegDataNode(PositionNode):
         "grounded",
         "roofed",
         "in_water",
+        "__grabbables",
+        "__grabbed",
         "__hor_facing",
         "jump_force",
         "sprite",
@@ -65,6 +69,7 @@ class LegDataNode(PositionNode):
         self.__on_collision: Callable | None = on_collision
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
+        self.__grabbable_offset: pm.Vec2 = pm.Vec2(0.0, 26.0)
 
 
         ################################
@@ -95,6 +100,8 @@ class LegDataNode(PositionNode):
         self.grounded: bool = False
         self.roofed: bool = False
         self.in_water: bool = False
+        self.__grabbables: list[PositionNode] = []
+        self.__grabbed: PositionNode | None = None
         ################################
         ################################
 
@@ -214,7 +221,7 @@ class LegDataNode(PositionNode):
         ################################
         ################################
 
-    def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+    def on_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if not collision_tags.WATER in tags:
             return
 
@@ -227,7 +234,8 @@ class LegDataNode(PositionNode):
         if self.in_water:
             self.gravity_vec *= 0.0
 
-    def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+    def on_ground_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        collider_id: int = id(collider)
         if entered:
             self.__ground_collision_ids.add(collider_id)
         else:
@@ -243,7 +251,8 @@ class LegDataNode(PositionNode):
         if self.grounded:
             self.gravity_vec *= 0.0
 
-    def on_roof_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+    def on_roof_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        collider_id: int = id(collider)
         if entered:
             self.__roof_collision_ids.add(collider_id)
         else:
@@ -260,14 +269,38 @@ class LegDataNode(PositionNode):
             self.gravity_vec *= 0.0
             self.roofed = False
 
-    def on_grabbable_found(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        if entered and self.__grab_button is None:
+    def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        if entered and self.__grab_button is None and self.__grabbed is None:
+            self.__grabbables.append(collider.owner)
+        elif not entered and self.__grab_button is not None:
+            self.__grabbables.remove(collider.owner)
+
+    def toggle_grabbable_button(self) -> None:
+        if len(self.__grabbables) > 0 and self.__grabbed is None and self.__grab_button is None:
             self.__grab_button = self.__build_grab_button()
             uniques.ACTIVE_SCENE.add_child(self.__grab_button)
-        elif not entered and self.__grab_button is not None:
+        elif (len(self.__grabbables) <= 0 or self.__grabbed is not None) and self.__grab_button is not None:
             uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
             self.__grab_button.delete()
             self.__grab_button = None
+
+    def grab(self) -> None:
+        if len(self.__grabbables) > 0:
+            self.__grabbed = self.__grabbables[0]
+            if isinstance(self.__grabbed, Gravitable):
+                self.__grabbed.toggle_gravity(False)
+
+    def drop(self) -> None:
+        if self.__grabbed is not None:
+            if isinstance(self.__grabbed, Gravitable):
+                self.__grabbed.toggle_gravity(True)
+            self.__grabbed = None
+
+    def toggle_grab(self) -> None:
+        if self.__grabbed is None:
+            self.grab()
+        else:
+            self.drop()
 
     def get_dampening(self) -> float:
         return self.water_dampening if self.in_water else self.land_dampening
@@ -288,17 +321,7 @@ class LegDataNode(PositionNode):
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
-        # if uniques.FISH is not None:
-        #     fish_position: tuple[float, float] = uniques.FISH.get_position()
-        #     position: tuple[float, float] = self.get_position()
-        #     distance: float = pm.Vec2(position[0] - fish_position[0], position[1] - fish_position[1]).length()
-        #     if distance < 24 and self.__grab_button is None:
-        #         self.__grab_button = self.__build_grab_button()
-        #         uniques.ACTIVE_SCENE.add_child(self.__grab_button)
-        #     elif distance >= 24 and self.__grab_button is not None:
-        #         uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
-        #         self.__grab_button.delete()
-        #         self.__grab_button = None
+        position: tuple[float, float] = self.get_position()
 
         # Only update facing if there's any horizontal movement.
         dir_cos: float = math.cos(self.move_vec.heading())
@@ -307,10 +330,10 @@ class LegDataNode(PositionNode):
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
         # Update sprite position.
-        self.sprite.set_position(self.get_position())
+        self.sprite.set_position(position)
 
         if self.__grab_button is not None:
-            position: tuple[float, float] = self.get_position()
+            position: tuple[float, float] = position
             self.__grab_button.set_position(
                 position = (
                     position[0] + self.__button_offset.x,
@@ -318,14 +341,19 @@ class LegDataNode(PositionNode):
                 )
             )
 
-        # Update sensors position
-        # self.__water_sensor.set_position(self.get_position())
-        self.__ground_sensor.set_position(self.get_position())
-        self.__roof_sensor.set_position(self.get_position())
-        self.__grab_sensor.set_position(self.get_position())
+        # Update grabbables position.
+        if self.__grabbed is not None:
+            self.__grabbed.set_position(position + self.__grabbable_offset)
+
+        # Update sensors position.
+        self.__ground_sensor.set_position(position)
+        self.__roof_sensor.set_position(position)
+        self.__grab_sensor.set_position(position)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
+
+        self.toggle_grabbable_button()
 
     def delete(self) -> None:
         self.sprite.delete()

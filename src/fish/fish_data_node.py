@@ -16,9 +16,10 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
+from gravitable import Gravitable
 
 
-class FishDataNode(PositionNode):
+class FishDataNode(PositionNode, Gravitable):
     """
     """
 
@@ -47,7 +48,8 @@ class FishDataNode(PositionNode):
         on_sprite_animation_end: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
-        super().__init__(x, y, z)
+        PositionNode.__init__(self, x, y, z)
+        Gravitable.__init__(self)
 
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__hor_facing: int = 1
@@ -163,15 +165,17 @@ class FishDataNode(PositionNode):
                 x = x,
                 y = y,
                 anchor_x = 20,
-                anchor_y = 45,
+                anchor_y = 20,
                 width = 40,
                 height = 40,
                 batch = batch
-            )
+            ),
+            owner = self
         )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
+        self.add_component(self.__collider)
         ################################
         ################################
 
@@ -215,6 +219,17 @@ class FishDataNode(PositionNode):
         if self.grounded:
             self.gravity_vec *= 0.0
 
+    def toggle_gravity(self, toggle: bool) -> None:
+        Gravitable.toggle_gravity(self, toggle)
+        if toggle:
+            controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
+        else:
+            controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
+
+        if toggle:
+            # Clear gravity vector otherwise it builds up while being held.
+            self.gravity_vec *= 0.0
+
     def get_move_dampening(self) -> float:
         return self.water_move_dampening if self.in_water else self.land_move_dampening
 
@@ -236,6 +251,7 @@ class FishDataNode(PositionNode):
 
         # Update colliders positions.
         self.__ground_sensor.set_position(self.get_position())
+        self.__grab_trigger.set_position(self.get_position())
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
@@ -303,7 +319,11 @@ class FishDataNode(PositionNode):
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
-        velocity: pm.Vec2 = self.move_vec + self.gravity_vec
+        velocity: pm.Vec2 = self.move_vec
+
+        if self.gravity_enabled:
+            velocity += self.gravity_vec
+
         if velocity.length() > 0.0:
             self.heading = velocity.heading()
 

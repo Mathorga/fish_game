@@ -26,6 +26,7 @@ class LegIdleState(LegState):
         # Inputs.
         self.__move: bool = False
         self.__jump: bool = False
+        self.__grab: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -38,10 +39,14 @@ class LegIdleState(LegState):
         if self.input_enabled:
             self.__move = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize().length() > 0.0
             self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(ControllerButton.DOWN)
+            self.__grab = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
+
+        if self.__grab:
+            self.actor.toggle_grab()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
