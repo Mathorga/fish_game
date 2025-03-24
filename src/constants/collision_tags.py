@@ -12,3 +12,6 @@ FALL: str = "fall"
 
 # Water interactions.
 WATER: str = "water"
+
+# Grabbable objects.
+GRABBABLE: str = "grabbable"

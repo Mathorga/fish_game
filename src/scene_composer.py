@@ -5,7 +5,6 @@ from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
 from amonite.node import Node
-from amonite.node import PositionNode
 from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
 from amonite.tilemap_node import TilemapNode
