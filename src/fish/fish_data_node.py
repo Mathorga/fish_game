@@ -17,6 +17,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from grabbable import Grabbable
+from fish.ink.ink_node import InkNode
 
 
 class FishDataNode(PositionNode, Grabbable):
@@ -54,6 +55,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__hor_facing: int = 1
         self.heading: float = 0.0
+        self.ink: InkNode | None = None
 
 
         ################################
@@ -180,7 +182,7 @@ class FishDataNode(PositionNode, Grabbable):
         ################################
 
     def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        if not collision_tags.WATER in tags:
+        if collision_tags.WATER not in tags:
             return
 
         if entered:
@@ -219,13 +221,30 @@ class FishDataNode(PositionNode, Grabbable):
         if self.grounded:
             self.gravity_vec *= 0.0
 
+    def spawn_ink(self) -> None:
+        self.ink = InkNode(
+            x = self.x,
+            y = self.y,
+            z = self.z - 100,
+            batch = self.__batch
+        )
+
+    def delete_ink(self) -> None:
+        if self.ink is None:
+            return
+
+        self.ink.delete()
+        self.ink = None
+
     def toggle_grab(self, toggle: bool) -> None:
         Grabbable.toggle_grab(self, toggle)
 
         if toggle:
             controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
+            self.spawn_ink()
         else:
             controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
+            self.delete_ink()
 
         if not toggle:
             # Clear gravity vector otherwise it builds up while being held.
@@ -258,6 +277,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
     def delete(self) -> None:
+        self.delete_ink()
         self.sprite.delete()
         self.__collider.delete()
         super().delete()
