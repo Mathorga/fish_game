@@ -1,7 +1,9 @@
+import pyglet
 import pyglet.math as pm
 
 from amonite.animation import Animation
 import amonite.controllers as controllers
+from amonite.input_controller import ControllerStick
 
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishStates
@@ -18,15 +20,15 @@ class FishIdleState(FishState):
             input_enabled = input_enabled
         )
 
-        self.__water_animation: Animation = Animation(source = "sprites/fish/dumbo_water_idle.json")
-        self.__land_animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
 
         # Inputs.
         self.__move: bool = False
-        self.__dash: bool = False
+        self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
 
     def start(self) -> None:
-        self.actor.set_animation(self.__water_animation if self.actor.in_water else self.__land_animation)
+        self.actor.set_animation(self.__animation)
+        self.actor.aim_vec *= 0.0
 
     def __fetch_input(self) -> None:
         """
@@ -35,7 +37,12 @@ class FishIdleState(FishState):
 
         if self.input_enabled:
             self.__move = controllers.INPUT_CONTROLLER.get_movement(controller_index = 1)
-            self.__dash = controllers.INPUT_CONTROLLER.get_sprint(controller_index = 1)
+            self.__aim_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.RSTICK) + controllers.INPUT_CONTROLLER.get_key_vector(
+                up = pyglet.window.key.I,
+                left = pyglet.window.key.J,
+                down = pyglet.window.key.K,
+                right = pyglet.window.key.L
+            )).normalize()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
@@ -50,8 +57,12 @@ class FishIdleState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
 
+        # if self.__shoot and self.actor.grounded:
+        #     return FishStates.SHOOT_LOAD
+        
+        if self.__aim_vec.length() > 0.0:
+            self.actor.aim_vec = self.__aim_vec
+            return FishStates.SHOOT_LOAD
+
         if self.__move:
             return FishStates.CRAWL
-
-        if self.__dash:
-            return FishStates.DASH

@@ -27,10 +27,14 @@ class FishDashState(FishState):
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
 
+        # Other.
+        self.__constrained: bool = False
+
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.__startup = True
         self.__animation_ended = False
+        self.__constrained = False
 
     def __fetch_input(self) -> None:
         """
@@ -67,6 +71,12 @@ class FishDashState(FishState):
 
         # Move the player.
         self.actor.move(dt = dt)
+
+        # Make sure to kill horizontal speed when getting out of the water in dash.
+        # Also make sure to apply this constraint only once.
+        if not self.actor.in_water and not self.__constrained:
+            self.__constrained = True
+            self.actor.move_vec = pm.Vec2(0.0, self.actor.move_vec.y)
 
         # Check for state changes.
         # Make sure the state ends when there's no more movement.

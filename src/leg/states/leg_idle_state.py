@@ -1,11 +1,11 @@
-from amonite.input_controller import ControllerButton, ControllerStick
 import pyglet
 import pyglet.math as pm
 
 from amonite.animation import Animation
 import amonite.controllers as controllers
+from amonite.input_controller import ControllerButton
+from amonite.input_controller import ControllerStick
 
-from constants import collision_tags
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_state import LegStates
 from leg.states.leg_state import LegState
