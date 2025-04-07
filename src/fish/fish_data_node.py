@@ -41,6 +41,8 @@ class FishDataNode(PositionNode, Grabbable):
     water_gravity_dampening: float = 0.2
     land_gravity_dampening: float = 0.5
 
+    max_shoot_force: float = 500.0
+
     def __init__(
         self,
         x: float = 0.0,
@@ -89,6 +91,9 @@ class FishDataNode(PositionNode, Grabbable):
 
 
         self.dash_force: float = self.max_move_speed * 3
+        self.shoot_force: float = 0.0
+        self.aim_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
+        self.ink_offset: pm.Vec2 = pm.Vec2(16.0, 16.0)
 
 
         ################################
@@ -222,9 +227,11 @@ class FishDataNode(PositionNode, Grabbable):
             self.gravity_vec *= 0.0
 
     def spawn_ink(self) -> None:
+        ink_spawn_offset: pm.Vec2 = self.ink_offset * self.aim_vec
+        print(ink_spawn_offset)
         self.ink = InkNode(
-            x = self.x,
-            y = self.y,
+            x = self.x + ink_spawn_offset.x,
+            y = self.y + ink_spawn_offset.y,
             z = self.z - 100,
             batch = self.__batch
         )
@@ -236,15 +243,23 @@ class FishDataNode(PositionNode, Grabbable):
         self.ink.delete()
         self.ink = None
 
+    def move_ink(self) -> None:
+        if self.ink is None:
+            return
+
+        ink_offset: pm.Vec2 = self.ink_offset * self.aim_vec
+        self.ink.set_position((
+            self.x + ink_offset.x,
+            self.y + ink_offset.y
+        ))
+
     def toggle_grab(self, toggle: bool) -> None:
         Grabbable.toggle_grab(self, toggle)
 
         if toggle:
             controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
-            self.spawn_ink()
         else:
             controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
-            self.delete_ink()
 
         if not toggle:
             # Clear gravity vector otherwise it builds up while being held.
@@ -260,9 +275,11 @@ class FishDataNode(PositionNode, Grabbable):
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
-        # Only update facing if there's any horizontal movement.
-        dir_cos: float = math.cos(self.move_vec.heading())
+        # Compute facing direction from aim if any, otherwise from movement.
+        dir_cos: float = math.cos(self.aim_vec.heading() if self.aim_vec.length() > 0.0 else self.move_vec.heading())
         dir_len: float = abs(dir_cos)
+
+        # Only update facing if there's any horizontal movement.
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 

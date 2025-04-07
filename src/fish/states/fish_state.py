@@ -13,6 +13,8 @@ class FishStates(str, Enum):
     SWIM = "swim"
     DASH = "dash"
     CRAWL = "crawl"
+    SHOOT_LOAD = "shoot_load"
+    SHOOT = "shoot"
 
 class FishState(State):
     """

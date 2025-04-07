@@ -29,3 +29,11 @@ class InkNode(PositionNode):
 
     def delete(self) -> None:
         self.sprite.delete()
+
+    def set_position(self, position, z = None):
+        super().set_position(position, z)
+
+        self.sprite.set_position(
+            position = position,
+            z = z
+        )

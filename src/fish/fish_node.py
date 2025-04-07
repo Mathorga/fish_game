@@ -4,6 +4,8 @@ from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 
 from fish.fish_data_node import FishDataNode
+from fish.states.fish_shoot_load_state import FishShootLoadState
+from fish.states.fish_shoot_state import FishShootState
 from fish.states.fish_state import FishStates
 from fish.states.fish_crawl_state import FishCrawlState
 from fish.states.fish_dash_state import FishDashState
@@ -44,7 +46,9 @@ class FishNode(PositionNode):
                 FishStates.IDLE: FishIdleState(actor = self.__data, input_enabled = enabled),
                 FishStates.SWIM: FishSwimState(actor = self.__data, input_enabled = enabled),
                 FishStates.DASH: FishDashState(actor = self.__data, input_enabled = enabled),
-                FishStates.CRAWL: FishCrawlState(actor = self.__data, input_enabled = enabled)
+                FishStates.CRAWL: FishCrawlState(actor = self.__data, input_enabled = enabled),
+                FishStates.SHOOT_LOAD: FishShootLoadState(actor = self.__data, input_enabled = enabled),
+                FishStates.SHOOT: FishShootState(actor = self.__data, input_enabled = enabled)
             }
         )
 
