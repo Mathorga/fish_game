@@ -15,7 +15,6 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
-from fish.ink.ink_node import InkNode
 
 
 class InkDataNode(PositionNode):
@@ -31,7 +30,6 @@ class InkDataNode(PositionNode):
 
         self.__batch: pyglet.graphics.Batch | None = batch
         self.heading: float = 0.0
-        self.ink: InkNode | None = None
 
 
         ################################
@@ -67,7 +65,7 @@ class InkDataNode(PositionNode):
         # Sprite
         ################################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/ink/ink_fly.json").content,
+            resource = Animation(source = "sprites/fish/ink_fly.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
             z = -100.0,
@@ -88,18 +86,15 @@ class InkDataNode(PositionNode):
             collision_type = CollisionType.DYNAMIC,
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
-                collision_tags.PLAYER_SENSE,
-                collision_tags.FALL,
-                collision_tags.WATER
             ],
             passive_tags = [],
             shape = CollisionRect(
                 x = x,
                 y = y,
                 anchor_x = 5,
-                anchor_y = 7,
+                anchor_y = 5,
                 width = 10,
-                height = 14,
+                height = 10,
                 batch = batch
             ),
             on_triggered = self.on_collision
