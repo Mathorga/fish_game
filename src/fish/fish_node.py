@@ -30,7 +30,7 @@ class FishNode(PositionNode):
             y = y,
             z = z
         )
-        
+
         # Data node, responsible for all content handling.
         self.__data: FishDataNode = FishDataNode(
             x = x,
@@ -51,6 +51,11 @@ class FishNode(PositionNode):
                 FishStates.SHOOT: FishShootState(actor = self.__data, input_enabled = enabled)
             }
         )
+
+    def delete(self):
+        self.__data.delete()
+
+        return super().delete()
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)

@@ -293,6 +293,9 @@ class FishDataNode(PositionNode, Grabbable):
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
+        if self.ink is not None:
+            self.ink.update(dt = dt)
+
     def delete(self) -> None:
         self.delete_ink()
         self.sprite.delete()
