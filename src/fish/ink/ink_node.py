@@ -1,9 +1,12 @@
 import pyglet
+import pyglet.math as pm
 
 from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 
 from fish.ink.ink_data_node import InkDataNode
+from fish.ink.states.ink_load_state import InkLoadState
+from fish.ink.states.ink_fly_state import InkFlyState
 from fish.ink.states.ink_state import InkStates
 
 class InkNode(PositionNode):
@@ -32,11 +35,19 @@ class InkNode(PositionNode):
         # State machine.
         self.__state_machine: StateMachine = StateMachine(
             states = {
-                # InkStates.LOAD: FishIdleState(actor = self.__data, input_enabled = enabled),
-                # InkStates.FLY: FishSwimState(actor = self.__data, input_enabled = enabled),
+                InkStates.LOAD: InkLoadState(actor = self.__data),
+                InkStates.FLY: InkFlyState(actor = self.__data),
                 # InkStates.SPLAT: FishDashState(actor = self.__data, input_enabled = enabled)
             }
         )
+
+    def release(self, shoot_vec: pm.Vec2) -> None:
+        """
+        Sets the ink flying.
+        """
+
+        self.__data.set_shoot_vec(shoot_vec = shoot_vec)
+        self.__state_machine.set_state(InkStates.FLY)
 
     def delete(self) -> None:
         self.__data.delete()
@@ -48,9 +59,9 @@ class InkNode(PositionNode):
         
         self.__state_machine.update(dt = dt)
 
-        self.__data.update(dt = dt)
+        self.__data.set_position(self.get_position())
 
-        self.set_position(self.__data.get_position())
+        self.__data.update(dt = dt)
 
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()

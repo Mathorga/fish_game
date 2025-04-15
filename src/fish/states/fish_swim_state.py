@@ -19,7 +19,6 @@ class FishSwimState(FishState):
         )
 
         # Animation.
-        # self.__animation: Animation = Animation(source = "sprites/fish/_swim.json")
         self.__animation: Animation = Animation(source = "sprites/fish/dumbo_swim.json")
 
         # Input.

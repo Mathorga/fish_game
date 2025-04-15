@@ -37,7 +37,7 @@ class InkDataNode(PositionNode):
         ################################
         self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_move_speed: float = 80.0
-        self.move_accel: float = 400.0
+        self.move_accel: float = 10.0
         ################################
         ################################
 
@@ -60,6 +60,8 @@ class InkDataNode(PositionNode):
         self.in_water: bool = False
         ################################
         ################################
+
+        self.shoot_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
 
         ################################
         # Sprite
@@ -214,6 +216,7 @@ class InkDataNode(PositionNode):
         self.set_position(self.__collider.get_position())
 
         velocity: pm.Vec2 = self.move_vec
+        print("VELOCITY", velocity)
 
         if velocity.length() > 0.0:
             self.heading = velocity.heading()
@@ -228,3 +231,10 @@ class InkDataNode(PositionNode):
             round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
         )
         self.__collider.set_velocity(converted_velocity)
+
+    def set_shoot_vec(self, shoot_vec: pm.Vec2) -> None:
+        """
+        Sets the ink's shoot vector.
+        """
+
+        self.shoot_vec = shoot_vec

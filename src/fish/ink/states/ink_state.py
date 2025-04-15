@@ -21,23 +21,7 @@ class InkState(State):
     def __init__(
         self,
         actor: InkDataNode,
-        input_enabled: bool = True
     ) -> None:
         super().__init__()
 
-        self.input_enabled: bool = input_enabled
         self.actor: InkDataNode = actor
-
-    def enable_input(self) -> None:
-        """
-        Enables all input reading.
-        """
-
-        self.input_enabled = True
-
-    def disable_input(self) -> None:
-        """
-        Disables all input reading.
-        """
-
-        self.input_enabled = False

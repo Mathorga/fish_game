@@ -91,7 +91,7 @@ class FishDataNode(PositionNode, Grabbable):
 
 
         self.dash_force: float = self.max_move_speed * 3
-        self.shoot_force: float = 0.0
+        self.shoot_force: float = self.max_shoot_force
         self.aim_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.ink_offset: pm.Vec2 = pm.Vec2(16.0, 16.0)
 
@@ -228,7 +228,6 @@ class FishDataNode(PositionNode, Grabbable):
 
     def spawn_ink(self) -> None:
         ink_spawn_offset: pm.Vec2 = self.ink_offset * self.aim_vec
-        print(ink_spawn_offset)
         self.ink = InkNode(
             x = self.x + ink_spawn_offset.x,
             y = self.y + ink_spawn_offset.y,
@@ -252,6 +251,12 @@ class FishDataNode(PositionNode, Grabbable):
             self.x + ink_offset.x,
             self.y + ink_offset.y
         ))
+
+    def shoot_ink(self) -> None:
+        if self.ink is None:
+            return
+
+        self.ink.release(self.aim_vec * self.shoot_force)
 
     def toggle_grab(self, toggle: bool) -> None:
         Grabbable.toggle_grab(self, toggle)

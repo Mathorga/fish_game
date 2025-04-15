@@ -22,6 +22,7 @@ class FishShootState(FishState):
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
+        self.actor.shoot_ink()
         self.__animation_ended = False
 
     def update(self, dt: float) -> str | None:
