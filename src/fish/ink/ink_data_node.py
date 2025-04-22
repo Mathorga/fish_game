@@ -24,10 +24,12 @@ class InkDataNode(PositionNode):
         y: float = 0.0,
         z: float = 0.0,
         on_sprite_animation_end: Callable | None = None,
+        on_collision: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         PositionNode.__init__(self, x, y, z)
 
+        self.__on_collision: Callable | None = on_collision
         self.__batch: pyglet.graphics.Batch | None = batch
         self.heading: float = 0.0
 
@@ -37,7 +39,7 @@ class InkDataNode(PositionNode):
         ################################
         self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_move_speed: float = 80.0
-        self.move_accel: float = 10.0
+        self.move_accel: float = 20.0
         ################################
         ################################
 
@@ -47,7 +49,7 @@ class InkDataNode(PositionNode):
         ################################
         self.gravity_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.target_gravity_speed: float = math.inf
-        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -800.0)
+        self.gravity_accel: pm.Vec2 = pm.Vec2(0.0, -300.0)
         ################################
         ################################
 
@@ -107,44 +109,13 @@ class InkDataNode(PositionNode):
         ################################
 
     def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        if collision_tags.WATER not in tags:
-            return
-
-        if entered:
-            self.in_water = True
-        else:
-            self.in_water = False
-
         # Remove vertical movement.
         self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
 
-        if self.in_water:
-            # Clear gravity vector on collision.
-            self.target_gravity_speed = 0.0
+        self.target_gravity_speed = math.inf
 
-            # Fix vertical gravity vector.
-            self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
-        else:
-            self.target_gravity_speed = math.inf
-
-            # Fix vertical gravity vector.
-            self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
-
-    def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        if entered:
-            self.__ground_collision_ids.add(collider_id)
-        else:
-            if collider_id in self.__ground_collision_ids:
-                self.__ground_collision_ids.remove(collider_id)
-
-        if len(self.__ground_collision_ids) > 0:
-            self.grounded = True
-        else:
-            self.grounded = False
-
-        # Clear gravity vector on collision.
-        if self.grounded:
-            self.gravity_vec *= 0.0
+        # Fix vertical gravity vector.
+        self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -162,7 +133,6 @@ class InkDataNode(PositionNode):
 
     def compute_move_speed(
         self,
-        move_vec: pyglet.math.Vec2,
         dt: float,
         max_speed: float | None = None,
     ) -> None:
@@ -171,11 +141,7 @@ class InkDataNode(PositionNode):
 
         current_speed: float = self.move_vec.length()
 
-        if move_vec.length() > 0.0:
-            target_speed = self.max_move_speed
-            target_heading = move_vec.heading()
-
-        if move_vec.length() < target_speed:
+        if self.move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
             current_speed += self.move_accel * dt
         else:
@@ -215,8 +181,7 @@ class InkDataNode(PositionNode):
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
-        velocity: pm.Vec2 = self.move_vec
-        print("VELOCITY", velocity)
+        velocity: pm.Vec2 = self.move_vec + self.gravity_vec
 
         if velocity.length() > 0.0:
             self.heading = velocity.heading()

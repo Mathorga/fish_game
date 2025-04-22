@@ -94,6 +94,8 @@ class FishShootLoadState(FishState):
             return FishStates.SHOOT
 
         if self.__aim_vec.length() <= 0.0:
+            # Make sure the ink is deleted if back to idle.
+            self.actor.delete_ink()
             return FishStates.IDLE
 
     def on_animation_end(self) -> None:

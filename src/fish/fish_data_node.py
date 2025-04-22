@@ -16,6 +16,7 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
+from constants import uniques
 from grabbable import Grabbable
 from fish.ink.ink_node import InkNode
 
@@ -41,7 +42,7 @@ class FishDataNode(PositionNode, Grabbable):
     water_gravity_dampening: float = 0.2
     land_gravity_dampening: float = 0.5
 
-    max_shoot_force: float = 500.0
+    max_shoot_force: float = 1600.0
 
     def __init__(
         self,
@@ -235,6 +236,9 @@ class FishDataNode(PositionNode, Grabbable):
             batch = self.__batch
         )
 
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.add_child(self.ink)
+
     def delete_ink(self) -> None:
         if self.ink is None:
             return
@@ -257,6 +261,7 @@ class FishDataNode(PositionNode, Grabbable):
             return
 
         self.ink.release(self.aim_vec * self.shoot_force)
+        self.ink = None
 
     def toggle_grab(self, toggle: bool) -> None:
         Grabbable.toggle_grab(self, toggle)
@@ -298,9 +303,6 @@ class FishDataNode(PositionNode, Grabbable):
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
-        if self.ink is not None:
-            self.ink.update(dt = dt)
-
     def delete(self) -> None:
         self.delete_ink()
         self.sprite.delete()
@@ -321,6 +323,7 @@ class FishDataNode(PositionNode, Grabbable):
 
         current_speed: float = self.move_vec.length()
 
+        # Set target speed and heading from input move vector.
         if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
             target_heading = move_vec.heading()

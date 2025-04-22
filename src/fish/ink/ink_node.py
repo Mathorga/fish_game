@@ -6,6 +6,7 @@ from amonite.state_machine import StateMachine
 
 from fish.ink.ink_data_node import InkDataNode
 from fish.ink.states.ink_load_state import InkLoadState
+from fish.ink.states.ink_splat_state import InkSplatState
 from fish.ink.states.ink_fly_state import InkFlyState
 from fish.ink.states.ink_state import InkStates
 
@@ -29,6 +30,7 @@ class InkNode(PositionNode):
             y = y,
             z = z,
             on_sprite_animation_end = self.on_sprite_animation_end,
+            on_collision = self.on_collision,
             batch = batch
         )
 
@@ -37,7 +39,7 @@ class InkNode(PositionNode):
             states = {
                 InkStates.LOAD: InkLoadState(actor = self.__data),
                 InkStates.FLY: InkFlyState(actor = self.__data),
-                # InkStates.SPLAT: FishDashState(actor = self.__data, input_enabled = enabled)
+                InkStates.SPLAT: InkSplatState(actor = self.__data)
             }
         )
 
@@ -49,6 +51,14 @@ class InkNode(PositionNode):
         self.__data.set_shoot_vec(shoot_vec = shoot_vec)
         self.__state_machine.set_state(InkStates.FLY)
 
+    def set_position(self, position: tuple[float, float], z: float | None = None):
+        super().set_position(position, z)
+
+        self.__data.set_position(
+            position = position,
+            z = z
+        )
+
     def delete(self) -> None:
         self.__data.delete()
 
@@ -59,9 +69,13 @@ class InkNode(PositionNode):
         
         self.__state_machine.update(dt = dt)
 
-        self.__data.set_position(self.get_position())
+        self.x = self.__data.x
+        self.y = self.__data.y
 
         self.__data.update(dt = dt)
 
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()
+
+    def on_collision(self, tags: list[str], collider_id: int, entered: bool):
+        self.__state_machine.on_collision(tags = tags, enter = entered)

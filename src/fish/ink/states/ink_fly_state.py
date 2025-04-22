@@ -1,3 +1,5 @@
+import pyglet.math as pm
+
 from amonite.animation import Animation
 
 from fish.ink.ink_data_node import InkDataNode
@@ -21,8 +23,11 @@ class InkFlyState(InkState):
         self.actor.set_animation(self.__animation)
         self.__collided = False
 
+        # Apply shoot speed.
+        self.actor.move_vec = self.actor.shoot_vec
+
     def update(self, dt: float) -> str | None:
-        self.actor.compute_move_speed(dt = dt, move_vec = self.actor.shoot_vec)
+        self.actor.compute_move_speed(dt = dt, max_speed = self.actor.shoot_vec.length())
         self.actor.compute_gravity_speed(dt = dt)
 
         self.actor.move(dt = dt)
