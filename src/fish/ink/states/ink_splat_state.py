@@ -12,7 +12,7 @@ class InkSplatState(InkState):
             actor = actor,
         )
 
-        self.__animation: Animation = Animation(source = "sprites/fish/ink_fly.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/ink_splat.json")
 
         self.__animation_ended: bool = False
 

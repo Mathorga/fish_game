@@ -10,7 +10,7 @@
     "pixel_perfect": true,
     "window_width": 960,
     "window_height": 640,
-    "fullscreen": true,
+    "fullscreen": false,
     "target_fps": 60.0,
     "camera_speed": 5.0,
     "layers_z_spacing": 64.0,

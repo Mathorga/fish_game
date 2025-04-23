@@ -97,10 +97,10 @@ class InkDataNode(PositionNode):
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = 5,
-                anchor_y = 5,
-                width = 10,
-                height = 10,
+                anchor_x = 3,
+                anchor_y = 3,
+                width = 6,
+                height = 6,
                 batch = batch
             ),
             on_triggered = self.on_collision
