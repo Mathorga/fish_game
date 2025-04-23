@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
     "show_collisions": true,
     "show_tiles_grid": false,
     "free_cam_bounds": false,
@@ -7,7 +7,7 @@
     "font_name": "rughai",
     "view_width": 480,
     "view_height": 320,
-    "pixel_perfect": false,
+    "pixel_perfect": true,
     "window_width": 960,
     "window_height": 640,
     "fullscreen": true,
