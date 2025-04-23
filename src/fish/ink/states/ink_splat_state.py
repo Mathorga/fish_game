@@ -16,5 +16,3 @@ class InkSplatState(InkState):
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
-        self.actor.move_vec *= 0.0
-        self.actor.gravity_vec *= 0.0

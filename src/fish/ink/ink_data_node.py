@@ -110,12 +110,9 @@ class InkDataNode(PositionNode):
 
     def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         # Remove vertical movement.
-        self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
+        self.move_vec *= 0.0
 
         self.target_gravity_speed = math.inf
-
-        # Fix vertical gravity vector.
-        self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
@@ -181,7 +178,10 @@ class InkDataNode(PositionNode):
         # Apply movement after collision.
         self.set_position(self.__collider.get_position())
 
+        # Sum movement with gravity.
         velocity: pm.Vec2 = self.move_vec + self.gravity_vec
+
+        print("VELOCITY", velocity)
 
         if velocity.length() > 0.0:
             self.heading = velocity.heading()
