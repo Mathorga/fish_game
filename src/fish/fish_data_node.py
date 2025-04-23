@@ -243,6 +243,11 @@ class FishDataNode(PositionNode, Grabbable):
         if self.ink is None:
             return
 
+        # First remove ink from the active scene.
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.remove_child(self.ink)
+
+        # Then delete the ink altogether.
         self.ink.delete()
         self.ink = None
 

@@ -68,7 +68,7 @@ class InkDataNode(PositionNode):
         ################################
         # Sprite
         ################################
-        self.sprite: SpriteNode = SpriteNode(
+        self.__sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/fish/ink_fly.json").content,
             x = SETTINGS[Keys.VIEW_WIDTH] / 2,
             y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
@@ -109,24 +109,22 @@ class InkDataNode(PositionNode):
         ################################
 
     def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
-        # Remove vertical movement.
-        self.move_vec *= 0.0
-
-        self.target_gravity_speed = math.inf
+        if self.__on_collision is not None:
+            self.__on_collision(tags, collider_id, entered)
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
         # Update sprite position.
-        self.sprite.set_position(self.get_position())
+        self.__sprite.set_position(self.get_position())
 
     def delete(self) -> None:
-        self.sprite.delete()
+        self.__sprite.delete()
         self.__collider.delete()
         super().delete()
 
     def set_animation(self, animation: Animation) -> None:
-        self.sprite.set_image(animation.content)
+        self.__sprite.set_image(animation.content)
 
     def compute_move_speed(
         self,
@@ -180,8 +178,6 @@ class InkDataNode(PositionNode):
 
         # Sum movement with gravity.
         velocity: pm.Vec2 = self.move_vec + self.gravity_vec
-
-        print("VELOCITY", velocity)
 
         if velocity.length() > 0.0:
             self.heading = velocity.heading()

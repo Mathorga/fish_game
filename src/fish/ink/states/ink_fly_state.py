@@ -34,6 +34,8 @@ class InkFlyState(InkState):
 
         # Check for state changes.
         if self.__collided:
+            self.actor.move_vec *= 0.0
+            self.actor.gravity_vec *= 0.0
             return InkStates.SPLAT
         
     def on_collision(self, tags: list[str], enter: bool) -> None:
