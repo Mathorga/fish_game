@@ -25,11 +25,13 @@ class InkDataNode(PositionNode):
         z: float = 0.0,
         on_sprite_animation_end: Callable | None = None,
         on_collision: Callable | None = None,
+        on_deletion: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         PositionNode.__init__(self, x, y, z)
 
         self.__on_collision: Callable | None = on_collision
+        self.__on_deletion: Callable | None = on_deletion
         self.__batch: pyglet.graphics.Batch | None = batch
         self.heading: float = 0.0
 
@@ -119,9 +121,16 @@ class InkDataNode(PositionNode):
         self.__sprite.set_position(self.get_position())
 
     def delete(self) -> None:
-        self.__sprite.delete()
+        controllers.COLLISION_CONTROLLER.remove_collider(self.__collider)
         self.__collider.delete()
+
+        self.__sprite.delete()
+
         super().delete()
+
+    def trigger_delete(self) -> None:
+        if self.__on_deletion is not None:
+            self.__on_deletion()
 
     def set_animation(self, animation: Animation) -> None:
         self.__sprite.set_image(animation.content)

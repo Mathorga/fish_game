@@ -4,6 +4,7 @@ import pyglet.math as pm
 from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 
+from constants import uniques
 from fish.ink.ink_data_node import InkDataNode
 from fish.ink.states.ink_load_state import InkLoadState
 from fish.ink.states.ink_splat_state import InkSplatState
@@ -31,6 +32,7 @@ class InkNode(PositionNode):
             z = z,
             on_sprite_animation_end = self.on_sprite_animation_end,
             on_collision = self.on_collision,
+            on_deletion = self.__remove_and_delete,
             batch = batch
         )
 
@@ -59,6 +61,12 @@ class InkNode(PositionNode):
             z = z
         )
 
+    def __remove_and_delete(self) -> None:
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.remove_child(self)
+
+        self.delete()
+
     def delete(self) -> None:
         self.__data.delete()
 
@@ -66,13 +74,14 @@ class InkNode(PositionNode):
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
-        
+
+        # State machine can change data, so data's update should be performed BEFORE state machine's update.
+        self.__data.update(dt = dt)
+
         self.__state_machine.update(dt = dt)
 
         self.x = self.__data.x
         self.y = self.__data.y
-
-        self.__data.update(dt = dt)
 
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()
