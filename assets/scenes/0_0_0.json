@@ -13,6 +13,26 @@
             "name": "leg_node",
             "x": 100,
             "y": 135
+        },
+        {
+            "name": "hold_button_node",
+            "id": 0,
+            "x": 250,
+            "y": 150,
+            "on_triggered_on": [
+                {
+                    "action": "trigger_on",
+                    "name": "platform",
+                    "id": 0
+                }
+            ],
+            "on_triggered_off": [
+                {
+                    "action": "trigger_off",
+                    "name": "platform",
+                    "id": 0
+                }
+            ]
         }
     ]
 }

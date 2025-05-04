@@ -13,6 +13,7 @@ from amonite.utils.hittables_loader import HittablesLoader
 
 from constants import uniques
 from fish.fish_node import FishNode
+from hold_button_node import HoldButtonNode
 from leg.leg_node import LegNode
 
 class WaterHittableNode(HittableNode):
@@ -167,8 +168,37 @@ class SceneComposerNode():
         # Set scene cam bounds.
         self.scene.set_cam_bounds(bounds = cam_bounds)
 
+    def __trigger_on(self, target_child_id: int) -> None:
+        """
+        Triggers the child with the provided id on.
+        """
+
+    def __trigger_off(self, target_child_id: int) -> None:
+        """
+        Triggers the child with the provided id on.
+        """
+
+    def __on_child_triggered(self, data: list[dict[str, Any]] | None) -> None:
+        """
+        Handles reactions to children being triggered on.
+        """
+
+        data_by_action: dict[str, list[dict[str, Any]]] = dict()
+
+        # Group data by actions.
+        for element in data:
+            action: str = element["action"]
+            if action in data_by_action.keys():
+                data_by_action[action].append(element)
+            else:
+                data_by_action[action] = [element]
+
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()
+
+        # Read on trigger data.
+        on_trigger_on_data: list[dict[str, Any]] | None = child_data["on_triggered_on"] if "on_triggered_on" in child_data.keys() else None
+        on_trigger_off_data: list[dict[str, Any]] | None = child_data["on_triggered_off"] if "on_triggered_off" in child_data.keys() else None
 
         match child_data["name"]:
             case "fish_node":
@@ -187,6 +217,16 @@ class SceneComposerNode():
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
+            case "hold_button_node":
+                return HoldButtonNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
+                    on_triggered_on = self.__on_child_triggered(data = on_trigger_on_data),
+                    on_triggered_off = self.__on_child_triggered(data = on_trigger_off_data),
+                    # on_triggered_on = lambda : self.__trigger_on(child_data["on_triggered_on"]["id"]) if child_data["on_triggered_on"]["action"] == "trigger_on" else self.__trigger_off(child_data["on_triggered_on"]["id"]) if on_trigger_on_data is not None else None,
+                    # on_triggered_off = lambda : self.__trigger_on(child_data["on_triggered_off"]["id"]) if child_data["on_triggered_off"]["action"] == "trigger_on" else self.__trigger_off(child_data["on_triggered_off"]["id"]) if on_trigger_off_data is not None else None,
+                    batch = self.scene.world_batch
+                )
             case "tilemap":
                 return Node()
             case _:
