@@ -1,6 +1,6 @@
 {
-    "name": "press_button",
-    "path": "sprites/press_button/press_button.png",
+    "name": "button_icon",
+    "path": "sprites/button_icon/button_icon.png",
     "rows": 1,
     "columns": 2,
     "center_x": true,

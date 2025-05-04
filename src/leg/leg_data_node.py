@@ -321,7 +321,7 @@ class LegDataNode(PositionNode):
     def __build_grab_button(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()
         return SpriteNode(
-            resource = Animation(source = "sprites/press_button/press_button.json").content,
+            resource = Animation(source = "sprites/button_icon/button_icon.json").content,
             x = position[0] + self.__button_offset.x,
             y = position[1] + self.__button_offset.y,
             y_sort = False,
