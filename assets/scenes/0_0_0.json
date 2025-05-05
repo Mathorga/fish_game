@@ -17,8 +17,8 @@
         {
             "name": "hold_button_node",
             "id": 0,
-            "x": 250,
-            "y": 100,
+            "x": 144,
+            "y": 48,
             "on_triggered_on": [
                 {
                     "action": "trigger_on",

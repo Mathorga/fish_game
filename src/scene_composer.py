@@ -188,7 +188,7 @@ class SceneComposerNode():
         # Group data by actions.
         for element in data:
             action: str = element["action"]
-            if action in data_by_action.keys():
+            if action in data_by_action:
                 data_by_action[action].append(element)
             else:
                 data_by_action[action] = [element]
@@ -221,8 +221,8 @@ class SceneComposerNode():
                 return HoldButtonNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    on_triggered_on = self.__on_child_triggered(data = on_trigger_on_data),
-                    on_triggered_off = self.__on_child_triggered(data = on_trigger_off_data),
+                    on_triggered_on = lambda : self.__on_child_triggered(data = on_trigger_on_data),
+                    on_triggered_off = lambda : self.__on_child_triggered(data = on_trigger_off_data),
                     # on_triggered_on = lambda : self.__trigger_on(child_data["on_triggered_on"]["id"]) if child_data["on_triggered_on"]["action"] == "trigger_on" else self.__trigger_off(child_data["on_triggered_on"]["id"]) if on_trigger_on_data is not None else None,
                     # on_triggered_off = lambda : self.__trigger_on(child_data["on_triggered_off"]["id"]) if child_data["on_triggered_off"]["action"] == "trigger_on" else self.__trigger_off(child_data["on_triggered_off"]["id"]) if on_trigger_off_data is not None else None,
                     batch = self.scene.world_batch

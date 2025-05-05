@@ -3,6 +3,6 @@
     "path": "sprites/buttons/button_up.png",
     "rows": 1,
     "columns": 1,
-    "center_x": true,
-    "center_y": true
+    "anchor_x":0,
+    "anchor_y": 0
 }
