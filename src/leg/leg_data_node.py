@@ -140,6 +140,7 @@ class LegDataNode(PositionNode):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
+                # collision_tags.PRESS_BUTTON,
                 collision_tags.FALL,
                 collision_tags.WATER
             ],
@@ -162,7 +163,7 @@ class LegDataNode(PositionNode):
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             active_tags = [
-                collision_tags.PLAYER_COLLISION
+                collision_tags.PLAYER_COLLISION,
             ],
             passive_tags = [],
             shape = CollisionRect(
@@ -330,6 +331,14 @@ class LegDataNode(PositionNode):
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
+
+        # # Handle one-way collisions.
+        # if self.gravity_vec.y >= 0.0:
+        #     if collision_tags.PRESS_BUTTON in self.__collider.active_tags:
+        #         self.__collider.active_tags.remove(collision_tags.PRESS_BUTTON)
+        # else:
+        #     if not collision_tags.PRESS_BUTTON in self.__collider.active_tags:
+        #         self.__collider.active_tags.append(collision_tags.PRESS_BUTTON)
 
         position: tuple[float, float] = self.get_position()
 

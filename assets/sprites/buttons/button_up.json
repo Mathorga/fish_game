@@ -2,7 +2,7 @@
     "name": "button_up",
     "path": "sprites/buttons/button_up.png",
     "rows": 1,
-    "columns": 1,
-    "anchor_x":0,
-    "anchor_y": 0
+    "columns": 8,
+    "center_x": true,
+    "center_y": true
 }

@@ -15,3 +15,9 @@ WATER: str = "water"
 
 # Grabbable objects.
 GRABBABLE: str = "grabbable"
+
+# # One-way button collisions.
+# PRESS_BUTTON: str = "button"
+
+# Ink collisions.
+INK: str = "ink"

@@ -15,10 +15,12 @@
             "y": 135
         },
         {
-            "name": "hold_button_node",
+            "name": "vertical_ink_button_node",
             "id": 0,
-            "x": 144,
-            "y": 48,
+            "x": 24,
+            "y": 135,
+            "button_anchor": "left",
+            "allow_turning_off": false,
             "on_triggered_on": [
                 {
                     "action": "trigger_on",
