@@ -51,8 +51,12 @@ class LegDataNode(PositionNode):
         "__roof_sensor",
         "__grab_sensor"
     )
-    water_dampening: float = 0.5
-    land_dampening: float = 1.0
+    move_water_dampening: float = 0.5
+    move_land_dampening: float = 1.0
+    gravity_water_dampening: float = 0.2
+    gravity_land_dampening: float = 1.0
+    jump_water_dampening: float = 0.45
+    jump_land_dampening: float = 1.0
     max_jump_force: float = 500.0
 
     def __init__(
@@ -136,6 +140,7 @@ class LegDataNode(PositionNode):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
+                # collision_tags.PRESS_BUTTON,
                 collision_tags.FALL,
                 collision_tags.WATER
             ],
@@ -158,7 +163,7 @@ class LegDataNode(PositionNode):
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             active_tags = [
-                collision_tags.PLAYER_COLLISION
+                collision_tags.PLAYER_COLLISION,
             ],
             passive_tags = [],
             shape = CollisionRect(
@@ -302,16 +307,22 @@ class LegDataNode(PositionNode):
         else:
             self.drop()
 
-    def get_dampening(self) -> float:
-        return self.water_dampening if self.in_water else self.land_dampening
+    def get_move_dampening(self) -> float:
+        return self.move_water_dampening if self.in_water else self.move_land_dampening
+
+    def get_gravity_dampening(self) -> float:
+        return self.gravity_water_dampening if self.in_water else self.gravity_land_dampening
+
+    def get_jump_dampening(self) -> float:
+        return self.jump_water_dampening if self.in_water else self.jump_land_dampening
 
     def get_max_jump_force(self) -> float:
-        return self.max_jump_force * self.get_dampening()
+        return self.max_jump_force * self.get_jump_dampening()
 
     def __build_grab_button(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()
         return SpriteNode(
-            resource = Animation(source = "sprites/press_button/press_button.json").content,
+            resource = Animation(source = "sprites/button_icon/button_icon.json").content,
             x = position[0] + self.__button_offset.x,
             y = position[1] + self.__button_offset.y,
             y_sort = False,
@@ -320,6 +331,14 @@ class LegDataNode(PositionNode):
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
+
+        # # Handle one-way collisions.
+        # if self.gravity_vec.y >= 0.0:
+        #     if collision_tags.PRESS_BUTTON in self.__collider.active_tags:
+        #         self.__collider.active_tags.remove(collision_tags.PRESS_BUTTON)
+        # else:
+        #     if not collision_tags.PRESS_BUTTON in self.__collider.active_tags:
+        #         self.__collider.active_tags.append(collision_tags.PRESS_BUTTON)
 
         position: tuple[float, float] = self.get_position()
 
@@ -377,13 +396,13 @@ class LegDataNode(PositionNode):
 
         if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
-            current_speed += self.move_accel * self.get_dampening() * dt
+            current_speed += self.move_accel * self.get_move_dampening() * dt
         else:
             # Decelerate otherwise.
-            current_speed -= self.move_accel * self.get_dampening() * dt
+            current_speed -= self.move_accel * self.get_move_dampening() * dt
 
         self.move_vec = pm.Vec2.from_polar(
-            length = pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_dampening()),
+            length = pm.clamp(current_speed, 0.0, self.max_move_speed * self.get_move_dampening()),
             angle = target_heading
         )
 
@@ -392,7 +411,7 @@ class LegDataNode(PositionNode):
             return
 
         # Accelerate when not grounded.
-        self.gravity_vec += self.gravity_accel * self.get_dampening() * dt
+        self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
             length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),

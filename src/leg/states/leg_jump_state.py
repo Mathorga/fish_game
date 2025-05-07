@@ -35,7 +35,7 @@ class LegJumpState(LegState):
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
         self.__animation_ended = False
-        self.__jump_force = self.actor.jump_force
+        self.__jump_force = self.actor.jump_force * self.actor.get_jump_dampening()
         self.__startup = True
 
     def __fetch_input(self) -> None:
@@ -53,6 +53,7 @@ class LegJumpState(LegState):
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
 
+        # Overwrite gravity speed on startup.
         if self.__startup:
             self.__startup = False
             self.actor.gravity_vec = pm.Vec2(0.0, self.__jump_force)

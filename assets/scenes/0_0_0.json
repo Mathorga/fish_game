@@ -13,6 +13,28 @@
             "name": "leg_node",
             "x": 100,
             "y": 135
+        },
+        {
+            "name": "vertical_ink_button_node",
+            "id": 0,
+            "x": 24,
+            "y": 135,
+            "button_anchor": "left",
+            "allow_turning_off": false,
+            "on_triggered_on": [
+                {
+                    "action": "trigger_on",
+                    "name": "platform",
+                    "id": 0
+                }
+            ],
+            "on_triggered_off": [
+                {
+                    "action": "trigger_off",
+                    "name": "platform",
+                    "id": 0
+                }
+            ]
         }
     ]
 }

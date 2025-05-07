@@ -1,0 +1,8 @@
+{
+    "name": "button_down",
+    "path": "sprites/buttons/button_down.png",
+    "rows": 1,
+    "columns": 1,
+    "center_x": true,
+    "center_y": true
+}

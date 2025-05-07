@@ -92,6 +92,7 @@ class InkDataNode(PositionNode):
             collision_type = CollisionType.DYNAMIC,
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
+                collision_tags.INK
             ],
             passive_tags = [],
             shape = CollisionRect(
