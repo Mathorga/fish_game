@@ -6,16 +6,18 @@
     "children": [
         {
             "name": "fish_node",
+            "id": 0,
             "x": 280,
             "y": 110
         },
         {
             "name": "leg_node",
+            "id": 0,
             "x": 100,
             "y": 135
         },
         {
-            "name": "vertical_ink_button_node",
+            "name": "ink_button_node",
             "id": 0,
             "x": 24,
             "y": 135,
@@ -24,17 +26,23 @@
             "on_triggered_on": [
                 {
                     "action": "trigger_on",
-                    "name": "platform",
+                    "name": "red_platform_node",
                     "id": 0
                 }
             ],
             "on_triggered_off": [
                 {
                     "action": "trigger_off",
-                    "name": "platform",
+                    "name": "red_platform_node",
                     "id": 0
                 }
             ]
+        },
+        {
+            "name": "red_platform_node",
+            "id": 0,
+            "x": 124,
+            "y": 135
         }
     ]
 }
