@@ -15,6 +15,7 @@ from constants import uniques
 from fish.fish_node import FishNode
 from ink_button_node import Direction, InkButtonNode
 from leg.leg_node import LegNode
+from red_platform_node import RedPlatformNode
 
 class WaterHittableNode(HittableNode):
     def __init__(
@@ -118,17 +119,21 @@ class SceneComposerNode():
         # Read children.
         ################################
         self.children_data: list[dict[str, Any]] = self.config_data["children"]
-        self.children: list[Node] = list(
-            filter(
-                # Only pick values that are not None.
-                lambda item: item is not None,
-                map(
-                    # Map each element to a Node.
-                    self.__map_child,
-                    self.children_data
-                )
-            )
-        )
+        self.children: dict[(str, int), Node] = {
+            (child["name"], child["id"]): self.__map_child(child)
+            for child in self.children_data
+        }
+        # self.children: list[Node] = list(
+        #     filter(
+        #         # Only pick values that are not None.
+        #         lambda item: item is not None,
+        #         map(
+        #             # Map each element to a Node.
+        #             self.__map_child,
+        #             self.children_data
+        #         )
+        #     )
+        # )
         ################################
         ################################
 
@@ -161,37 +166,84 @@ class SceneComposerNode():
         ################################
 
         self.scene.add_children(tilemaps)
-        self.scene.add_children(self.children)
+        self.scene.add_children(self.children.values())
         self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
 
         # Set scene cam bounds.
         self.scene.set_cam_bounds(bounds = cam_bounds)
 
-    def __trigger_on(self, target_child_id: int) -> None:
+    def __trigger_on(self, target_child_id: tuple[str, int]) -> None:
         """
         Triggers the child with the provided id on.
         """
 
-    def __trigger_off(self, target_child_id: int) -> None:
+        # Make sure the target child exists.
+        if not target_child_id in self.children.keys():
+            return
+
+        # Retrieve target child from its identifier.
+        target_child: Node = self.children[target_child_id]
+
+        # Make sure the target child exposes a "trigger_on" method.
+        if not hasattr(target_child, "trigger_on"):
+            return
+
+        # Call the method on the target child.
+        getattr(target_child, "trigger_on")()
+
+    def __trigger_off(self, target_child_id: tuple[str, int]) -> None:
         """
         Triggers the child with the provided id on.
         """
+
+    def __trigger_child(self, action: str, target_child_id: tuple[str, int]) -> None:
+        """
+        Triggers the child with the provided id.
+        """
+
+        # Make sure the target child exists.
+        if not target_child_id in self.children.keys():
+            return
+
+        # Retrieve target child from its identifier.
+        target_child: Node = self.children[target_child_id]
+
+        # Make sure the target child exposes the method specified by [action].
+        if not hasattr(target_child, action):
+            return
+
+        # Call the method on the target child.
+        getattr(target_child, action)()
 
     def __on_child_triggered(self, data: list[dict[str, Any]] | None) -> None:
         """
         Handles reactions to children being triggered on.
         """
 
-        data_by_action: dict[str, list[dict[str, Any]]] = dict()
+        # data_by_action: dict[str, list[dict[str, Any]]] = dict()
+
+        for element in data:
+            # Make sure the proper action structure is ensured.
+            if list(element.keys()) != ["action", "name", "id"]:
+                continue
+
+            # Extract target identifier.
+            target_id: tuple[str, int] = (element["name"], element["id"])
+
+            self.__trigger_child(element["action"], target_id)
+
+            # match element["action"]:
+            #     case "trigger_on":
+            #         self.__trigger_on(target_id)
 
         # Group data by actions.
-        for element in data:
-            action: str = element["action"]
-            if action in data_by_action:
-                data_by_action[action].append(element)
-            else:
-                data_by_action[action] = [element]
+        # for element in data:
+        #     action: str = element["action"]
+        #     if action in data_by_action:
+        #         data_by_action[action].append(element)
+        #     else:
+        #         data_by_action[action] = [element]
 
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()
@@ -217,7 +269,7 @@ class SceneComposerNode():
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
-            case "vertical_ink_button_node":
+            case "ink_button_node":
                 return InkButtonNode(
                     x = child_data["x"],
                     y = child_data["y"],
@@ -225,6 +277,12 @@ class SceneComposerNode():
                     allow_turning_off = child_data["allow_turning_off"] if "allow_turning_off" in child_data else True,
                     on_triggered_on = lambda : self.__on_child_triggered(data = on_trigger_on_data),
                     on_triggered_off = lambda : self.__on_child_triggered(data = on_trigger_off_data),
+                    batch = self.scene.world_batch
+                )
+            case "red_platform_node":
+                return RedPlatformNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
                     batch = self.scene.world_batch
                 )
             case "tilemap":
