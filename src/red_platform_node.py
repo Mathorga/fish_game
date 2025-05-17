@@ -30,8 +30,8 @@ class RedPlatformNode(PositionNode):
         self.__on: bool = False
         self.__switching: bool = False
 
-        collider_width: int = 0
-        collider_height: int = 0
+        collider_width: int = 16
+        collider_height: int = 16
         collider_anchor_x_offset: int = 0
         collider_anchor_y_offset: int = 0
 

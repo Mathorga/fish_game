@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Callable
 import pyglet
 
@@ -12,8 +11,9 @@ from amonite.collision.collision_shape import CollisionRect
 from amonite.collision.collision_node import CollisionMethod
 
 from constants import collision_tags
+from interactable import Interactable
 
-class InkButtonNode(PositionNode):
+class PressButtonNode(PositionNode, Interactable):
     def __init__(
         self,
         x: float = 0.0,
@@ -24,11 +24,8 @@ class InkButtonNode(PositionNode):
         on_triggered_off: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ):
-        super().__init__(
-            x = x,
-            y = y,
-            z = z
-        )
+        PositionNode.__init__(self, x, y, z)
+        Interactable.__init__(self)
 
         self.__on_triggered_on: Callable | None = on_triggered_on
         self.__on_triggered_off: Callable | None = on_triggered_off
@@ -56,11 +53,10 @@ class InkButtonNode(PositionNode):
         ################################
         ################################
 
-        # TODO Remove.
         ################################
         # Colliders.
         ################################
-        self.__sensor: CollisionNode = CollisionNode(
+        self.__grab_trigger: CollisionNode = CollisionNode(
             x = x,
             y = y,
             collision_type = CollisionType.STATIC,
@@ -68,18 +64,22 @@ class InkButtonNode(PositionNode):
             sensor = True,
             active_tags = [],
             passive_tags = [
-                collision_tags.INK
+                collision_tags.INTERACTABLE
             ],
             shape = CollisionRect(
                 x = x,
                 y = y,
-                anchor_x = (collider_width / 2) - collider_anchor_x_offset,
-                anchor_y = (collider_height / 2) - collider_anchor_y_offset,
-                width = collider_width,
-                height = collider_height,
+                anchor_x = 20,
+                anchor_y = 20,
+                width = 40,
+                height = 40,
                 batch = batch
-            )
+            ),
+            owner = self
         )
-        controllers.COLLISION_CONTROLLER.add_collider(self.__sensor)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
         ################################
         ################################
+
+    def interact(self):
+        return super().interact()

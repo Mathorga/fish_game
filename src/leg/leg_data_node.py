@@ -16,8 +16,7 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
-from constants import uniques
-from grabbable import Grabbable
+from grabbable.grabber import Grabber
 
 class LegDataNode(PositionNode):
     """
@@ -26,8 +25,9 @@ class LegDataNode(PositionNode):
     __slots__ = (
         "__on_collision",
         "__batch",
-        "__button_offset",
-        "__grabbable_offset",
+        "__hor_facing",
+        "jump_force",
+        "__grabber",
         "move_vec",
         "max_move_speed",
         "move_accel",
@@ -40,16 +40,10 @@ class LegDataNode(PositionNode):
         "grounded",
         "roofed",
         "in_water",
-        "__grabbables",
-        "__grabbed",
-        "__hor_facing",
-        "jump_force",
         "sprite",
-        "__grab_button",
         "__collider",
         "__ground_sensor",
         "__roof_sensor",
-        "__grab_sensor"
     )
     move_water_dampening: float = 0.5
     move_land_dampening: float = 1.0
@@ -72,8 +66,22 @@ class LegDataNode(PositionNode):
 
         self.__on_collision: Callable | None = on_collision
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
-        self.__grabbable_offset: pm.Vec2 = pm.Vec2(0.0, 26.0)
+        self.__hor_facing: int = 1
+        self.jump_force: float = 0.0
+        self.__grabber: Grabber = Grabber(
+            x = x,
+            y = y,
+            sensor_shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            batch = batch
+        )
 
 
         ################################
@@ -104,14 +112,8 @@ class LegDataNode(PositionNode):
         self.grounded: bool = False
         self.roofed: bool = False
         self.in_water: bool = False
-        self.__grabbables: list[PositionNode] = []
-        self.__grabbed: PositionNode | None = None
         ################################
         ################################
-
-
-        self.__hor_facing: int = 1
-        self.jump_force: float = 0.0
 
 
         ################################
@@ -125,7 +127,6 @@ class LegDataNode(PositionNode):
             on_animation_end = on_sprite_animation_end,
             batch = batch
         )
-        self.__grab_button: SpriteNode | None = None
         ################################
         ################################
 
@@ -198,31 +199,9 @@ class LegDataNode(PositionNode):
             ),
             on_triggered = self.on_roof_collision
         )
-        self.__grab_sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
-            collision_type = CollisionType.DYNAMIC,
-            collision_method = CollisionMethod.PASSIVE,
-            sensor = True,
-            active_tags = [
-                collision_tags.GRABBABLE
-            ],
-            passive_tags = [],
-            shape = CollisionRect(
-                x = x,
-                y = y,
-                anchor_x = 15,
-                anchor_y = 20,
-                width = 30,
-                height = 30,
-                batch = batch
-            ),
-            on_triggered = self.on_grabbable_found
-        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
-        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_sensor)
         ################################
         ################################
 
@@ -274,38 +253,8 @@ class LegDataNode(PositionNode):
             self.gravity_vec *= 0.0
             self.roofed = False
 
-    def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if entered and self.__grab_button is None and self.__grabbed is None:
-            self.__grabbables.append(collider.owner)
-        elif not entered and self.__grab_button is not None:
-            self.__grabbables.remove(collider.owner)
-
-    def toggle_grabbable_button(self) -> None:
-        if len(self.__grabbables) > 0 and self.__grabbed is None and self.__grab_button is None:
-            self.__grab_button = self.__build_grab_button()
-            uniques.ACTIVE_SCENE.add_child(self.__grab_button)
-        elif (len(self.__grabbables) <= 0 or self.__grabbed is not None) and self.__grab_button is not None:
-            uniques.ACTIVE_SCENE.remove_child(self.__grab_button)
-            self.__grab_button.delete()
-            self.__grab_button = None
-
-    def grab(self) -> None:
-        if len(self.__grabbables) > 0:
-            self.__grabbed = self.__grabbables[0]
-            if isinstance(self.__grabbed, Grabbable):
-                self.__grabbed.toggle_grab(True)
-
-    def drop(self) -> None:
-        if self.__grabbed is not None:
-            if isinstance(self.__grabbed, Grabbable):
-                self.__grabbed.toggle_grab(False)
-            self.__grabbed = None
-
     def toggle_grab(self) -> None:
-        if self.__grabbed is None:
-            self.grab()
-        else:
-            self.drop()
+        self.__grabber.toggle_grab()
 
     def get_move_dampening(self) -> float:
         return self.move_water_dampening if self.in_water else self.move_land_dampening
@@ -319,26 +268,8 @@ class LegDataNode(PositionNode):
     def get_max_jump_force(self) -> float:
         return self.max_jump_force * self.get_jump_dampening()
 
-    def __build_grab_button(self) -> SpriteNode:
-        position: tuple[float, float] = self.get_position()
-        return SpriteNode(
-            resource = Animation(source = "sprites/button_icon/button_icon.json").content,
-            x = position[0] + self.__button_offset.x,
-            y = position[1] + self.__button_offset.y,
-            y_sort = False,
-            batch = self.__batch
-        )
-
     def update(self, dt: float) -> None:
         super().update(dt = dt)
-
-        # # Handle one-way collisions.
-        # if self.gravity_vec.y >= 0.0:
-        #     if collision_tags.PRESS_BUTTON in self.__collider.active_tags:
-        #         self.__collider.active_tags.remove(collision_tags.PRESS_BUTTON)
-        # else:
-        #     if not collision_tags.PRESS_BUTTON in self.__collider.active_tags:
-        #         self.__collider.active_tags.append(collision_tags.PRESS_BUTTON)
 
         position: tuple[float, float] = self.get_position()
 
@@ -351,34 +282,22 @@ class LegDataNode(PositionNode):
         # Update sprite position.
         self.sprite.set_position(position)
 
-        if self.__grab_button is not None:
-            position: tuple[float, float] = position
-            self.__grab_button.set_position(
-                position = (
-                    position[0] + self.__button_offset.x,
-                    position[1] + self.__button_offset.y
-                )
-            )
-
-        # Update grabbables position.
-        if self.__grabbed is not None:
-            self.__grabbed.set_position(position + self.__grabbable_offset)
+        # Update grabber position.
+        self.__grabber.set_position(position)
+        self.__grabber.update(dt = dt)
 
         # Update sensors position.
         self.__ground_sensor.set_position(position)
         self.__roof_sensor.set_position(position)
-        self.__grab_sensor.set_position(position)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
-        self.toggle_grabbable_button()
-
     def delete(self) -> None:
         self.sprite.delete()
         self.__collider.delete()
-        if self.__grab_button is not None:
-            self.__grab_button.delete()
+        self.__ground_sensor.delete()
+        self.__roof_sensor.delete()
         super().delete()
 
     def set_animation(self, animation: Animation) -> None:
