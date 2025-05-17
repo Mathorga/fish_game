@@ -39,6 +39,27 @@
             ]
         },
         {
+            "name": "press_button_node",
+            "id": 0,
+            "x": 24,
+            "y": 165,
+            "allow_turning_off": false,
+            "on_triggered_on": [
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 0
+                }
+            ],
+            "on_triggered_off": [
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 0
+                }
+            ]
+        },
+        {
             "name": "red_platform_node",
             "id": 0,
             "x": 124,
