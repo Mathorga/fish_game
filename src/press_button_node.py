@@ -11,7 +11,7 @@ from amonite.collision.collision_shape import CollisionRect
 from amonite.collision.collision_node import CollisionMethod
 
 from constants import collision_tags
-from interactable import Interactable
+from interactable.interactable import Interactable
 
 class PressButtonNode(PositionNode, Interactable):
     def __init__(
