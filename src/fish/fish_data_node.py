@@ -17,7 +17,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
-from grabbable import Grabbable
+from grabbable.grabbable import Grabbable
 from fish.ink.ink_node import InkNode
 
 
@@ -87,6 +87,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.__ground_collision_ids: set[int] = set()
         self.grounded: bool = False
         self.in_water: bool = False
+        self.__interactables: set[PositionNode] = set()
         ################################
         ################################
 
@@ -180,6 +181,27 @@ class FishDataNode(PositionNode, Grabbable):
             ),
             owner = self
         )
+        self.__interact_sensor: CollisionNode = CollisionNode(
+            x = x,
+            y = y,
+            collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
+            sensor = True,
+            active_tags = [
+                collision_tags.GRABBABLE
+            ],
+            passive_tags = [],
+            shape = CollisionRect(
+                x = x,
+                y = y,
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            on_triggered = self.on_interactable_found
+        )
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
@@ -226,6 +248,12 @@ class FishDataNode(PositionNode, Grabbable):
         # Clear gravity vector on collision.
         if self.grounded:
             self.gravity_vec *= 0.0
+
+    def on_interactable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        if entered:
+            self.__interactables.add(collider.owner)
+        else:
+            self.__interactables.remove(collider.owner)
 
     def spawn_ink(self) -> None:
         ink_spawn_offset: pm.Vec2 = self.ink_offset * self.aim_vec

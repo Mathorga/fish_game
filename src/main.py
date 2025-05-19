@@ -2,16 +2,10 @@ import os
 import pyglet
 import pyglet.gl as gl
 import amonite.controllers as controllers
-from amonite.animation import Animation
 from amonite.upscaler import TrueUpscaler
-from amonite.scene_node import SceneNode
-from amonite.shapes.rect_node import RectNode
-from amonite.sprite_node import SpriteNode
-from amonite.node import PositionNode
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
-from fish.fish_node import FishNode
 from mid_camera_node import MidCameraNode
 from scene_composer import SceneComposerNode
 
@@ -114,27 +108,6 @@ class FishGame:
             ),
             cam_target = True
         )
-
-        ########################
-        # Scene content.
-        ########################
-        # test_sprite: PositionNode = SpriteNode(
-        #     resource = Animation(source = "sprites/fish_idle.json").content,
-        #     x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-        #     y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
-        #     batch = uniques.ACTIVE_SCENE.world_batch
-        # )
-
-        # fish: WaterFishNode = WaterFishNode(
-        #     x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-        #     y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
-        #     batch = uniques.ACTIVE_SCENE.world_batch
-        # )
-
-        # Add children to the active scene.
-        # uniques.ACTIVE_SCENE.add_child(fish)
-        ########################
-        ########################
 
 
         ########################
