@@ -103,13 +103,14 @@ class FishDataNode(PositionNode, Grabbable):
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/fish/dumbo_swim.json").content,
-            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
-            z = -100.0,
+            x = 0.0,
+            y = 0.0,
+            z = 0.0,
             y_sort = False,
             on_animation_end = on_sprite_animation_end,
             batch = batch
         )
+        self.add_component(self.sprite)
         ################################
         ################################
 
@@ -205,7 +206,7 @@ class FishDataNode(PositionNode, Grabbable):
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
-        self.add_component(self.__collider)
+        # self.add_component(self.__collider)
         ################################
         ################################
 
@@ -250,10 +251,11 @@ class FishDataNode(PositionNode, Grabbable):
             self.gravity_vec *= 0.0
 
     def on_interactable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if entered:
-            self.__interactables.add(collider.owner)
-        else:
-            self.__interactables.remove(collider.owner)
+        if (collider.owner is not None):
+            if entered:
+                self.__interactables.add(collider.owner)
+            else:
+                self.__interactables.remove(collider.owner)
 
     def spawn_ink(self) -> None:
         ink_spawn_offset: pm.Vec2 = self.ink_offset * self.aim_vec
@@ -327,7 +329,7 @@ class FishDataNode(PositionNode, Grabbable):
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
         # Update sprite position.
-        self.sprite.set_position(self.get_position())
+        # self.sprite.set_position(self.get_position())
 
         # Update colliders positions.
         self.__ground_sensor.set_position(self.get_position())
