@@ -121,12 +121,14 @@ class LegDataNode(PositionNode):
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/leg/leg_idle.json").content,
-            x = SETTINGS[Keys.VIEW_WIDTH] / 2,
-            y = SETTINGS[Keys.VIEW_HEIGHT] / 2,
+            x = 0.0,
+            y = 0.0,
+            z = 0.0,
             y_sort = False,
             on_animation_end = on_sprite_animation_end,
             batch = batch
         )
+        self.add_component(self.sprite)
         ################################
         ################################
 
@@ -147,8 +149,8 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 6,
                 anchor_y = 16,
                 width = 12,
@@ -168,8 +170,8 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 6,
                 anchor_y = 17,
                 width = 12,
@@ -189,8 +191,8 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 6,
                 anchor_y = -11,
                 width = 12,
@@ -280,7 +282,7 @@ class LegDataNode(PositionNode):
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
         # Update sprite position.
-        self.sprite.set_position(position)
+        # self.sprite.set_position(position)
 
         # Update grabber position.
         self.__grabber.set_position(position)

@@ -130,8 +130,8 @@ class FishDataNode(PositionNode, Grabbable):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 5,
                 anchor_y = 7,
                 width = 10,
@@ -151,8 +151,8 @@ class FishDataNode(PositionNode, Grabbable):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 5,
                 anchor_y = 8,
                 width = 10,
@@ -172,8 +172,8 @@ class FishDataNode(PositionNode, Grabbable):
                 collision_tags.GRABBABLE
             ],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 20,
                 anchor_y = 20,
                 width = 40,
@@ -193,8 +193,8 @@ class FishDataNode(PositionNode, Grabbable):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 15,
                 anchor_y = 20,
                 width = 30,
@@ -206,7 +206,6 @@ class FishDataNode(PositionNode, Grabbable):
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
-        # self.add_component(self.__collider)
         ################################
         ################################
 
@@ -320,6 +319,8 @@ class FishDataNode(PositionNode, Grabbable):
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
+        position: tuple[float, float] = self.get_position()
+
         # Compute facing direction from aim if any, otherwise from movement.
         dir_cos: float = math.cos(self.aim_vec.heading() if self.aim_vec.length() > 0.0 else self.move_vec.heading())
         dir_len: float = abs(dir_cos)
@@ -332,8 +333,8 @@ class FishDataNode(PositionNode, Grabbable):
         # self.sprite.set_position(self.get_position())
 
         # Update colliders positions.
-        self.__ground_sensor.set_position(self.get_position())
-        self.__grab_trigger.set_position(self.get_position())
+        self.__ground_sensor.set_position(position)
+        self.__grab_trigger.set_position(position)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)

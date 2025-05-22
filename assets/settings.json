@@ -1,8 +1,8 @@
 {
-    "debug": false,
+    "debug": true,
     "show_collisions": true,
     "show_tiles_grid": false,
-    "free_cam_bounds": false,
+    "free_cam_bounds": true,
     "title": "FISH-GAME",
     "font_name": "rughai",
     "view_width": 480,

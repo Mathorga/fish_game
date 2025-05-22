@@ -88,8 +88,8 @@ class InkDataNode(PositionNode):
         # Colliders
         ################################
         self.__collider: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
+            x = 0.0,
+            y = 0.0,
             collision_type = CollisionType.DYNAMIC,
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
@@ -97,8 +97,8 @@ class InkDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = x,
-                y = y,
+                x = 0.0,
+                y = 0.0,
                 anchor_x = 3,
                 anchor_y = 3,
                 width = 6,
@@ -107,6 +107,7 @@ class InkDataNode(PositionNode):
             ),
             on_triggered = self.on_collision
         )
+        self.add_component(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         ################################
         ################################
