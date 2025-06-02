@@ -37,8 +37,6 @@ class Grabber(PositionNode):
         self.__grab_button: SpriteNode | None = None
 
         self.__grab_sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
             collision_type = CollisionType.DYNAMIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -55,6 +53,7 @@ class Grabber(PositionNode):
             ),
             on_triggered = self.on_grabbable_found
         )
+        self.add_component(self.__grab_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__grab_sensor)
 
 
@@ -74,8 +73,6 @@ class Grabber(PositionNode):
         # Update grabbables position.
         if self.__grabbed is not None:
             self.__grabbed.set_position(position + self.__grabbable_offset)
-
-        self.__grab_sensor.set_position(position)
 
         self.toggle_grabbable_button()
 

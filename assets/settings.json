@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
     "show_collisions": true,
     "show_tiles_grid": false,
     "free_cam_bounds": true,
@@ -10,7 +10,7 @@
     "pixel_perfect": false,
     "window_width": 960,
     "window_height": 640,
-    "fullscreen": false,
+    "fullscreen": true,
     "target_fps": 60.0,
     "camera_speed": 5.0,
     "layers_z_spacing": 64.0,
