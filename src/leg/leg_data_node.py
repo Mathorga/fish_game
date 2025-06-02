@@ -82,6 +82,7 @@ class LegDataNode(PositionNode):
             ),
             batch = batch
         )
+        self.add_component(self.__grabber)
 
 
         ################################
@@ -121,9 +122,6 @@ class LegDataNode(PositionNode):
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/leg/leg_idle.json").content,
-            x = 0.0,
-            y = 0.0,
-            z = 0.0,
             y_sort = False,
             on_animation_end = on_sprite_animation_end,
             batch = batch
@@ -137,6 +135,7 @@ class LegDataNode(PositionNode):
         # Colliders.
         ################################
         self.__collider: CollisionNode = CollisionNode(
+            # This collider drives the whole body position, so set its position to be the one provided.
             x = x,
             y = y,
             collision_type = CollisionType.DYNAMIC,
@@ -149,8 +148,6 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = 0.0,
-                y = 0.0,
                 anchor_x = 6,
                 anchor_y = 16,
                 width = 12,
@@ -160,8 +157,6 @@ class LegDataNode(PositionNode):
             on_triggered = self.on_collision
         )
         self.__ground_sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
             collision_type = CollisionType.DYNAMIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -170,8 +165,6 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = 0.0,
-                y = 0.0,
                 anchor_x = 6,
                 anchor_y = 17,
                 width = 12,
@@ -181,8 +174,6 @@ class LegDataNode(PositionNode):
             on_triggered = self.on_ground_collision
         )
         self.__roof_sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
             collision_type = CollisionType.DYNAMIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -191,8 +182,6 @@ class LegDataNode(PositionNode):
             ],
             passive_tags = [],
             shape = CollisionRect(
-                x = 0.0,
-                y = 0.0,
                 anchor_x = 6,
                 anchor_y = -11,
                 width = 12,
@@ -201,6 +190,9 @@ class LegDataNode(PositionNode):
             ),
             on_triggered = self.on_roof_collision
         )
+        self.add_component(self.__collider)
+        self.add_component(self.__ground_sensor)
+        self.add_component(self.__roof_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
@@ -275,22 +267,15 @@ class LegDataNode(PositionNode):
 
         position: tuple[float, float] = self.get_position()
 
-        # Only update facing if there's any horizontal movement.
         dir_cos: float = math.cos(self.move_vec.heading())
         dir_len: float = abs(dir_cos)
+
+        # Only update facing if there's any horizontal movement.
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
-        # Update sprite position.
-        # self.sprite.set_position(position)
-
-        # Update grabber position.
-        self.__grabber.set_position(position)
+        # Update grabber.
         self.__grabber.update(dt = dt)
-
-        # Update sensors position.
-        self.__ground_sensor.set_position(position)
-        self.__roof_sensor.set_position(position)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)

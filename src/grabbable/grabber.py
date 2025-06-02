@@ -47,8 +47,6 @@ class Grabber(PositionNode):
             ],
             passive_tags = [],
             shape = sensor_shape if sensor_shape is not None else CollisionRect(
-                x = x,
-                y = y,
                 anchor_x = 5,
                 anchor_y = 5,
                 width = 10,
