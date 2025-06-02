@@ -32,7 +32,6 @@ class PressButtonNode(PositionNode, Interactable):
         self.__allow_turning_off: bool = allow_turning_off
         self.__on: bool = False
 
-        sprite_rotation: float = 0.0
         collider_width: int = 0
         collider_height: int = 0
         collider_anchor_x_offset: int = 0
@@ -49,7 +48,6 @@ class PressButtonNode(PositionNode, Interactable):
             y_sort = False,
             batch = batch
         )
-        self.sprite.sprite.rotation = sprite_rotation
         ################################
         ################################
 
