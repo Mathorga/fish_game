@@ -1,7 +1,7 @@
 class Grabbable:
     """
     Base class for grabbable objects.
-    Grabbable objects can extend this class to inherit grabbable features.
+    Grabbable objects can extend this class to inherit its features.
     """
 
     def __init__(self):
