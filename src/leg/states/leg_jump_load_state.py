@@ -6,6 +6,7 @@ from amonite import controllers
 from amonite.input_controller import ControllerButton
 from amonite.input_controller import ControllerStick
 
+from constants import uniques
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_state import LegStates
 from leg.states.leg_state import LegState
@@ -64,8 +65,16 @@ class LegJumpLoadState(LegState):
         """
 
         if self.input_enabled:
-            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(button = ControllerButton.DOWN)
-            self.__move_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize()
+            self.__jump = controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE] or controllers.INPUT_CONTROLLER.get_button(
+                button = ControllerButton.DOWN,
+                controller_index = uniques.LEG_CONTROLLER
+            )
+            self.__move_vec = (
+                controllers.INPUT_CONTROLLER.get_stick_vector(
+                    stick = ControllerStick.LSTICK,
+                    controller_index = uniques.LEG_CONTROLLER
+                ) + controllers.INPUT_CONTROLLER.get_key_vector()
+            ).normalize()
 
     def __can_release(self) -> bool:
         return self.__animation_ended or self.__elapsed > self.__release_threshold

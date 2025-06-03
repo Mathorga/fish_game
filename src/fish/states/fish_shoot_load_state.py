@@ -6,6 +6,7 @@ from amonite import controllers
 from amonite.input_controller import ControllerButton
 from amonite.input_controller import ControllerStick
 
+from constants import uniques
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishState, FishStates
 
@@ -64,13 +65,24 @@ class FishShootLoadState(FishState):
         """
 
         if self.input_enabled:
-            self.__shoot = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False) or controllers.INPUT_CONTROLLER.get_button_presses(button = ControllerButton.DOWN)
-            self.__aim_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.RSTICK) + controllers.INPUT_CONTROLLER.get_key_vector(
-                up = pyglet.window.key.I,
-                left = pyglet.window.key.J,
-                down = pyglet.window.key.K,
-                right = pyglet.window.key.L
-            )).normalize()
+            self.__shoot = controllers.INPUT_CONTROLLER.key_presses.get(
+                pyglet.window.key.SPACE,
+                False
+            ) or controllers.INPUT_CONTROLLER.get_button_presses(
+                button = ControllerButton.DOWN,
+                controller_index = uniques.FISH_CONTROLLER
+            )
+            self.__aim_vec = (
+                controllers.INPUT_CONTROLLER.get_stick_vector(
+                    stick = ControllerStick.RSTICK,
+                    controller_index = uniques.FISH_CONTROLLER
+                ) + controllers.INPUT_CONTROLLER.get_key_vector(
+                    up = pyglet.window.key.I,
+                    left = pyglet.window.key.J,
+                    down = pyglet.window.key.K,
+                    right = pyglet.window.key.L
+                )
+            ).normalize()
 
     def __can_release(self) -> bool:
         return self.__animation_ended or self.__elapsed > self.__release_threshold

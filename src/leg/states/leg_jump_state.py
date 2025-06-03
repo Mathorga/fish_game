@@ -5,6 +5,7 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
+from constants import uniques
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_state import LegStates
 from leg.states.leg_state import LegState
@@ -44,7 +45,12 @@ class LegJumpState(LegState):
         """
 
         if self.input_enabled:
-            self.__move_vec = (controllers.INPUT_CONTROLLER.get_stick_vector(ControllerStick.LSTICK) + controllers.INPUT_CONTROLLER.get_key_vector()).normalize()
+            self.__move_vec = (
+                controllers.INPUT_CONTROLLER.get_stick_vector(
+                    stick = ControllerStick.LSTICK,
+                    controller_index = uniques.LEG_CONTROLLER
+                ) + controllers.INPUT_CONTROLLER.get_key_vector()
+            ).normalize()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

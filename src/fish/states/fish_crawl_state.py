@@ -4,6 +4,7 @@ import pyglet.math as pm
 from amonite.animation import Animation
 import amonite.controllers as controllers
 
+from constants import uniques
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishState
 from fish.states.fish_state import FishStates
@@ -34,7 +35,9 @@ class FishCrawlState(FishState):
         """
 
         if self.input_enabled:
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec(controller_index = 1)
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec(
+                controller_index = uniques.FISH_CONTROLLER
+            )
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
