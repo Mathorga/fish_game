@@ -13,9 +13,9 @@ from amonite.collision.collision_node import CollisionMethod
 
 from constants import collision_tags
 from constants import uniques
-from grabbable.grabbable import Grabbable
+from interactable.interactable import Interactable
 
-class Grabber(PositionNode):
+class Interactor(PositionNode):
     def __init__(
         self,
         x: float = 0.0,
@@ -29,19 +29,17 @@ class Grabber(PositionNode):
         )
 
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.__grabbables: list[PositionNode] = []
-        self.__grabbed: PositionNode | None = None
+        self.__interactables: list[PositionNode] = []
         self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
-        self.__grabbable_offset: pm.Vec2 = pm.Vec2(0.0, 26.0)
 
         self.__button_signal: SpriteNode | None = None
 
-        self.__grab_sensor: CollisionNode = CollisionNode(
+        self.__interact_sensor: CollisionNode = CollisionNode(
             collision_type = CollisionType.DYNAMIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             active_tags = [
-                collision_tags.GRABBABLE
+                collision_tags.INTERACTABLE
             ],
             passive_tags = [],
             shape = sensor_shape if sensor_shape is not None else CollisionRect(
@@ -51,10 +49,10 @@ class Grabber(PositionNode):
                 height = 10,
                 batch = batch
             ),
-            on_triggered = self.on_grabbable_found
+            on_triggered = self.on_interactable_found
         )
-        self.add_component(self.__grab_sensor)
-        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_sensor)
+        self.add_component(self.__interact_sensor)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__interact_sensor)
 
 
     def update(self, dt: float) -> None:
@@ -70,50 +68,33 @@ class Grabber(PositionNode):
                 )
             )
 
-        # Update grabbables position.
-        if self.__grabbed is not None:
-            self.__grabbed.set_position(position + self.__grabbable_offset)
-
-        self.toggle_grabbable_button()
+        self.toggle_button_signal()
 
     def delete(self):
-        self.__grab_sensor.delete()
+        self.__interact_sensor.delete()
         if self.__button_signal is not None:
             self.__button_signal.delete()
         super().delete()
 
-    def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if entered and self.__button_signal is None and self.__grabbed is None:
-            self.__grabbables.append(collider.owner)
+    def on_interactable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        if entered and self.__button_signal is None:
+            self.__interactables.append(collider.owner)
         elif not entered and self.__button_signal is not None:
-            self.__grabbables.remove(collider.owner)
+            self.__interactables.remove(collider.owner)
 
-    def toggle_grabbable_button(self) -> None:
-        if len(self.__grabbables) > 0 and self.__grabbed is None and self.__button_signal is None:
+    def toggle_button_signal(self) -> None:
+        if len(self.__interactables) > 0 and self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
             uniques.ACTIVE_SCENE.add_child(self.__button_signal)
-        elif (len(self.__grabbables) <= 0 or self.__grabbed is not None) and self.__button_signal is not None:
+        elif len(self.__interactables) <= 0 and self.__button_signal is not None:
             uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 
-    def grab(self) -> None:
-        if len(self.__grabbables) > 0:
-            self.__grabbed = self.__grabbables[0]
-            if isinstance(self.__grabbed, Grabbable):
-                self.__grabbed.toggle_grab(True)
-
-    def drop(self) -> None:
-        if self.__grabbed is not None:
-            if isinstance(self.__grabbed, Grabbable):
-                self.__grabbed.toggle_grab(False)
-            self.__grabbed = None
-
-    def toggle_grab(self) -> None:
-        if self.__grabbed is None:
-            self.grab()
-        else:
-            self.drop()
+    def interact(self) -> None:
+        for interactable in self.__interactables:
+            if isinstance(interactable, Interactable):
+                interactable.interact()
 
     def __build_button_signal(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()
