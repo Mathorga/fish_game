@@ -24,39 +24,36 @@ class PressButtonNode(PositionNode, Interactable):
         on_triggered_off: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
     ):
-        PositionNode.__init__(self, x, y, z)
-        Interactable.__init__(self)
+        PositionNode.__init__(
+            self,
+            x = x,
+            y = y,
+            z = z
+        )
+        Interactable.__init__(
+            self,
+            one_shot = not allow_turning_off
+        )
 
         self.__on_triggered_on: Callable | None = on_triggered_on
         self.__on_triggered_off: Callable | None = on_triggered_off
-        self.__allow_turning_off: bool = allow_turning_off
-        self.__on: bool = False
-
-        collider_width: int = 0
-        collider_height: int = 0
-        collider_anchor_x_offset: int = 0
-        collider_anchor_y_offset: int = 0
 
         ################################
         # Sprite.
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/buttons/button_up.json").content,
-            x = x,
-            y = y,
-            z = -100.0,
             y_sort = False,
             batch = batch
         )
+        self.add_component(self.sprite)
         ################################
         ################################
 
         ################################
         # Colliders.
         ################################
-        self.__grab_trigger: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
+        self.__interact_trigger: CollisionNode = CollisionNode(
             collision_type = CollisionType.STATIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -65,19 +62,30 @@ class PressButtonNode(PositionNode, Interactable):
                 collision_tags.INTERACTABLE
             ],
             shape = CollisionRect(
-                x = x,
-                y = y,
-                anchor_x = 20,
-                anchor_y = 20,
-                width = 40,
-                height = 40,
+                anchor_x = 15,
+                anchor_y = 15,
+                width = 30,
+                height = 30,
                 batch = batch
             ),
             owner = self
         )
-        controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
+        self.add_component(self.__interact_trigger)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__interact_trigger)
         ################################
         ################################
 
     def interact(self):
-        return super().interact()
+        super().interact()
+
+        if self.on:
+            self.sprite.set_image(Animation(source = "sprites/buttons/button_down.json").content)
+
+            if self.__on_triggered_on is not None:
+                self.__on_triggered_on()
+        else:
+            self.sprite.set_image(Animation(source = "sprites/buttons/button_up.json").content)
+
+            if self.__on_triggered_off is not None:
+                self.__on_triggered_off()
+            return

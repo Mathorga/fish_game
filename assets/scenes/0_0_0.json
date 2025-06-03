@@ -41,8 +41,8 @@
         {
             "name": "press_button_node",
             "id": 0,
-            "x": 24,
-            "y": 165,
+            "x": 264,
+            "y": 88,
             "allow_turning_off": false,
             "on_triggered_on": [
                 {

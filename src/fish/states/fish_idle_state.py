@@ -25,6 +25,7 @@ class FishIdleState(FishState):
         # Inputs.
         self.__move: bool = False
         self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__interact: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -43,10 +44,14 @@ class FishIdleState(FishState):
                 down = pyglet.window.key.K,
                 right = pyglet.window.key.L
             )).normalize()
+            self.__interact = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
+
+        if self.__interact:
+            self.actor.interact()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
         self.actor.compute_gravity_speed(dt = dt)

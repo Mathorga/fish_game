@@ -18,6 +18,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
+from interactable.interactor import Interactor
 from grabbable.grabbable import Grabbable
 from fish.ink.ink_node import InkNode
 
@@ -60,6 +61,17 @@ class FishDataNode(PositionNode, Grabbable):
         self.__hor_facing: int = 1
         self.heading: float = 0.0
         self.ink: InkNode | None = None
+        self.__interactor: Interactor = Interactor(
+            sensor_shape = CollisionRect(
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            batch = batch
+        )
+        self.add_component(self.__interactor)
 
 
         ################################
@@ -171,24 +183,6 @@ class FishDataNode(PositionNode, Grabbable):
             ),
             owner = self
         )
-        # self.__interact_sensor: CollisionNode = CollisionNode(
-        #     collision_type = CollisionType.DYNAMIC,
-        #     collision_method = CollisionMethod.PASSIVE,
-        #     sensor = True,
-        #     active_tags = [
-        #         collision_tags.GRABBABLE
-        #     ],
-        #     passive_tags = [],
-        #     shape = CollisionRect(
-        #         anchor_x = 15,
-        #         anchor_y = 20,
-        #         width = 30,
-        #         height = 30,
-        #         batch = batch
-        #     ),
-        #     on_triggered = self.on_interactable_found
-        # )
-        self.add_component(self.__collider)
         self.add_component(self.__ground_sensor)
         self.add_component(self.__grab_trigger)
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
@@ -297,6 +291,9 @@ class FishDataNode(PositionNode, Grabbable):
             # Clear gravity vector otherwise it builds up while being held.
             self.gravity_vec *= 0.0
 
+    def interact(self) -> None:
+        self.__interactor.interact()
+
     def get_move_dampening(self) -> float:
         return self.water_move_dampening if self.in_water else self.land_move_dampening
 
@@ -307,8 +304,6 @@ class FishDataNode(PositionNode, Grabbable):
     def update(self, dt: float) -> None:
         super().update(dt = dt)
 
-        position: tuple[float, float] = self.get_position()
-
         # Compute facing direction from aim if any, otherwise from movement.
         dir_cos: float = math.cos(self.aim_vec.heading() if self.aim_vec.length() > 0.0 else self.move_vec.heading())
         dir_len: float = abs(dir_cos)
@@ -317,12 +312,14 @@ class FishDataNode(PositionNode, Grabbable):
         if dir_len > 0.1:
             self.__hor_facing = int(math.copysign(1.0, dir_cos))
 
+        # Update interactor.
+        self.__interactor.update(dt = dt)
+
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
     def delete(self) -> None:
         self.delete_ink()
-        self.sprite.delete()
         self.__collider.delete()
         super().delete()
 

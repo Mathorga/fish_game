@@ -69,11 +69,7 @@ class LegDataNode(PositionNode):
         self.__hor_facing: int = 1
         self.jump_force: float = 0.0
         self.__grabber: Grabber = Grabber(
-            x = x,
-            y = y,
             sensor_shape = CollisionRect(
-                x = x,
-                y = y,
                 anchor_x = 15,
                 anchor_y = 20,
                 width = 30,
@@ -142,7 +138,6 @@ class LegDataNode(PositionNode):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
-                # collision_tags.PRESS_BUTTON,
                 collision_tags.FALL,
                 collision_tags.WATER
             ],
@@ -190,7 +185,6 @@ class LegDataNode(PositionNode):
             ),
             on_triggered = self.on_roof_collision
         )
-        self.add_component(self.__collider)
         self.add_component(self.__ground_sensor)
         self.add_component(self.__roof_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
@@ -281,10 +275,7 @@ class LegDataNode(PositionNode):
         self.sprite.set_scale(x_scale = self.__hor_facing)
 
     def delete(self) -> None:
-        self.sprite.delete()
         self.__collider.delete()
-        self.__ground_sensor.delete()
-        self.__roof_sensor.delete()
         super().delete()
 
     def set_animation(self, animation: Animation) -> None:

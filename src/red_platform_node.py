@@ -1,5 +1,3 @@
-from enum import Enum
-from typing import Callable
 import pyglet
 
 import amonite.controllers as controllers
@@ -40,13 +38,11 @@ class RedPlatformNode(PositionNode):
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/platforms/platform_inactive.json").content,
-            x = x,
-            y = y,
-            z = -100.0,
             y_sort = False,
             on_animation_end = self.__on_sprite_animation_end,
             batch = batch
         )
+        self.add_component(self.sprite)
         ################################
         ################################
 
@@ -54,8 +50,6 @@ class RedPlatformNode(PositionNode):
         # Colliders.
         ################################
         self.__collider: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
             collision_type = CollisionType.STATIC,
             collision_method = CollisionMethod.PASSIVE,
             active_tags = [],
@@ -63,29 +57,40 @@ class RedPlatformNode(PositionNode):
                 collision_tags.PLAYER_COLLISION
             ],
             shape = CollisionRect(
-                x = x,
-                y = y,
-                anchor_x = (collider_width / 2) - collider_anchor_x_offset,
-                anchor_y = (collider_height / 2) - collider_anchor_y_offset,
+                anchor_x = int((collider_width / 2) - collider_anchor_x_offset),
+                anchor_y = int((collider_height / 2) - collider_anchor_y_offset),
                 width = collider_width,
                 height = collider_height,
                 batch = batch
             ),
         )
-        controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+        self.add_component(self.__collider)
+        # controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         ################################
         ################################
+
+    def update(self, dt: float) -> None:
+        return super().update(dt)
 
     def __on_sprite_animation_end(self) -> None:
         if not self.__switching:
             return
 
-        self.sprite.set_image(Animation(source = "sprites/platforms/platform_inactive.json" if self.__on else "sprites/platforms/platform_active.json").content)
+        self.__switching = False
+
+        if self.__on:
+            self.sprite.set_image(Animation(source = "sprites/platforms/platform_active.json").content)
+            controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+        else:
+            self.sprite.set_image(Animation(source = "sprites/platforms/platform_inactive.json").content)
+            controllers.COLLISION_CONTROLLER.remove_collider(self.__collider)
 
     def trigger_on(self) -> None:
         self.__switching = True
+        self.__on = True
         self.sprite.set_image(Animation(source = "sprites/platforms/platform_activating.json").content)
 
     def trigger_off(self) -> None:
+        self.__switching = True
         self.__on = False
         self.sprite.set_image(Animation(source = "sprites/platforms/platform_inactive.json").content)

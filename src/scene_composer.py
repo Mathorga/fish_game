@@ -15,6 +15,7 @@ from constants import uniques
 from fish.fish_node import FishNode
 from ink_button_node import Direction, InkButtonNode
 from leg.leg_node import LegNode
+from press_button_node import PressButtonNode
 from red_platform_node import RedPlatformNode
 
 class WaterHittableNode(HittableNode):
@@ -119,7 +120,7 @@ class SceneComposerNode():
         # Read children.
         ################################
         self.children_data: list[dict[str, Any]] = self.config_data["children"]
-        self.children: dict[(str, int), Node] = {
+        self.children: dict[tuple[str, int], Node] = {
             (child["name"], child["id"]): self.__map_child(child)
             for child in self.children_data
         }
@@ -166,7 +167,7 @@ class SceneComposerNode():
         ################################
 
         self.scene.add_children(tilemaps)
-        self.scene.add_children(self.children.values())
+        self.scene.add_children([*self.children.values()])
         self.scene.add_children(self.__waters)
         self.scene.add_children(self.__walls)
 
@@ -221,6 +222,10 @@ class SceneComposerNode():
         Handles reactions to children being triggered on.
         """
 
+        # Just return if no data is provided.
+        if data is None:
+            return
+
         # data_by_action: dict[str, list[dict[str, Any]]] = dict()
 
         for element in data:
@@ -257,7 +262,7 @@ class SceneComposerNode():
                 uniques.FISH = FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = False,
+                    enabled = True,
                     batch = self.scene.world_batch
                 )
                 return uniques.FISH
@@ -265,7 +270,7 @@ class SceneComposerNode():
                 uniques.LEG = LegNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = True,
+                    enabled = False,
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
@@ -274,6 +279,15 @@ class SceneComposerNode():
                     x = child_data["x"],
                     y = child_data["y"],
                     button_anchor = next((direction for direction in Direction if direction.value == child_data["button_anchor"]), Direction.DONW),
+                    allow_turning_off = child_data["allow_turning_off"] if "allow_turning_off" in child_data else True,
+                    on_triggered_on = lambda : self.__on_child_triggered(data = on_trigger_on_data),
+                    on_triggered_off = lambda : self.__on_child_triggered(data = on_trigger_off_data),
+                    batch = self.scene.world_batch
+                )
+            case "press_button_node":
+                return PressButtonNode(
+                    x = child_data["x"],
+                    y = child_data["y"],
                     allow_turning_off = child_data["allow_turning_off"] if "allow_turning_off" in child_data else True,
                     on_triggered_on = lambda : self.__on_child_triggered(data = on_trigger_on_data),
                     on_triggered_off = lambda : self.__on_child_triggered(data = on_trigger_off_data),

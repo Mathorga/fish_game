@@ -75,13 +75,11 @@ class InkButtonNode(PositionNode):
         ################################
         self.sprite: SpriteNode = SpriteNode(
             resource = Animation(source = "sprites/buttons/button_up.json").content,
-            x = x,
-            y = y,
-            z = -100.0,
             y_sort = False,
             batch = batch
         )
         self.sprite.sprite.rotation = sprite_rotation
+        self.add_component(self.sprite)
         ################################
         ################################
 
@@ -89,8 +87,6 @@ class InkButtonNode(PositionNode):
         # Colliders.
         ################################
         self.__sensor: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
             collision_type = CollisionType.STATIC,
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -99,16 +95,15 @@ class InkButtonNode(PositionNode):
                 collision_tags.INK
             ],
             shape = CollisionRect(
-                x = x,
-                y = y,
-                anchor_x = (collider_width / 2) - collider_anchor_x_offset,
-                anchor_y = (collider_height / 2) - collider_anchor_y_offset,
+                anchor_x = int((collider_width / 2) - collider_anchor_x_offset),
+                anchor_y = int((collider_height / 2) - collider_anchor_y_offset),
                 width = collider_width,
                 height = collider_height,
                 batch = batch
             ),
             on_triggered = self.__on_sense
         )
+        self.add_component(self.__sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__sensor)
         ################################
         ################################

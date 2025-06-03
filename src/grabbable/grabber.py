@@ -83,17 +83,20 @@ class Grabber(PositionNode):
         super().delete()
 
     def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if entered and self.__button_signal is None and self.__grabbed is None:
-            self.__grabbables.append(collider.owner)
-        elif not entered and self.__button_signal is not None:
-            self.__grabbables.remove(collider.owner)
+        if collider.owner is not None and isinstance(collider.owner, Grabbable):
+            if entered and self.__button_signal is None and self.__grabbed is None:
+                self.__grabbables.append(collider.owner)
+            elif not entered:
+                self.__grabbables.remove(collider.owner)
 
     def toggle_grabbable_button(self) -> None:
         if len(self.__grabbables) > 0 and self.__grabbed is None and self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
-            uniques.ACTIVE_SCENE.add_child(self.__button_signal)
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.add_child(self.__button_signal)
         elif (len(self.__grabbables) <= 0 or self.__grabbed is not None) and self.__button_signal is not None:
-            uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 

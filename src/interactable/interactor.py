@@ -29,7 +29,7 @@ class Interactor(PositionNode):
         )
 
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.__interactables: list[PositionNode] = []
+        self.__interactables: list[Interactable] = []
         self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
 
         self.__button_signal: SpriteNode | None = None
@@ -77,24 +77,31 @@ class Interactor(PositionNode):
         super().delete()
 
     def on_interactable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if entered and self.__button_signal is None:
-            self.__interactables.append(collider.owner)
-        elif not entered and self.__button_signal is not None:
-            self.__interactables.remove(collider.owner)
+        if collider.owner is not None and isinstance(collider.owner, Interactable) and collider.owner.is_active():
+            if entered and self.__button_signal is None:
+                self.__interactables.append(collider.owner)
+            elif not entered:
+                self.__interactables.remove(collider.owner)
 
     def toggle_button_signal(self) -> None:
         if len(self.__interactables) > 0 and self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
-            uniques.ACTIVE_SCENE.add_child(self.__button_signal)
+            if uniques.ACTIVE_SCENE is not None:
+               uniques.ACTIVE_SCENE.add_child(self.__button_signal)
         elif len(self.__interactables) <= 0 and self.__button_signal is not None:
-            uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 
     def interact(self) -> None:
-        for interactable in self.__interactables:
-            if isinstance(interactable, Interactable):
-                interactable.interact()
+        # Only interact with the first interactable in line.
+        if len(self.__interactables) > 0:
+            interactable: Interactable = self.__interactables[0]
+            interactable.interact()
+
+            if not interactable.is_active():
+                self.__interactables.remove(interactable)
 
     def __build_button_signal(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()
