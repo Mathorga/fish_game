@@ -203,7 +203,7 @@ class PlaceWaterTool(EditorTool):
                     y = current_bounds[1],
                     width = int(current_bounds[2]),
                     height = int(current_bounds[3]),
-                    tags = [collision_tags.PLAYER_SENSE],
+                    tags = [collision_tags.WATER],
                     sensor = True,
                     batch = self.__world_batch
                 )
