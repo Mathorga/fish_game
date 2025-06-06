@@ -1,9 +1,9 @@
-from amonite.input_controller import ControllerStick
 import pyglet
 import pyglet.math as pm
 
 from amonite.animation import Animation
 import amonite.controllers as controllers
+from amonite.input_controller import ControllerStick
 
 from constants import uniques
 from leg.leg_data_node import LegDataNode
@@ -23,7 +23,6 @@ class LegJumpState(LegState):
 
         # Animation.
         self.__animation: Animation = Animation(source = "sprites/leg/leg_jump.json")
-        self.__animation_ended: bool = False
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
@@ -35,7 +34,6 @@ class LegJumpState(LegState):
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
-        self.__animation_ended = False
         self.__jump_force = self.actor.jump_force * self.actor.get_jump_dampening()
         self.__startup = True
 
@@ -79,6 +77,3 @@ class LegJumpState(LegState):
 
         # Reset the actor jump force for the next jump.
         self.actor.jump_force = 0.0
-
-    def on_animation_end(self) -> None:
-        self.__animation_ended = True

@@ -9,19 +9,19 @@
                 "304,0"
             ],
             "sizes": [
-                "656,64"
+                "656,72"
             ]
         },
         {
             "tags": [
-                "player_sense"
+                "water"
             ],
             "sensor": true,
             "positions": [
                 "128,32"
             ],
             "sizes": [
-                "160,48"
+                "160,40"
             ]
         }
     ]

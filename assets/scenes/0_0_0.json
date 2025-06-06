@@ -7,48 +7,41 @@
         {
             "name": "fish_node",
             "id": 0,
-            "x": 280,
+            "x": 700,
             "y": 110
         },
         {
             "name": "leg_node",
             "id": 0,
-            "x": 100,
+            "x": 680,
             "y": 135
-        },
-        {
-            "name": "ink_button_node",
-            "id": 0,
-            "x": 24,
-            "y": 135,
-            "button_anchor": "left",
-            "allow_turning_off": false,
-            "on_triggered_on": [
-                {
-                    "action": "trigger_on",
-                    "name": "red_platform_node",
-                    "id": 0
-                }
-            ],
-            "on_triggered_off": [
-                {
-                    "action": "trigger_off",
-                    "name": "red_platform_node",
-                    "id": 0
-                }
-            ]
         },
         {
             "name": "press_button_node",
             "id": 0,
-            "x": 264,
+            "x": 964,
             "y": 88,
-            "allow_turning_off": false,
+            "allow_turning_off": true,
             "on_triggered_on": [
                 {
                     "action": "trigger_on",
                     "name": "red_platform_node",
                     "id": 0
+                },
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 1
+                },
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 2
+                },
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 3
                 }
             ],
             "on_triggered_off": [
@@ -56,14 +49,47 @@
                     "action": "trigger_off",
                     "name": "red_platform_node",
                     "id": 0
+                },
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 1
+                },
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 2
+                },
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 3
                 }
             ]
         },
         {
             "name": "red_platform_node",
             "id": 0,
-            "x": 124,
-            "y": 135
+            "x": 760,
+            "y": 120
+        },
+        {
+            "name": "red_platform_node",
+            "id": 1,
+            "x": 776,
+            "y": 120
+        },
+        {
+            "name": "red_platform_node",
+            "id": 2,
+            "x": 872,
+            "y": 152
+        },
+        {
+            "name": "red_platform_node",
+            "id": 3,
+            "x": 888,
+            "y": 152
         }
     ]
 }

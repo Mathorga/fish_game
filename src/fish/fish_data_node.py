@@ -175,10 +175,10 @@ class FishDataNode(PositionNode, Grabbable):
                 collision_tags.GRABBABLE
             ],
             shape = CollisionRect(
-                anchor_x = 20,
-                anchor_y = 20,
-                width = 40,
-                height = 40,
+                anchor_x = 15,
+                anchor_y = 15,
+                width = 30,
+                height = 30,
                 batch = batch
             ),
             owner = self
@@ -322,6 +322,14 @@ class FishDataNode(PositionNode, Grabbable):
         self.delete_ink()
         self.__collider.delete()
         super().delete()
+
+    def move_to(
+        self,
+        position: tuple[float, float]
+    ):
+        super().move_to(position = position)
+
+        self.__collider.set_position(position = position)
 
     def set_animation(self, animation: Animation) -> None:
         self.sprite.set_image(animation.content)

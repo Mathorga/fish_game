@@ -42,6 +42,7 @@ class LegDataNode(PositionNode):
         "in_water",
         "sprite",
         "__collider",
+        "__water_sensor",
         "__ground_sensor",
         "__roof_sensor",
     )
@@ -49,7 +50,7 @@ class LegDataNode(PositionNode):
     move_land_dampening: float = 1.0
     gravity_water_dampening: float = 0.2
     gravity_land_dampening: float = 1.0
-    jump_water_dampening: float = 0.45
+    jump_water_dampening: float = 0.55
     jump_land_dampening: float = 1.0
     max_jump_force: float = 500.0
 
@@ -71,7 +72,7 @@ class LegDataNode(PositionNode):
         self.__grabber: Grabber = Grabber(
             sensor_shape = CollisionRect(
                 anchor_x = 15,
-                anchor_y = 20,
+                anchor_y = 16,
                 width = 30,
                 height = 30,
                 batch = batch
@@ -139,7 +140,6 @@ class LegDataNode(PositionNode):
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
                 collision_tags.FALL,
-                collision_tags.WATER
             ],
             passive_tags = [],
             shape = CollisionRect(
@@ -149,7 +149,24 @@ class LegDataNode(PositionNode):
                 height = 28,
                 batch = batch
             ),
-            on_triggered = self.on_collision
+        )
+        self.__water_sensor: CollisionNode = CollisionNode(
+            collision_type = CollisionType.DYNAMIC,
+            collision_method = CollisionMethod.PASSIVE,
+            sensor = True,
+            active_tags = [
+                collision_tags.WATER
+            ],
+            passive_tags = [
+            ],
+            shape = CollisionRect(
+                anchor_x = 6,
+                anchor_y = 16,
+                width = 12,
+                height = 28,
+                batch = batch
+            ),
+            on_triggered = self.on_water_collision
         )
         self.__ground_sensor: CollisionNode = CollisionNode(
             collision_type = CollisionType.DYNAMIC,
@@ -185,26 +202,24 @@ class LegDataNode(PositionNode):
             ),
             on_triggered = self.on_roof_collision
         )
+        self.add_component(self.__water_sensor)
         self.add_component(self.__ground_sensor)
         self.add_component(self.__roof_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+        controllers.COLLISION_CONTROLLER.add_collider(self.__water_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__ground_sensor)
         controllers.COLLISION_CONTROLLER.add_collider(self.__roof_sensor)
         ################################
         ################################
 
-    def on_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if not collision_tags.WATER in tags:
-            return
-
+    def on_water_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if entered:
             self.in_water = True
+            self.gravity_vec *= 0.0
+            self.__grabber.turn_off()
         else:
             self.in_water = False
-
-        # Clear gravity vector on collision.
-        if self.in_water:
-            self.gravity_vec *= 0.0
+            self.__grabber.turn_on()
 
     def on_ground_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         collider_id: int = id(collider)

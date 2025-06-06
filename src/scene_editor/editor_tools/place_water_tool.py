@@ -177,7 +177,7 @@ class PlaceWaterTool(EditorTool):
         if self.alt_mode:
             self.clear(map_position = map_position)
         else:
-            if self.__starting_position == None:
+            if self.__starting_position is None:
                 # Record starting position.
                 self.__starting_position = map_position
 
@@ -203,7 +203,7 @@ class PlaceWaterTool(EditorTool):
                     y = current_bounds[1],
                     width = int(current_bounds[2]),
                     height = int(current_bounds[3]),
-                    tags = [collision_tags.PLAYER_SENSE],
+                    tags = [collision_tags.WATER],
                     sensor = True,
                     batch = self.__world_batch
                 )
