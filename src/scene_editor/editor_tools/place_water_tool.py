@@ -272,6 +272,5 @@ class PlaceWaterTool(EditorTool):
         # Recreate all of them from wallmap files.
         self.__waters = HittablesLoader.fetch(
             source = f"watermaps/{self.__scene_name}.json",
-            sensor = True,
             batch = self.__world_batch
         )
