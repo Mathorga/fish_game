@@ -17,11 +17,11 @@
             "scaleInEditor": 8
         },
         "lv_1.tmx": {
-            "scale": 1.5,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 552.6666666666667,
-                "y": 254
+                "x": 745.5,
+                "y": 198
             }
         },
         "scaffolding.tsx": {
@@ -35,6 +35,9 @@
         "server_tower_on.tsx": {
             "scaleInDock": 5.5,
             "scaleInEditor": 8
+        },
+        "water.tsx": {
+            "scaleInDock": 1
         }
     },
     "frame.defaultDuration": 400,
