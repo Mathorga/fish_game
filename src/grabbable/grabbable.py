@@ -13,3 +13,11 @@ class Grabbable:
         """
 
         self.grabbed = toggle
+
+    def move_to(
+        self,
+        position: tuple[float, float],
+    ) -> None:
+        """
+
+        """

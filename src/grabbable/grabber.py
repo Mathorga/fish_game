@@ -30,7 +30,8 @@ class Grabber(PositionNode):
 
         self.__batch: pyglet.graphics.Batch | None = batch
         self.__grabbables: list[PositionNode] = []
-        self.__grabbed: PositionNode | None = None
+        self.__grabbed: Grabbable | None = None
+        self.__on: bool = True
         self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
         self.__grabbable_offset: pm.Vec2 = pm.Vec2(0.0, 26.0)
 
@@ -72,7 +73,7 @@ class Grabber(PositionNode):
 
         # Update grabbables position.
         if self.__grabbed is not None:
-            self.__grabbed.set_position(position + self.__grabbable_offset)
+            self.__grabbed.move_to(position + self.__grabbable_offset)
 
         self.toggle_grabbable_button()
 
@@ -82,6 +83,19 @@ class Grabber(PositionNode):
             self.__button_signal.delete()
         super().delete()
 
+    def __turn_button_signal_on(self) -> None:
+        if self.__button_signal is None:
+            self.__button_signal = self.__build_button_signal()
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.add_child(self.__button_signal)
+
+    def __turn_button_signal_off(self) -> None:
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
+        if self.__button_signal is not None:
+            self.__button_signal.delete()
+            self.__button_signal = None
+
     def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if collider.owner is not None and isinstance(collider.owner, Grabbable):
             if entered and self.__button_signal is None and self.__grabbed is None:
@@ -90,15 +104,10 @@ class Grabber(PositionNode):
                 self.__grabbables.remove(collider.owner)
 
     def toggle_grabbable_button(self) -> None:
-        if len(self.__grabbables) > 0 and self.__grabbed is None and self.__button_signal is None:
-            self.__button_signal = self.__build_button_signal()
-            if uniques.ACTIVE_SCENE is not None:
-                uniques.ACTIVE_SCENE.add_child(self.__button_signal)
-        elif (len(self.__grabbables) <= 0 or self.__grabbed is not None) and self.__button_signal is not None:
-            if uniques.ACTIVE_SCENE is not None:
-                uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
-            self.__button_signal.delete()
-            self.__button_signal = None
+        if self.__on and len(self.__grabbables) > 0 and self.__grabbed is None:
+            self.__turn_button_signal_on()
+        elif (len(self.__grabbables) <= 0 or self.__grabbed is not None):
+            self.__turn_button_signal_off()
 
     def grab(self) -> None:
         if len(self.__grabbables) > 0:
@@ -117,6 +126,13 @@ class Grabber(PositionNode):
             self.grab()
         else:
             self.drop()
+
+    def turn_on(self) -> None:
+        self.__on = True
+
+    def turn_off(self) -> None:
+        self.__on = False
+        self.__turn_button_signal_off()
 
     def __build_button_signal(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()

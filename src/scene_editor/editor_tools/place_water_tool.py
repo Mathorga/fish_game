@@ -177,7 +177,7 @@ class PlaceWaterTool(EditorTool):
         if self.alt_mode:
             self.clear(map_position = map_position)
         else:
-            if self.__starting_position == None:
+            if self.__starting_position is None:
                 # Record starting position.
                 self.__starting_position = map_position
 
