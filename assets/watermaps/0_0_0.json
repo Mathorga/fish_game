@@ -11,6 +11,18 @@
             "sizes": [
                 "656,64"
             ]
+        },
+        {
+            "tags": [
+                "player_sense"
+            ],
+            "sensor": true,
+            "positions": [
+                "128,32"
+            ],
+            "sizes": [
+                "160,48"
+            ]
         }
     ]
 }
