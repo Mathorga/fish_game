@@ -52,6 +52,7 @@ class LegDataNode(PositionNode):
     gravity_land_dampening: float = 1.0
     jump_water_dampening: float = 0.5
     jump_land_dampening: float = 1.0
+    jump_land_grab_dampening: float = 0.85
     max_jump_force: float = 500.0
 
     def __init__(
@@ -270,8 +271,11 @@ class LegDataNode(PositionNode):
     def get_gravity_dampening(self) -> float:
         return self.gravity_water_dampening if self.in_water else self.gravity_land_dampening
 
+    def get_jump_land_dampening(self) -> float:
+        return self.jump_land_dampening * self.jump_land_grab_dampening if self.__grabber.is_grabbing() else self.jump_land_dampening
+
     def get_jump_dampening(self) -> float:
-        return self.jump_water_dampening if self.in_water else self.jump_land_dampening
+        return self.jump_water_dampening if self.in_water else self.get_jump_land_dampening()
 
     def get_max_jump_force(self) -> float:
         return self.max_jump_force * self.get_jump_dampening()

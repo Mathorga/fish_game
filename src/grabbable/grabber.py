@@ -147,6 +147,9 @@ class Grabber(PositionNode):
         self.__on = False
         self.__turn_button_signal_off()
 
+    def is_grabbing(self) -> bool:
+        return self.__grabbed is not None
+
     def __build_button_signal(self) -> SpriteNode:
         position: tuple[float, float] = self.get_position()
         return SpriteNode(
