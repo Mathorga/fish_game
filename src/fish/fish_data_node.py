@@ -191,29 +191,31 @@ class FishDataNode(PositionNode, Grabbable):
         ################################
         ################################
 
+    def __enter_water(self) -> None:
+        self.in_water = True
+
+        # Clear gravity vector on collision.
+        self.target_gravity_speed = 0.0
+
+    def __exit_water(self) -> None:
+        self.in_water = False
+
+        self.target_gravity_speed = math.inf
+
     def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if collision_tags.WATER not in tags:
             return
 
-        if entered:
-            self.in_water = True
-        else:
-            self.in_water = False
-
         # Remove vertical movement.
         self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
 
-        if self.in_water:
-            # Clear gravity vector on collision.
-            self.target_gravity_speed = 0.0
-
-            # Fix vertical gravity vector.
-            self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
+        if entered:
+            self.__enter_water()
         else:
-            self.target_gravity_speed = math.inf
+            self.__exit_water()
 
-            # Fix vertical gravity vector.
-            self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
+        # Fix vertical gravity vector.
+        self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
@@ -284,10 +286,10 @@ class FishDataNode(PositionNode, Grabbable):
 
         if toggle:
             controllers.COLLISION_CONTROLLER.add_collider(self.__grab_trigger)
+            self.__exit_water()
         else:
             controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
 
-        if not toggle:
             # Clear gravity vector otherwise it builds up while being held.
             self.gravity_vec *= 0.0
 

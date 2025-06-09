@@ -29,7 +29,7 @@ class Grabber(PositionNode):
         )
 
         self.__batch: pyglet.graphics.Batch | None = batch
-        self.__grabbables: list[PositionNode] = []
+        self.__grabbables: list[Grabbable] = []
         self.__grabbed: Grabbable | None = None
         self.__on: bool = True
         self.__button_offset: pm.Vec2 = pm.Vec2(0.0, 32.0)
@@ -73,7 +73,7 @@ class Grabber(PositionNode):
 
         # Update grabbables position.
         if self.__grabbed is not None:
-            self.__grabbed.move_to(position + self.__grabbable_offset)
+            self.__grabbed.move_to((position[0] + self.__grabbable_offset.x, position[1] + self.__grabbable_offset.y))
 
         self.toggle_grabbable_button()
 
@@ -90,18 +90,23 @@ class Grabber(PositionNode):
             uniques.ACTIVE_SCENE.add_child(self.__button_signal)
 
     def __turn_button_signal_off(self) -> None:
-        if uniques.ACTIVE_SCENE is not None:
-            uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
         if self.__button_signal is not None:
+            if uniques.ACTIVE_SCENE is not None:
+                uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 
     def on_grabbable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
-        if collider.owner is not None and isinstance(collider.owner, Grabbable):
-            if entered and self.__button_signal is None and self.__grabbed is None:
-                self.__grabbables.append(collider.owner)
-            elif not entered:
-                self.__grabbables.remove(collider.owner)
+        if collider.owner is None:
+            return
+
+        if not isinstance(collider.owner, Grabbable):
+            return
+
+        if entered:
+            self.__grabbables.append(collider.owner)
+        elif collider.owner in self.__grabbables:
+            self.__grabbables.remove(collider.owner)
 
     def toggle_grabbable_button(self) -> None:
         if self.__on and len(self.__grabbables) > 0 and self.__grabbed is None:
@@ -110,10 +115,18 @@ class Grabber(PositionNode):
             self.__turn_button_signal_off()
 
     def grab(self) -> None:
-        if len(self.__grabbables) > 0:
-            self.__grabbed = self.__grabbables[0]
-            if isinstance(self.__grabbed, Grabbable):
-                self.__grabbed.toggle_grab(True)
+        if not self.__on:
+            return
+
+        if len(self.__grabbables) <= 0:
+            return
+
+        self.__grabbed = self.__grabbables[0]
+
+        if not isinstance(self.__grabbed, Grabbable):
+            return
+
+        self.__grabbed.toggle_grab(True)
 
     def drop(self) -> None:
         if self.__grabbed is not None:

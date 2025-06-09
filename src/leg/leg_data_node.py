@@ -218,6 +218,7 @@ class LegDataNode(PositionNode):
             self.in_water = True
             # TODO Test this when exiting water from the sides or the bottom: maybe a dedicated jump vector is needed.
             self.gravity_vec *= 0.0
+            self.__grabber.drop()
             self.__grabber.turn_off()
         else:
             # Exiting water: set the water flag, increase the current gravity vector in order to support jumps when partly in water and activate the grabber, so that objects can be grabbed again.
