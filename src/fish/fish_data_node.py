@@ -202,20 +202,30 @@ class FishDataNode(PositionNode, Grabbable):
 
         self.target_gravity_speed = math.inf
 
-    def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
+    def on_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if collision_tags.WATER not in tags:
             return
 
         # Remove vertical movement.
         self.move_vec = pm.Vec2(self.move_vec.x, 0.0)
 
-        if entered:
+        if entered and not self.in_water:
             self.__enter_water()
-        else:
+
+            # Fix vertical gravity vector.
+            self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
+
+            return
+
+        if not entered and self.in_water:
             self.__exit_water()
 
-        # Fix vertical gravity vector.
-        self.gravity_vec = pm.Vec2(self.gravity_vec.x, -100.0)
+            print("GINORONE", collider)
+
+            # Fix vertical gravity vector.
+            self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
+
+            return
 
     def on_ground_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         if entered:
@@ -290,8 +300,8 @@ class FishDataNode(PositionNode, Grabbable):
         else:
             controllers.COLLISION_CONTROLLER.remove_collider(self.__grab_trigger)
 
-            # Clear gravity vector otherwise it builds up while being held.
-            self.gravity_vec *= 0.0
+        # Clear gravity vector otherwise it builds up while being held.
+        self.gravity_vec *= 0.0
 
     def interact(self) -> None:
         self.__interactor.interact()
