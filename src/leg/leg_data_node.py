@@ -50,7 +50,7 @@ class LegDataNode(PositionNode):
     move_land_dampening: float = 1.0
     gravity_water_dampening: float = 0.2
     gravity_land_dampening: float = 1.0
-    jump_water_dampening: float = 0.55
+    jump_water_dampening: float = 0.5
     jump_land_dampening: float = 1.0
     max_jump_force: float = 500.0
 
@@ -214,11 +214,15 @@ class LegDataNode(PositionNode):
 
     def on_water_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if entered:
+            # Entering water: set the water flag, reset gravity in order to get the water resistance effect and disable grabber, so that no object can be grabbed while in water.
             self.in_water = True
+            # TODO Test this when exiting water from the sides or the bottom: maybe a dedicated jump vector is needed.
             self.gravity_vec *= 0.0
             self.__grabber.turn_off()
         else:
+            # Exiting water: set the water flag, increase the current gravity vector in order to support jumps when partly in water and activate the grabber, so that objects can be grabbed again.
             self.in_water = False
+            self.gravity_vec *= 1.3
             self.__grabber.turn_on()
 
     def on_ground_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
