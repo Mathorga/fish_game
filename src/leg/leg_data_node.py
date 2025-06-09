@@ -223,7 +223,7 @@ class LegDataNode(PositionNode):
         else:
             # Exiting water: set the water flag, increase the current gravity vector in order to support jumps when partly in water and activate the grabber, so that objects can be grabbed again.
             self.in_water = False
-            self.gravity_vec *= 1.3
+            self.gravity_vec *= 1.0 + self.jump_water_dampening
             self.__grabber.turn_on()
 
     def on_ground_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
