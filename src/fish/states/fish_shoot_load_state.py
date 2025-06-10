@@ -1,3 +1,4 @@
+import math
 import pyglet
 import pyglet.math as pm
 
@@ -58,6 +59,7 @@ class FishShootLoadState(FishState):
         self.__release_threshold = 1.0
         self.__animation_ended = False
         self.actor.spawn_ink()
+        self.actor.ink_parabola.set_speed(self.actor.shoot_force)
 
     def __fetch_input(self) -> None:
         """
@@ -97,6 +99,8 @@ class FishShootLoadState(FishState):
 
         self.__elapsed += dt
         self.actor.shoot_force += self.__shoot_force_step * dt
+        self.actor.ink_parabola.set_speed(self.actor.shoot_force / 50)
+        self.actor.ink_parabola.set_angle(math.degrees(self.actor.aim_vec.heading()))
 
         # Make sure the shoot force does not exceed its maximum possible value.
         self.actor.shoot_force = pm.clamp(self.actor.shoot_force, 0.0, self.actor.max_shoot_force)

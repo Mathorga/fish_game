@@ -1,5 +1,4 @@
 import math
-import time
 from typing import Callable
 import pyglet
 import pyglet.math as pm
@@ -20,6 +19,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
+from gpt_parabola import GPTParabola
 from interactable.interactor import Interactor
 from grabbable.grabbable import Grabbable
 from fish.ink.ink_node import InkNode
@@ -63,27 +63,6 @@ class FishDataNode(PositionNode, Grabbable):
         self.__hor_facing: int = 1
         self.heading: float = 0.0
         self.ink: InkNode | None = None
-        self.__interactor: Interactor = Interactor(
-            sensor_shape = CollisionRect(
-                anchor_x = 15,
-                anchor_y = 20,
-                width = 30,
-                height = 30,
-                batch = batch
-            ),
-            batch = batch
-        )
-        self.add_component(self.__interactor)
-
-        self.__shoot_loading_indicator: LoadingIndicatorNode = LoadingIndicatorNode(
-            foreground_sprite_res = pyglet.resource.image("sprites/loading_foreground.png"),
-            background_sprite_res = pyglet.resource.image("sprites/loading_background.png"),
-            y = -16,
-            ease_function = Tween.cubeInOut,
-            start_visible = True,
-            batch = batch
-        )
-        self.add_component(self.__shoot_loading_indicator)
 
 
         ################################
@@ -121,6 +100,36 @@ class FishDataNode(PositionNode, Grabbable):
         self.shoot_force: float = self.max_shoot_force
         self.aim_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.ink_offset: pm.Vec2 = pm.Vec2(16.0, 16.0)
+
+
+        self.__interactor: Interactor = Interactor(
+            sensor_shape = CollisionRect(
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            batch = batch
+        )
+        self.add_component(self.__interactor)
+
+        self.__shoot_loading_indicator: LoadingIndicatorNode = LoadingIndicatorNode(
+            foreground_sprite_res = pyglet.resource.image("sprites/loading_foreground.png"),
+            background_sprite_res = pyglet.resource.image("sprites/loading_background.png"),
+            y = -16,
+            ease_function = Tween.cubeInOut,
+            start_visible = True,
+            batch = batch
+        )
+        self.add_component(self.__shoot_loading_indicator)
+
+        self.ink_parabola: GPTParabola = GPTParabola(
+            timestep = 1.0,
+            gravity = 0.1,
+            batch = batch
+        )
+        self.add_component(self.ink_parabola)
 
 
         ################################
@@ -336,6 +345,8 @@ class FishDataNode(PositionNode, Grabbable):
 
         # Update interactor.
         self.__interactor.update(dt = dt)
+
+        self.ink_parabola.update(dt = dt)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)
