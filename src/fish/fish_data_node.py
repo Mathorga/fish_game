@@ -220,9 +220,7 @@ class FishDataNode(PositionNode, Grabbable):
         if not entered and self.in_water:
             self.__exit_water()
 
-            print("GINORONE", collider)
-
-            # Fix vertical gravity vector.
+            # Push upwards when exiting water.
             self.gravity_vec = pm.Vec2(self.gravity_vec.x, 150.0)
 
             return
