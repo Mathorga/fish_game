@@ -1,4 +1,4 @@
 # All OpenGL rendering, sound and input management.
 pyglet==2.1.4
-amonite==0.2.1
+amonite==0.2.2
 # ../amonite

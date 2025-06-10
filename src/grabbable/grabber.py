@@ -63,14 +63,6 @@ class Grabber(PositionNode):
 
         position: tuple[float, float] = self.get_position()
 
-        if self.__button_signal is not None:
-            self.__button_signal.set_position(
-                position = (
-                    position[0] + self.__button_offset.x,
-                    position[1] + self.__button_offset.y
-                )
-            )
-
         # Update grabbables position.
         if self.__grabbed is not None:
             self.__grabbed.move_to((position[0] + self.__grabbable_offset.x, position[1] + self.__grabbable_offset.y))
@@ -86,6 +78,7 @@ class Grabber(PositionNode):
     def __turn_button_signal_on(self) -> None:
         if self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
+            self.add_component(self.__button_signal)
         if uniques.ACTIVE_SCENE is not None:
             uniques.ACTIVE_SCENE.add_child(self.__button_signal)
 
@@ -93,6 +86,8 @@ class Grabber(PositionNode):
         if self.__button_signal is not None:
             if uniques.ACTIVE_SCENE is not None:
                 uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
+            # TODO Amonite's PositionNode should expose a "remove_component" mehtod.
+            self.components.remove(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 
@@ -151,11 +146,10 @@ class Grabber(PositionNode):
         return self.__grabbed is not None
 
     def __build_button_signal(self) -> SpriteNode:
-        position: tuple[float, float] = self.get_position()
         return SpriteNode(
             resource = Animation(source = "sprites/button_icon/button_icon.json").content,
-            x = position[0] + self.__button_offset.x,
-            y = position[1] + self.__button_offset.y,
+            x = self.__button_offset.x,
+            y = self.__button_offset.y,
             y_sort = False,
             batch = self.__batch
         )

@@ -24,7 +24,7 @@ class FishShootLoadState(FishState):
         ########################
         # Animation.
         ########################
-        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_swim_dash.json")
+        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_shoot_load.json")
         ########################
         ########################
 
@@ -46,7 +46,7 @@ class FishShootLoadState(FishState):
         self.__release_threshold: float = 1.0
         self.__animation_ended: bool = False
 
-        self.__shoot_force_step: float = 500.0
+        self.__shoot_force_step: float = 200.0
         ########################
         ########################
 
