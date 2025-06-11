@@ -47,19 +47,20 @@ class FishShootLoadState(FishState):
         self.__release_threshold: float = 1.0
         self.__animation_ended: bool = False
 
+        self.__shoot_force: float = self.actor.min_shoot_force
         self.__shoot_force_step: float = 200.0
         ########################
         ########################
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
-        self.actor.shoot_force = 0.0
+        self.__shoot_force = self.actor.min_shoot_force
         self.__shoot = False
         self.__elapsed = 0.0
         self.__release_threshold = 1.0
         self.__animation_ended = False
         self.actor.spawn_ink()
-        self.actor.ink_parabola.set_speed(self.actor.shoot_force)
+        self.actor.set_shoot_force(self.__shoot_force)
 
     def __fetch_input(self) -> None:
         """
@@ -98,13 +99,12 @@ class FishShootLoadState(FishState):
         self.actor.move_ink()
 
         self.__elapsed += dt
-        self.actor.shoot_force += self.__shoot_force_step * dt
-        self.actor.ink_parabola.set_speed(self.actor.shoot_force)
-        self.actor.ink_parabola.set_angle(math.degrees(self.actor.aim_vec.heading()))
-        self.actor.ink_parabola.set_gravity(300.0)
+        self.__shoot_force += self.__shoot_force_step * dt
 
         # Make sure the shoot force does not exceed its maximum possible value.
-        self.actor.shoot_force = pm.clamp(self.actor.shoot_force, 0.0, self.actor.max_shoot_force)
+        self.__shoot_force = pm.clamp(self.__shoot_force, 0.0, self.actor.max_shoot_force)
+
+        self.actor.set_shoot_force(self.__shoot_force)
 
         # Check for state changes.
         if self.__shoot and self.__can_release:

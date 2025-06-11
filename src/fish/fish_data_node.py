@@ -19,7 +19,6 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
-from gpt_parabola import GPTParabola
 from interactable.interactor import Interactor
 from grabbable.grabbable import Grabbable
 from fish.ink.ink_node import InkNode
@@ -46,7 +45,8 @@ class FishDataNode(PositionNode, Grabbable):
     water_gravity_dampening: float = 0.2
     land_gravity_dampening: float = 0.5
 
-    max_shoot_force: float = 1600.0
+    min_shoot_force: float = 127.0
+    max_shoot_force: float = 512.0
 
     def __init__(
         self,
@@ -97,7 +97,6 @@ class FishDataNode(PositionNode, Grabbable):
 
 
         self.dash_force: float = self.max_move_speed * 3
-        self.shoot_force: float = self.max_shoot_force
         self.aim_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.ink_offset: pm.Vec2 = pm.Vec2(16.0, 16.0)
 
@@ -123,13 +122,6 @@ class FishDataNode(PositionNode, Grabbable):
             batch = batch
         )
         self.add_component(self.__shoot_loading_indicator)
-
-        self.ink_parabola: GPTParabola = GPTParabola(
-            timestep = 0.1,
-            gravity = 300,
-            batch = batch
-        )
-        self.add_component(self.ink_parabola)
 
 
         ################################
@@ -303,11 +295,17 @@ class FishDataNode(PositionNode, Grabbable):
             self.y + ink_offset.y
         ))
 
+    def set_shoot_force(self, shoot_force: float) -> None:
+        if self.ink is None:
+            return
+
+        self.ink.set_shoot_vec(shoot_vec = self.aim_vec * shoot_force)
+
     def shoot_ink(self) -> None:
         if self.ink is None:
             return
 
-        self.ink.release(self.aim_vec * self.shoot_force)
+        self.ink.release()
         self.ink = None
 
     def toggle_grab(self, toggle: bool) -> None:
@@ -345,8 +343,6 @@ class FishDataNode(PositionNode, Grabbable):
 
         # Update interactor.
         self.__interactor.update(dt = dt)
-
-        self.ink_parabola.update(dt = dt)
 
         # Flip sprite if moving to the left.
         self.sprite.set_scale(x_scale = self.__hor_facing)

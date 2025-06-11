@@ -1,0 +1,8 @@
+{
+    "name": "ink_parabola",
+    "path": "sprites/fish/ink_parabola.png",
+    "rows": 1,
+    "columns": 1,
+    "center_x": true,
+    "center_y": true
+}
