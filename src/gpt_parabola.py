@@ -28,7 +28,10 @@ class GPTParabola(PositionNode):
         self.__theta: float = math.radians(angle)
         self.timestep: float = timestep
         self.gravity: float = gravity
-        self.__flight_time: float = (2 * speed * math.sin(self.__theta)) / gravity
+
+        # TODO Flight time should be recomputed every time speed or gravity changes.
+        # self.__flight_time: float = (2 * speed * math.sin(self.__theta)) / gravity
+        self.__flight_time: float = 20.0
 
         self.trajectory: list[pm.Vec2] = []
         self.steps: list[PositionNode] = []

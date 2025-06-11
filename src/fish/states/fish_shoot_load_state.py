@@ -99,8 +99,9 @@ class FishShootLoadState(FishState):
 
         self.__elapsed += dt
         self.actor.shoot_force += self.__shoot_force_step * dt
-        self.actor.ink_parabola.set_speed(self.actor.shoot_force / 50)
+        self.actor.ink_parabola.set_speed(self.actor.shoot_force)
         self.actor.ink_parabola.set_angle(math.degrees(self.actor.aim_vec.heading()))
+        self.actor.ink_parabola.set_gravity(300.0)
 
         # Make sure the shoot force does not exceed its maximum possible value.
         self.actor.shoot_force = pm.clamp(self.actor.shoot_force, 0.0, self.actor.max_shoot_force)

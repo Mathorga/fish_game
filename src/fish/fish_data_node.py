@@ -125,8 +125,8 @@ class FishDataNode(PositionNode, Grabbable):
         self.add_component(self.__shoot_loading_indicator)
 
         self.ink_parabola: GPTParabola = GPTParabola(
-            timestep = 1.0,
-            gravity = 0.1,
+            timestep = 0.1,
+            gravity = 300,
             batch = batch
         )
         self.add_component(self.ink_parabola)
