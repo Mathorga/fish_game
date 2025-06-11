@@ -1,5 +1,4 @@
 import math
-import time
 from typing import Callable
 import pyglet
 import pyglet.math as pm
@@ -46,7 +45,8 @@ class FishDataNode(PositionNode, Grabbable):
     water_gravity_dampening: float = 0.2
     land_gravity_dampening: float = 0.5
 
-    max_shoot_force: float = 1600.0
+    min_shoot_force: float = 127.0
+    max_shoot_force: float = 512.0
 
     def __init__(
         self,
@@ -63,27 +63,6 @@ class FishDataNode(PositionNode, Grabbable):
         self.__hor_facing: int = 1
         self.heading: float = 0.0
         self.ink: InkNode | None = None
-        self.__interactor: Interactor = Interactor(
-            sensor_shape = CollisionRect(
-                anchor_x = 15,
-                anchor_y = 20,
-                width = 30,
-                height = 30,
-                batch = batch
-            ),
-            batch = batch
-        )
-        self.add_component(self.__interactor)
-
-        self.__shoot_loading_indicator: LoadingIndicatorNode = LoadingIndicatorNode(
-            foreground_sprite_res = pyglet.resource.image("sprites/loading_foreground.png"),
-            background_sprite_res = pyglet.resource.image("sprites/loading_background.png"),
-            y = -16,
-            ease_function = Tween.cubeInOut,
-            start_visible = True,
-            batch = batch
-        )
-        self.add_component(self.__shoot_loading_indicator)
 
 
         ################################
@@ -118,9 +97,31 @@ class FishDataNode(PositionNode, Grabbable):
 
 
         self.dash_force: float = self.max_move_speed * 3
-        self.shoot_force: float = self.max_shoot_force
         self.aim_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.ink_offset: pm.Vec2 = pm.Vec2(16.0, 16.0)
+
+
+        self.__interactor: Interactor = Interactor(
+            sensor_shape = CollisionRect(
+                anchor_x = 15,
+                anchor_y = 20,
+                width = 30,
+                height = 30,
+                batch = batch
+            ),
+            batch = batch
+        )
+        self.add_component(self.__interactor)
+
+        self.__shoot_loading_indicator: LoadingIndicatorNode = LoadingIndicatorNode(
+            foreground_sprite_res = pyglet.resource.image("sprites/loading_foreground.png"),
+            background_sprite_res = pyglet.resource.image("sprites/loading_background.png"),
+            y = -16,
+            ease_function = Tween.cubeInOut,
+            start_visible = True,
+            batch = batch
+        )
+        self.add_component(self.__shoot_loading_indicator)
 
 
         ################################
@@ -294,11 +295,17 @@ class FishDataNode(PositionNode, Grabbable):
             self.y + ink_offset.y
         ))
 
+    def set_shoot_force(self, shoot_force: float) -> None:
+        if self.ink is None:
+            return
+
+        self.ink.set_shoot_vec(shoot_vec = self.aim_vec * shoot_force)
+
     def shoot_ink(self) -> None:
         if self.ink is None:
             return
 
-        self.ink.release(self.aim_vec * self.shoot_force)
+        self.ink.release()
         self.ink = None
 
     def toggle_grab(self, toggle: bool) -> None:

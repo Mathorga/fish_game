@@ -15,6 +15,8 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
+from constants import uniques
+from gpt_parabola import GPTParabola
 
 
 class InkDataNode(PositionNode):
@@ -84,6 +86,10 @@ class InkDataNode(PositionNode):
         ################################
 
 
+        self.parabola: GPTParabola | None
+        self.spawn_parabola()
+
+
         ################################
         # Colliders
         ################################
@@ -116,9 +122,36 @@ class InkDataNode(PositionNode):
         if self.__on_collision is not None:
             self.__on_collision(tags, collider_id, entered)
 
+    def spawn_parabola(self) -> None:
+        self.parabola = GPTParabola(
+            sprite_resource = Animation(source = "sprites/fish/ink_parabola.json").content,
+            gravity = self.gravity_accel.length(),
+            batch = self.__batch
+        )
+        self.add_component(self.parabola)
+
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.add_child(self.parabola)
+
+    def delete_parabola(self) -> None:
+        if self.parabola is None:
+            return
+
+        # First remove parabola from the active scene.
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.remove_child(self.parabola)
+
+        # Then delete the parabola altogether.
+        self.parabola.delete()
+        self.parabola = None
+
     def delete(self) -> None:
         controllers.COLLISION_CONTROLLER.remove_collider(self.__collider)
         self.__collider.delete()
+
+        # First remove parabola from the active scene.
+        if uniques.ACTIVE_SCENE is not None:
+            uniques.ACTIVE_SCENE.remove_child(self.parabola)
 
         super().delete()
 
@@ -202,3 +235,5 @@ class InkDataNode(PositionNode):
         """
 
         self.shoot_vec = shoot_vec
+        self.parabola.set_speed(shoot_vec.length())
+        self.parabola.set_angle(math.degrees(shoot_vec.heading()))

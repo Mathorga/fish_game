@@ -26,6 +26,8 @@ class InkFlyState(InkState):
         # Apply shoot speed.
         self.actor.move_vec = self.actor.shoot_vec
 
+        self.actor.delete_parabola()
+
     def update(self, dt: float) -> str | None:
         self.actor.compute_move_speed(dt = dt, max_speed = self.actor.shoot_vec.length())
         self.actor.compute_gravity_speed(dt = dt)

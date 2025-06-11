@@ -45,13 +45,19 @@ class InkNode(PositionNode):
             }
         )
 
-    def release(self, shoot_vec: pm.Vec2) -> None:
+    def release(self) -> None:
         """
         Sets the ink flying.
         """
 
-        self.__data.set_shoot_vec(shoot_vec = shoot_vec)
         self.__state_machine.set_state(InkStates.FLY)
+
+    def set_shoot_vec(self, shoot_vec: pm.Vec2) -> None:
+        """
+        Sets the ink's shoot vector.
+        """
+
+        self.__data.set_shoot_vec(shoot_vec = shoot_vec)
 
     def set_position(self, position: tuple[float, float], z: float | None = None):
         super().set_position(position, z)
