@@ -38,6 +38,11 @@ class FishShootState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
 
+    def end(self) -> None:
+        super().end()
+
+        self.actor.aim_vec *= 0.0
+
     def on_animation_end(self) -> None:
         super().on_animation_end()
 
