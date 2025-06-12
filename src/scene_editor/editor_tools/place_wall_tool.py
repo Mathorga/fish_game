@@ -119,8 +119,8 @@ class PlaceWallTool(EditorTool):
                 # The wall size is computed by subtracting the start position from the current.
                 current_bounds: tuple[float, float, float, float] = self.__current_wall.get_bounds()
                 wall: WallNode = WallNode(
-                    x = int(current_bounds[0]),
-                    y = int(current_bounds[1]),
+                    x = current_bounds[0],
+                    y = current_bounds[1],
                     width = int(current_bounds[2]),
                     height = int(current_bounds[3]),
                     tags = [collision_tags.PLAYER_COLLISION],

@@ -128,8 +128,8 @@ class PlaceWaterTool(EditorTool):
                     self.__tile_size[1] / 2
                 )
                 water: HittableNode = HittableNode(
-                    x = int(current_bounds[0] + half_tile_size[0]),
-                    y = int(current_bounds[1] + half_tile_size[1]),
+                    x = current_bounds[0] + half_tile_size[0],
+                    y = current_bounds[1] + half_tile_size[1],
                     width = int(current_bounds[2] - self.__tile_size[0]),
                     height = int(current_bounds[3] - self.__tile_size[1]),
                     tags = [collision_tags.WATER],
