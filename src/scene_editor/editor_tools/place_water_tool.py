@@ -16,77 +16,6 @@ from constants import uniques
 TOOL_COLOR: tuple[int, int, int, int] = (0x7F, 0x7F, 0xFF, 0x7F)
 ALT_COLOR: tuple[int, int, int, int] = (0xFF, 0x7F, 0x00, 0x7F)
 
-class WaterEditorMenuNode(Node):
-    def __init__(
-        self,
-        wall_names: list[str],
-        view_width: int,
-        view_height: int,
-        start_open: bool = False,
-        batch: pyglet.graphics.Batch | None = None,
-    ) -> None:
-        super().__init__()
-
-        self.__wall_names = wall_names
-        self.__view_width = view_width
-        self.__view_height = view_height
-        self.__batch = batch
-
-        # Flag, defines whether the menu is open or close.
-        self.__open = start_open
-
-        # Elements in the current page.
-        self.__wall_texts: list[TextNode] = []
-
-        # Currently selected element.
-        self.__current_index: int = 0
-
-        self.__background: RectNode | None = None
-
-    def update(self, dt: int) -> None:
-        super().update(dt)
-
-        if self.__open:
-            # Only handle controls if open:
-            # Wall selection.
-            self.__current_index -= int(controllers.INPUT_CONTROLLER.get_cursor_movement_vec(
-                up_keys = [pyglet.window.key.W],
-                left_keys = [pyglet.window.key.A],
-                down_keys = [pyglet.window.key.S],
-                right_keys = [pyglet.window.key.D],
-            ).y)
-            if self.__current_index < 0:
-                self.__current_index = 0
-            if self.__current_index >= len(self.__wall_names):
-                self.__current_index = len(self.__wall_names) - 1
-
-    def get_current_prop(self) -> str:
-        return self.__wall_names[self.__current_index]
-
-    def is_open(self) -> bool:
-        return self.__open
-
-    def open(self) -> None:
-        self.__open = True
-
-        self.__background = RectNode(
-            x = 0.0,
-            y = 0.0,
-            z = -100.0,
-            width = self.__view_width,
-            height = self.__view_height,
-            color = (0x33, 0x33, 0x33, 0xFF),
-            batch = self.__batch
-        )
-        self.__background.set_opacity(0xDD)
-
-    def close(self) -> None:
-        self.__open = False
-
-        if self.__background is not None:
-            self.__background.delete()
-            self.__background = None
-
 class PlaceWaterTool(EditorTool):
     def __init__(
         self,
@@ -112,14 +41,6 @@ class PlaceWaterTool(EditorTool):
         self.__world_batch: pyglet.graphics.Batch | None = world_batch
         self.__ui_batch: pyglet.graphics.Batch | None = ui_batch
 
-        # Create a menu to handle wall type selection.
-        self.__menu = WaterEditorMenuNode(
-            wall_names = [],
-            view_width = view_width,
-            view_height = view_height,
-            batch = ui_batch
-        )
-
         # Area of the currently created
         self.__current_wall: RectNode | None = None
 
@@ -134,7 +55,11 @@ class PlaceWaterTool(EditorTool):
         super().move_cursor(map_position)
 
         if self.__current_wall is not None and self.__starting_position is not None:
-            # current_bounds: tuple[float, float, float, float] = self.__current_wall.get_bounds()
+            half_tile_size: tuple[float, float] = (
+                self.__tile_size[0] / 2,
+                self.__tile_size[1] / 2
+            )
+
             self.__current_wall.set_bounds(
                 bounds = (
                     # X position.
@@ -198,11 +123,15 @@ class PlaceWaterTool(EditorTool):
                 # Create a wall with the given position and size.
                 # The wall size is computed by subtracting the start position from the current.
                 current_bounds: tuple[float, float, float, float] = self.__current_wall.get_bounds()
+                half_tile_size: tuple[float, float] = (
+                    self.__tile_size[0] / 2,
+                    self.__tile_size[1] / 2
+                )
                 water: HittableNode = HittableNode(
-                    x = current_bounds[0],
-                    y = current_bounds[1],
-                    width = int(current_bounds[2]),
-                    height = int(current_bounds[3]),
+                    x = int(current_bounds[0] + half_tile_size[0]),
+                    y = int(current_bounds[1] + half_tile_size[1]),
+                    width = int(current_bounds[2] - self.__tile_size[0]),
+                    height = int(current_bounds[3] - self.__tile_size[1]),
                     tags = [collision_tags.WATER],
                     sensor = True,
                     batch = self.__world_batch
