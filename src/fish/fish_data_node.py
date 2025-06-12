@@ -3,8 +3,6 @@ from typing import Callable
 import pyglet
 import pyglet.math as pm
 
-from amonite.loading_indicator_node import LoadingIndicatorNode
-from amonite.utils.tween import Tween
 import amonite.controllers as controllers
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
@@ -13,7 +11,6 @@ from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
 from amonite.collision.collision_node import CollisionMethod
-from amonite.settings import SETTINGS
 from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
@@ -112,16 +109,6 @@ class FishDataNode(PositionNode, Grabbable):
             batch = batch
         )
         self.add_component(self.__interactor)
-
-        self.__shoot_loading_indicator: LoadingIndicatorNode = LoadingIndicatorNode(
-            foreground_sprite_res = pyglet.resource.image("sprites/loading_foreground.png"),
-            background_sprite_res = pyglet.resource.image("sprites/loading_background.png"),
-            y = -16,
-            ease_function = Tween.cubeInOut,
-            start_visible = True,
-            batch = batch
-        )
-        self.add_component(self.__shoot_loading_indicator)
 
 
         ################################
