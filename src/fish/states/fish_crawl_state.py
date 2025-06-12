@@ -27,6 +27,7 @@ class FishCrawlState(FishState):
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__interact: bool = False
 
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
@@ -52,10 +53,14 @@ class FishCrawlState(FishState):
                     right = pyglet.window.key.L
                 )
             ).normalize()
+            self.__interact = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
+
+        if self.__interact:
+            self.actor.interact()
 
         self.actor.compute_move_speed(
             move_vec = pm.Vec2(self.__move_vec.x, 0.0),
