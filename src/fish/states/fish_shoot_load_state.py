@@ -53,12 +53,13 @@ class FishShootLoadState(FishState):
         ########################
 
     def start(self) -> None:
-        self.actor.set_animation(self.__animation)
         self.__shoot_force = self.actor.min_shoot_force
         self.__shoot = False
         self.__elapsed = 0.0
         self.__release_threshold = 1.0
         self.__animation_ended = False
+        self.actor.set_animation(self.__animation)
+        self.actor.move_vec *= 0.0
         self.actor.spawn_ink()
         self.actor.set_shoot_force(self.__shoot_force)
 
