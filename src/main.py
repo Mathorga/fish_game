@@ -6,8 +6,11 @@ from amonite.upscaler import TrueUpscaler
 from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
+from global_input_node import GlobalInputNode
 from mid_camera_node import MidCameraNode
-from scene_composer import SceneComposerNode
+import scene_composer
+from scene_composer import SCENE_COMPOSER
+from scene_composer import SceneComposer
 
 
 FRAGMENT_SOURCE = """
@@ -93,22 +96,20 @@ class FishGame:
         )
 
         # Create a scene.
-        uniques.ACTIVE_SCENE = SceneComposerNode(
+        scene_composer.SCENE_COMPOSER = SceneComposer(
             window = self.__window,
             view_width = SETTINGS[Keys.VIEW_WIDTH],
-            view_height = SETTINGS[Keys.VIEW_HEIGHT],
-            config_file_path = "scenes/0_0_0.json"
-        ).scene
-
-        uniques.ACTIVE_SCENE.add_child(
-            MidCameraNode(
-                targets = [
-                    uniques.LEG,
-                    uniques.FISH
-                ]
-            ),
-            cam_target = True
+            view_height = SETTINGS[Keys.VIEW_HEIGHT]
         )
+        scene_composer.SCENE_COMPOSER.load_scene(config_file_path = "scenes/0_0_0.json")
+        # uniques.ACTIVE_SCENE = SceneComposer(
+        #     window = self.__window,
+        #     view_width = SETTINGS[Keys.VIEW_WIDTH],
+        #     view_height = SETTINGS[Keys.VIEW_HEIGHT],
+        #     config_file_path = "scenes/0_0_0.json"
+        # ).scene
+
+        self.__global_input_node: GlobalInputNode = GlobalInputNode()
 
 
         ########################
@@ -184,6 +185,7 @@ class FishGame:
             with controllers.INPUT_CONTROLLER:
                 if uniques.ACTIVE_SCENE is not None:
                     uniques.ACTIVE_SCENE.update(dt = self.phys_timestep)
+                    self.__global_input_node.update(dt = self.phys_timestep)
 
             # Compute collisions through collision manager.
             controllers.COLLISION_CONTROLLER.update(dt = self.phys_timestep)
