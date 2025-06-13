@@ -38,6 +38,7 @@ FRAGMENT_SOURCE = """
         // Negative colors.
         //final_color.rgb = 1.0 - final_color.rgb;
 
+        // This may be completely useless.
         if (final_color.a < 0.01) {
             discard;
         }
