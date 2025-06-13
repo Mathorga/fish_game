@@ -78,7 +78,7 @@ class FishDashState(FishState):
         # Just change to swimming if out of water.
         # This helps regularizing the out-of-water jump.
         if not self.actor.in_water:
-            return FishStates.SWIM
+            return FishStates.IDLE
 
         # Check for state changes.
         # Make sure the state ends when there's no more movement.

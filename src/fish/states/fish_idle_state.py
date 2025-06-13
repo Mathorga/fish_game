@@ -21,15 +21,29 @@ class FishIdleState(FishState):
             input_enabled = input_enabled
         )
 
-        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
+        self.__land_animation: Animation = Animation(source = "sprites/fish/dumbo_land_idle.json")
+        self.__midair_animation: Animation = Animation(source = "sprites/fish/dumbo_swim.json")
+        self.__animation: Animation = self.__land_animation if self.actor.grounded else self.__midair_animation
 
         # Inputs.
         self.__move: bool = False
         self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         self.__interact: bool = False
 
+    def __update_animation(self) -> None:
+        if self.actor.grounded and self.__animation != self.__land_animation:
+            self.__animation = self.__land_animation
+            self.actor.set_animation(self.__animation)
+            return
+
+        if not self.actor.grounded and self.__animation != self.__midair_animation:
+            self.__animation = self.__midair_animation
+            self.actor.set_animation(self.__animation)
+            return
+
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
+        self.__update_animation()
         self.actor.aim_vec *= 0.0
 
     def __fetch_input(self) -> None:
@@ -56,6 +70,8 @@ class FishIdleState(FishState):
             self.__interact = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
     def update(self, dt: float) -> str | None:
+        self.__update_animation()
+
         # Read inputs.
         self.__fetch_input()
 

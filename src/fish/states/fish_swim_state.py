@@ -54,7 +54,7 @@ class FishSwimState(FishState):
 
         # Check for state changes.
         if not self.actor.in_water:
-            return FishStates.CRAWL
+            return FishStates.IDLE if self.__move_vec.length() <= 0.0 else FishStates.CRAWL
 
         if self.__dash:
             return FishStates.DASH

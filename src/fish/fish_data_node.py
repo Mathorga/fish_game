@@ -159,8 +159,8 @@ class FishDataNode(PositionNode, Grabbable):
             passive_tags = [],
             shape = CollisionRect(
                 anchor_x = 5,
-                anchor_y = 8,
-                width = 10,
+                anchor_y = 10,
+                width = 8,
                 height = 2,
                 batch = batch
             ),
