@@ -55,11 +55,6 @@ class PlaceWaterTool(EditorTool):
         super().move_cursor(map_position)
 
         if self.__current_wall is not None and self.__starting_position is not None:
-            half_tile_size: tuple[float, float] = (
-                self.__tile_size[0] / 2,
-                self.__tile_size[1] / 2
-            )
-
             self.__current_wall.set_bounds(
                 bounds = (
                     # X position.
