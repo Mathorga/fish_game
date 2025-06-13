@@ -4,6 +4,7 @@ import pyglet
 from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
+import amonite.controllers as controllers
 from amonite.node import Node
 from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
@@ -17,6 +18,7 @@ from ink_button_node import Direction, InkButtonNode
 from leg.leg_node import LegNode
 from press_button_node import PressButtonNode
 from red_platform_node import RedPlatformNode
+from mid_camera_node import MidCameraNode
 
 class WaterHittableNode(HittableNode):
     def __init__(
@@ -70,7 +72,7 @@ class WaterHittableNode(HittableNode):
             batch = batch
         )
 
-class SceneComposerNode():
+class SceneComposer():
     """
     Handles scene composition via file.
     Creates a new scene by reading a config file.
@@ -80,87 +82,104 @@ class SceneComposerNode():
         self,
         window: BaseWindow,
         view_width: int,
-        view_height: int,
-        config_file_path: str
+        view_height: int
     ):
+        self.__window: BaseWindow = window
+        self.__view_width: int = view_width
+        self.__view_height: int = view_height
+
+        self.children: dict[tuple[str, int], Node] = {}
+        self.scene: SceneNode
+
+    def load_scene(self, config_file_path: str) -> None:
+        """
+        Loads all scene data from the provided scene config file.
+        Destroys the currently active scene in the process.
+        """
+
+        # Delete any previous active scene.
+        if uniques.ACTIVE_SCENE is not None:
+            controllers.COLLISION_CONTROLLER.clear()
+            uniques.ACTIVE_SCENE.delete()
+            uniques.ACTIVE_SCENE = None
+
+        # Store the currently open scene file.
+        uniques.ACTIVE_SCENE_SRC = config_file_path
+
         # Read config file and setup the scene.
-        self.config_data: dict[str, Any] = {}
         with open(file = f"{pyglet.resource.path[0]}/{config_file_path}", mode = "r", encoding = "UTF-8") as content:
-            self.config_data = json.load(content)
+            config_data = json.load(content)
 
         # Store all keys for faster access.
-        config_keys: list[str] = list(self.config_data.keys())
+        config_keys: list[str] = list(config_data.keys())
 
         # Make sure all mandatory fields are present in the config file.
         assert "title" in config_keys and "children" in config_keys
 
         # Read scene title.
-        self.title: str = self.config_data["title"]
+        title: str = config_data["title"]
 
-        self.scene: SceneNode = SceneNode(
-            window = window,
-            view_width = view_width,
-            view_height = view_height,
+        ################################
+        # Create scene.
+        ################################
+        self.scene = SceneNode(
+            window = self.__window,
+            view_width = self.__view_width,
+            view_height = self.__view_height,
             curtain_z = 300.0,
-            title = self.title,
+            title = title,
         )
+        ################################
+        ################################
 
-        ################ Read tilemap ################
+        ################################
+        # Read tilemap.
+        ################################
         tilemaps: list[TilemapNode] = TilemapNode.from_tmx_file(
-            source = self.config_data["tilemap"],
+            source = config_data["tilemap"],
             tilesets_path = "tilesets/",
             batch = self.scene.world_batch
         )
-        self.__tile_size = tilemaps[0].get_tile_size()[0]
+        tile_size = tilemaps[0].get_tile_size()[0]
         tilemap_width = tilemaps[0].map_width
         tilemap_height = tilemaps[0].map_height
         cam_bounds = tilemaps[0].bounds
+        ################################
+        ################################
 
         ################################
         # Read children.
         ################################
-        self.children_data: list[dict[str, Any]] = self.config_data["children"]
-        self.children: dict[tuple[str, int], Node] = {
+        children_data: list[dict[str, Any]] = config_data["children"]
+        self.children = {
             (child["name"], child["id"]): self.__map_child(child)
-            for child in self.children_data
+            for child in children_data
         }
-        # self.children: list[Node] = list(
-        #     filter(
-        #         # Only pick values that are not None.
-        #         lambda item: item is not None,
-        #         map(
-        #             # Map each element to a Node.
-        #             self.__map_child,
-        #             self.children_data
-        #         )
-        #     )
-        # )
         ################################
         ################################
-
 
         ################################
         # Read hittables.
         ################################
-        self.__waters: list[WaterHittableNode] = []
-        if self.config_data["waters"] is not None:
-            self.__waters = list(
-                    map(
+        __waters: list[WaterHittableNode] = []
+        if config_data["waters"] is not None:
+            __waters = list(
+                map(
                     lambda hittable: WaterHittableNode.from_hittable(
                         hittable = hittable,
                         z = -200,
                         batch = self.scene.world_batch
                     ),
                     HittablesLoader.fetch(
-                        source = self.config_data["waters"],
+                        source = config_data["waters"],
                         batch = self.scene.world_batch
                     )
                 )
             )
-        self.__walls: list[HittableNode] = []
-        if self.config_data["walls"] is not None:
-            self.__walls = HittablesLoader.fetch(
-                source = self.config_data["walls"],
+        __walls: list[HittableNode] = []
+        if config_data["walls"] is not None:
+            __walls = HittablesLoader.fetch(
+                source = config_data["walls"],
                 batch = self.scene.world_batch
             )
         ################################
@@ -168,35 +187,25 @@ class SceneComposerNode():
 
         self.scene.add_children(tilemaps)
         self.scene.add_children([*self.children.values()])
-        self.scene.add_children(self.__waters)
-        self.scene.add_children(self.__walls)
+        self.scene.add_children(__waters)
+        self.scene.add_children(__walls)
 
         # Set scene cam bounds.
         self.scene.set_cam_bounds(bounds = cam_bounds)
 
-    def __trigger_on(self, target_child_id: tuple[str, int]) -> None:
-        """
-        Triggers the child with the provided id on.
-        """
+        # Add a mid camera node between the two characters if defined in the current scene.
+        if uniques.LEG is not None and uniques.FISH is not None:
+            self.scene.add_child(
+                MidCameraNode(
+                    targets = [
+                        uniques.LEG,
+                        uniques.FISH
+                    ]
+                ),
+                cam_target = True
+            )
 
-        # Make sure the target child exists.
-        if not target_child_id in self.children.keys():
-            return
-
-        # Retrieve target child from its identifier.
-        target_child: Node = self.children[target_child_id]
-
-        # Make sure the target child exposes a "trigger_on" method.
-        if not hasattr(target_child, "trigger_on"):
-            return
-
-        # Call the method on the target child.
-        getattr(target_child, "trigger_on")()
-
-    def __trigger_off(self, target_child_id: tuple[str, int]) -> None:
-        """
-        Triggers the child with the provided id on.
-        """
+        uniques.ACTIVE_SCENE = self.scene
 
     def __trigger_child(self, action: str, target_child_id: tuple[str, int]) -> None:
         """
@@ -219,14 +228,12 @@ class SceneComposerNode():
 
     def __on_child_triggered(self, data: list[dict[str, Any]] | None) -> None:
         """
-        Handles reactions to children being triggered on.
+        Handles reactions to children being triggered on or off.
         """
 
         # Just return if no data is provided.
         if data is None:
             return
-
-        # data_by_action: dict[str, list[dict[str, Any]]] = dict()
 
         for element in data:
             # Make sure the proper action structure is ensured.
@@ -237,18 +244,6 @@ class SceneComposerNode():
             target_id: tuple[str, int] = (element["name"], element["id"])
 
             self.__trigger_child(element["action"], target_id)
-
-            # match element["action"]:
-            #     case "trigger_on":
-            #         self.__trigger_on(target_id)
-
-        # Group data by actions.
-        # for element in data:
-        #     action: str = element["action"]
-        #     if action in data_by_action:
-        #         data_by_action[action].append(element)
-        #     else:
-        #         data_by_action[action] = [element]
 
     def __map_child(self, child_data: dict[str, Any]) -> Node:
         assert "name" in child_data.keys()
@@ -304,3 +299,5 @@ class SceneComposerNode():
             case _:
                 # TODO Return something visible so that the user notices something's wrong.
                 return Node()
+
+SCENE_COMPOSER: SceneComposer | None = None

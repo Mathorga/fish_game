@@ -55,7 +55,7 @@ class FishNode(PositionNode):
     def delete(self):
         self.__data.delete()
 
-        return super().delete()
+        super().delete()
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)
