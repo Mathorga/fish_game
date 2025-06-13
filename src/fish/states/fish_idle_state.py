@@ -87,9 +87,6 @@ class FishIdleState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
 
-        # if self.__shoot and self.actor.grounded:
-        #     return FishStates.SHOOT_LOAD
-        
         if self.__aim_vec.length() > 0.0:
             self.actor.aim_vec = self.__aim_vec
             return FishStates.SHOOT_LOAD
