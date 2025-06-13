@@ -7,9 +7,7 @@ from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
 
 from constants import uniques
 from global_input_node import GlobalInputNode
-from mid_camera_node import MidCameraNode
 import scene_composer
-from scene_composer import SCENE_COMPOSER
 from scene_composer import SceneComposer
 
 
@@ -185,7 +183,7 @@ class FishGame:
             with controllers.INPUT_CONTROLLER:
                 if uniques.ACTIVE_SCENE is not None:
                     uniques.ACTIVE_SCENE.update(dt = self.phys_timestep)
-                    self.__global_input_node.update(dt = self.phys_timestep)
+                self.__global_input_node.update(dt = self.phys_timestep)
 
             # Compute collisions through collision manager.
             controllers.COLLISION_CONTROLLER.update(dt = self.phys_timestep)

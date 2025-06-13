@@ -70,12 +70,6 @@ class Interactor(PositionNode):
 
         self.toggle_button_signal()
 
-    def delete(self):
-        self.__interact_sensor.delete()
-        if self.__button_signal is not None:
-            self.__button_signal.delete()
-        super().delete()
-
     def on_interactable_found(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if collider.owner is not None and isinstance(collider.owner, Interactable) and collider.owner.is_active():
             if entered and self.__button_signal is None:
@@ -86,11 +80,10 @@ class Interactor(PositionNode):
     def toggle_button_signal(self) -> None:
         if len(self.__interactables) > 0 and self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
-            if uniques.ACTIVE_SCENE is not None:
-               uniques.ACTIVE_SCENE.add_child(self.__button_signal)
+            self.add_component(self.__button_signal)
         elif len(self.__interactables) <= 0 and self.__button_signal is not None:
-            if uniques.ACTIVE_SCENE is not None:
-                uniques.ACTIVE_SCENE.remove_child(self.__button_signal)
+            # TODO Amonite's PositionNode should expose a "remove_component" mehtod.
+            self.components.remove(self.__button_signal)
             self.__button_signal.delete()
             self.__button_signal = None
 

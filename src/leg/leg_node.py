@@ -58,6 +58,11 @@ class LegNode(PositionNode):
 
         self.set_position(self.__data.get_position())
 
+    def delete(self):
+        self.__data.delete()
+
+        super().delete()
+
     def on_sprite_animation_end(self):
         self.__state_machine.on_animation_end()
 

@@ -69,18 +69,10 @@ class Grabber(PositionNode):
 
         self.toggle_grabbable_button()
 
-    def delete(self):
-        self.__grab_sensor.delete()
-        if self.__button_signal is not None:
-            self.__button_signal.delete()
-        super().delete()
-
     def __turn_button_signal_on(self) -> None:
         if self.__button_signal is None:
             self.__button_signal = self.__build_button_signal()
             self.add_component(self.__button_signal)
-        if uniques.ACTIVE_SCENE is not None:
-            uniques.ACTIVE_SCENE.add_child(self.__button_signal)
 
     def __turn_button_signal_off(self) -> None:
         if self.__button_signal is not None:

@@ -11,7 +11,6 @@ from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
 from amonite.collision.collision_node import CollisionMethod
-from amonite.settings import SETTINGS
 from amonite.settings import GLOBALS
 from amonite.settings import Keys
 

@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "debug main",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "debug scene editor",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/scene_editor/scene_editor.py",
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        },
+    ]
+}

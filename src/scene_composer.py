@@ -4,6 +4,7 @@ import pyglet
 from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
+import amonite.controllers as controllers
 from amonite.node import Node
 from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
@@ -83,7 +84,6 @@ class SceneComposer():
         view_width: int,
         view_height: int
     ):
-        self.__config_data: dict[str, Any] = {}
         self.__window: BaseWindow = window
         self.__view_width: int = view_width
         self.__view_height: int = view_height
@@ -92,21 +92,32 @@ class SceneComposer():
         self.scene: SceneNode
 
     def load_scene(self, config_file_path: str) -> None:
+        """
+        Loads all scene data from the provided scene config file.
+        Destroys the currently active scene in the process.
+        """
+
+        # Delete any previous active scene.
+        if uniques.ACTIVE_SCENE is not None:
+            controllers.COLLISION_CONTROLLER.clear()
+            uniques.ACTIVE_SCENE.delete()
+            uniques.ACTIVE_SCENE = None
+
         # Store the currently open scene file.
         uniques.ACTIVE_SCENE_SRC = config_file_path
 
         # Read config file and setup the scene.
         with open(file = f"{pyglet.resource.path[0]}/{config_file_path}", mode = "r", encoding = "UTF-8") as content:
-            self.__config_data = json.load(content)
+            config_data = json.load(content)
 
         # Store all keys for faster access.
-        config_keys: list[str] = list(self.__config_data.keys())
+        config_keys: list[str] = list(config_data.keys())
 
         # Make sure all mandatory fields are present in the config file.
         assert "title" in config_keys and "children" in config_keys
 
         # Read scene title.
-        title: str = self.__config_data["title"]
+        title: str = config_data["title"]
 
         ################################
         # Create scene.
@@ -125,11 +136,11 @@ class SceneComposer():
         # Read tilemap.
         ################################
         tilemaps: list[TilemapNode] = TilemapNode.from_tmx_file(
-            source = self.__config_data["tilemap"],
+            source = config_data["tilemap"],
             tilesets_path = "tilesets/",
             batch = self.scene.world_batch
         )
-        self.__tile_size = tilemaps[0].get_tile_size()[0]
+        tile_size = tilemaps[0].get_tile_size()[0]
         tilemap_width = tilemaps[0].map_width
         tilemap_height = tilemaps[0].map_height
         cam_bounds = tilemaps[0].bounds
@@ -139,7 +150,7 @@ class SceneComposer():
         ################################
         # Read children.
         ################################
-        children_data: list[dict[str, Any]] = self.__config_data["children"]
+        children_data: list[dict[str, Any]] = config_data["children"]
         self.children = {
             (child["name"], child["id"]): self.__map_child(child)
             for child in children_data
@@ -151,7 +162,7 @@ class SceneComposer():
         # Read hittables.
         ################################
         __waters: list[WaterHittableNode] = []
-        if self.__config_data["waters"] is not None:
+        if config_data["waters"] is not None:
             __waters = list(
                 map(
                     lambda hittable: WaterHittableNode.from_hittable(
@@ -160,15 +171,15 @@ class SceneComposer():
                         batch = self.scene.world_batch
                     ),
                     HittablesLoader.fetch(
-                        source = self.__config_data["waters"],
+                        source = config_data["waters"],
                         batch = self.scene.world_batch
                     )
                 )
             )
         __walls: list[HittableNode] = []
-        if self.__config_data["walls"] is not None:
+        if config_data["walls"] is not None:
             __walls = HittablesLoader.fetch(
-                source = self.__config_data["walls"],
+                source = config_data["walls"],
                 batch = self.scene.world_batch
             )
         ################################
@@ -246,7 +257,7 @@ class SceneComposer():
                 uniques.FISH = FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = False,
+                    enabled = True,
                     batch = self.scene.world_batch
                 )
                 return uniques.FISH
@@ -254,7 +265,7 @@ class SceneComposer():
                 uniques.LEG = LegNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = True,
+                    enabled = False,
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
