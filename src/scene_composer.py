@@ -265,7 +265,7 @@ class SceneComposer():
                 uniques.LEG = LegNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = False,
+                    enabled = True,
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG

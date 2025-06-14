@@ -1,9 +1,13 @@
 import pyglet
 import pyglet.math as pm
 
+from amonite.settings import SETTINGS
+from amonite.settings import Keys
 from amonite.animation import Animation
 from amonite import controllers
+from amonite.input_controller import ControllerStick
 
+from constants import custom_setting_keys
 from constants import uniques
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishStates
@@ -43,9 +47,16 @@ class FishDashState(FishState):
         """
 
         if self.input_enabled:
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec(
+            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+                stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )
+
+            # Only read keyboard input if so specified in settings.
+            if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
+                self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
+
+            self.__move_vec = self.__move_vec.normalize()
 
     def update(self, dt: float) -> str | None:
         # Handle animation end.

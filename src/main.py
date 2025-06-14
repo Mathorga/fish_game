@@ -3,7 +3,10 @@ import pyglet
 import pyglet.gl as gl
 import amonite.controllers as controllers
 from amonite.upscaler import TrueUpscaler
-from amonite.settings import GLOBALS, SETTINGS, Keys, load_settings
+from amonite.settings import GLOBALS
+from amonite.settings import SETTINGS
+from amonite.settings import Keys
+from amonite.settings import load_settings
 
 from constants import uniques
 from global_input_node import GlobalInputNode

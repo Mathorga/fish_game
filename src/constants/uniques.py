@@ -9,5 +9,5 @@ ACTIVE_SCENE: SceneNode | None = None
 FISH: PositionNode | None = None
 LEG: PositionNode | None = None
 
-FISH_CONTROLLER: int = 0
-LEG_CONTROLLER: int = 1
+FISH_CONTROLLER: int = 1
+LEG_CONTROLLER: int = 0
