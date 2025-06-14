@@ -37,10 +37,15 @@
    <wangtile tileid="25" wangid="0,2,0,2,0,0,0,2"/>
    <wangtile tileid="26" wangid="0,3,0,3,0,3,0,2"/>
    <wangtile tileid="27" wangid="0,2,0,3,0,3,0,3"/>
+   <wangtile tileid="28" wangid="0,2,0,2,0,2,0,2"/>
    <wangtile tileid="30" wangid="0,0,0,2,0,2,0,2"/>
    <wangtile tileid="31" wangid="0,2,0,2,0,2,0,0"/>
    <wangtile tileid="32" wangid="0,3,0,3,0,2,0,3"/>
    <wangtile tileid="33" wangid="0,3,0,2,0,3,0,3"/>
+   <wangtile tileid="38" wangid="0,0,0,2,0,2,0,0"/>
+   <wangtile tileid="39" wangid="0,0,0,0,0,2,0,2"/>
+   <wangtile tileid="44" wangid="0,2,0,0,0,0,0,2"/>
+   <wangtile tileid="45" wangid="0,2,0,2,0,0,0,0"/>
   </wangset>
  </wangsets>
 </tileset>
