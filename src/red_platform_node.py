@@ -17,6 +17,7 @@ class RedPlatformNode(PositionNode):
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
+        starts_on: bool = False,
         batch: pyglet.graphics.Batch | None = None
     ):
         super().__init__(
@@ -25,7 +26,7 @@ class RedPlatformNode(PositionNode):
             z = z
         )
 
-        self.__on: bool = False
+        self.__on: bool = starts_on
         self.__switching: bool = False
 
         collider_width: int = 16
