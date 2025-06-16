@@ -31,8 +31,8 @@ class FishIdleState(FishState):
 
         # Inputs.
         self.__move: bool = False
-        self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         self.__interact: bool = False
+        self.__aim: bool = False
 
     def __update_animation(self) -> None:
         if self.actor.grounded and self.__animation != self.__land_animation:
@@ -60,8 +60,8 @@ class FishIdleState(FishState):
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )
-            self.__aim_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
-                stick = ControllerStick.RSTICK,
+            self.__aim = controllers.INPUT_CONTROLLER.get_button_presses(
+                button = ControllerButton.EAST,
                 controller_index = uniques.FISH_CONTROLLER
             )
             self.__interact = controllers.INPUT_CONTROLLER.get_button_presses(
@@ -72,12 +72,7 @@ class FishIdleState(FishState):
             # Only read keyboard input if so specified in settings.
             if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
-                self.__aim_vec += controllers.INPUT_CONTROLLER.get_key_vector(
-                    up = pyglet.window.key.I,
-                    left = pyglet.window.key.J,
-                    down = pyglet.window.key.K,
-                    right = pyglet.window.key.L
-                )
+                self.__aim += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.RSHIFT, False)
                 self.__interact += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move = move_vec.normalize().length() > 0.0
@@ -100,8 +95,7 @@ class FishIdleState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
 
-        if self.__aim_vec.length() > 0.0:
-            self.actor.aim_vec = self.__aim_vec
+        if self.__aim:
             return FishStates.SHOOT_LOAD
 
         if self.__move:

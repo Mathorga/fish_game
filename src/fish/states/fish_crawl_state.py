@@ -32,7 +32,7 @@ class FishCrawlState(FishState):
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
-        self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__aim: bool = False
         self.__interact: bool = False
 
     def __update_animation(self) -> None:
@@ -60,8 +60,8 @@ class FishCrawlState(FishState):
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )
-            self.__aim_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
-                stick = ControllerStick.RSTICK,
+            self.__aim = controllers.INPUT_CONTROLLER.get_button_presses(
+                button = ControllerButton.EAST,
                 controller_index = uniques.FISH_CONTROLLER
             )
             self.__interact = controllers.INPUT_CONTROLLER.get_button_presses(
@@ -72,16 +72,10 @@ class FishCrawlState(FishState):
             # Only read keyboard input if so specified in settings.
             if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
-                self.__aim_vec += controllers.INPUT_CONTROLLER.get_key_vector(
-                    up = pyglet.window.key.I,
-                    left = pyglet.window.key.J,
-                    down = pyglet.window.key.K,
-                    right = pyglet.window.key.L
-                )
+                self.__aim += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.RSHIFT, False)
                 self.__interact += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move_vec = self.__move_vec.normalize()
-            self.__aim_vec = self.__aim_vec.normalize()
 
     def update(self, dt: float) -> str | None:
         self.__update_animation()
@@ -105,8 +99,7 @@ class FishCrawlState(FishState):
         if self.actor.in_water:
             return FishStates.SWIM
         
-        if self.__aim_vec.length() > 0.0:
-            self.actor.aim_vec = self.__aim_vec
+        if self.__aim:
             return FishStates.SHOOT_LOAD
 
         if self.actor.move_vec.length() <= 0.0:

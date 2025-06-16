@@ -1,5 +1,4 @@
 import pyglet
-import pyglet.math as pm
 
 from amonite.settings import SETTINGS
 from amonite.settings import Keys
@@ -41,7 +40,7 @@ class FishSwimState(FishState):
 
         if self.input_enabled:
             self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
-                stick = ControllerStick.RSTICK,
+                stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )
             self.__dash = controllers.INPUT_CONTROLLER.get_button_presses(
@@ -55,19 +54,6 @@ class FishSwimState(FishState):
                 self.__dash += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
             self.__move_vec = self.__move_vec.normalize()
-
-    def __fetch_input(self) -> None:
-        """
-        Reads all necessary inputs.
-        """
-
-        if self.input_enabled:
-            self.__move_vec = controllers.INPUT_CONTROLLER.get_movement_vec(
-                controller_index = uniques.FISH_CONTROLLER
-            )
-            self.__dash = controllers.INPUT_CONTROLLER.get_sprint(
-                controller_index = uniques.FISH_CONTROLLER
-            )
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

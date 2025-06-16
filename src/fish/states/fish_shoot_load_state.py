@@ -35,6 +35,7 @@ class FishShootLoadState(FishState):
         ########################
         # Input.
         ########################
+        self.__aim: bool = False
         self.__shoot: bool = False
         self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
         ########################
@@ -57,6 +58,7 @@ class FishShootLoadState(FishState):
 
     def start(self) -> None:
         self.__shoot_force = self.actor.min_shoot_force
+        self.__aim = False
         self.__shoot = False
         self.__elapsed = 0.0
         self.__release_threshold = 1.0
@@ -73,22 +75,22 @@ class FishShootLoadState(FishState):
 
         if self.input_enabled:
             self.__aim_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
-                stick = ControllerStick.RSTICK,
+                stick = ControllerStick.LSTICK,
+                controller_index = uniques.FISH_CONTROLLER
+            )
+            self.__aim = controllers.INPUT_CONTROLLER.get_button(
+                button = ControllerButton.EAST,
                 controller_index = uniques.FISH_CONTROLLER
             )
             self.__shoot = controllers.INPUT_CONTROLLER.get_button_presses(
-                button = ControllerButton.SOUTH,
+                button = ControllerButton.RSHOULDER,
                 controller_index = uniques.FISH_CONTROLLER
             )
 
             # Only read keyboard input if so specified in settings.
             if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
-                self.__aim_vec += controllers.INPUT_CONTROLLER.get_key_vector(
-                    up = pyglet.window.key.I,
-                    left = pyglet.window.key.J,
-                    down = pyglet.window.key.K,
-                    right = pyglet.window.key.L
-                )
+                self.__aim_vec += controllers.INPUT_CONTROLLER.get_key_vector()
+                self.__aim += controllers.INPUT_CONTROLLER[pyglet.window.key.RSHIFT]
                 self.__shoot += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
             self.__aim_vec = self.__aim_vec.normalize()
@@ -116,7 +118,7 @@ class FishShootLoadState(FishState):
         if self.__shoot and self.__can_release:
             return FishStates.SHOOT
 
-        if self.__aim_vec.length() <= 0.0:
+        if not self.__aim:
             # Make sure the ink is deleted if back to idle.
             self.actor.delete_ink()
             return FishStates.IDLE

@@ -292,6 +292,7 @@ class SceneComposer():
                 return RedPlatformNode(
                     x = child_data["x"],
                     y = child_data["y"],
+                    starts_on = child_data["starts_on"] if "starts_on" in child_data else False,
                     batch = self.scene.world_batch
                 )
             case "tilemap":
