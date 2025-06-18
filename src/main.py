@@ -1,6 +1,7 @@
 import os
 import pyglet
 import pyglet.gl as gl
+
 import amonite.controllers as controllers
 from amonite.upscaler import TrueUpscaler
 from amonite.settings import GLOBALS
@@ -12,45 +13,8 @@ from constants import uniques
 from global_input_node import GlobalInputNode
 import scene_composer
 from scene_composer import SceneComposer
+from utils import utils
 
-
-FRAGMENT_SOURCE = """
-    #version 150 core
-    in vec4 vertex_colors;
-    in vec3 texture_coords;
-    out vec4 final_color;
-
-    uniform sampler2D sprite_texture;
-    uniform float dt;
-
-    void main() {
-        final_color = texture(sprite_texture, texture_coords.xy) * vertex_colors;
-
-        // Dips to red on long rendered frames.
-        //final_color.gb *= (1.0 - (dt - 0.01) * 100.0);
-
-        // Rotate colors.
-        //final_color.rgb = final_color.gbr;
-
-        // Black/white.
-        //float brightness = (final_color.r + final_color.g + final_color.b) / 3.0;
-        //final_color = vec4(brightness, brightness, brightness, final_color.a);
-
-        // Shows current xy coords on top of real colors.
-        //final_color.rg *= texture_coords.xy;
-
-        // Negative colors.
-        //final_color.rgb = 1.0 - final_color.rgb;
-
-        // This may be completely useless.
-        if (final_color.a < 0.01) {
-            discard;
-        }
-    }
-"""
-vert_shader = pyglet.graphics.shader.Shader(pyglet.sprite.vertex_source, "vertex")
-frag_shader = pyglet.graphics.shader.Shader(FRAGMENT_SOURCE, "fragment")
-upscaler_program = pyglet.graphics.shader.ShaderProgram(vert_shader, frag_shader)
 
 class FishGame:
     def __init__(self) -> None:
@@ -89,6 +53,12 @@ class FishGame:
             self.__window.height // SETTINGS[Keys.VIEW_HEIGHT]
         ) * platform_scaling)
 
+        # Define a custom shader for global scene rendering.
+        upscaler_program: pyglet.graphics.shader.ShaderProgram = utils.load_shader(
+            vert_file_path = "shaders/default.vert.glsl",
+            frag_file_path = "shaders/default.frag.glsl"
+        )
+
         self.__upscaler = TrueUpscaler(
             window = self.__window,
             render_width = int((SETTINGS[Keys.VIEW_WIDTH] * GLOBALS[Keys.SCALING]) / platform_scaling),
@@ -103,12 +73,6 @@ class FishGame:
             view_height = SETTINGS[Keys.VIEW_HEIGHT]
         )
         scene_composer.SCENE_COMPOSER.load_scene(config_file_path = "scenes/0_0_0.json")
-        # uniques.ACTIVE_SCENE = SceneComposer(
-        #     window = self.__window,
-        #     view_width = SETTINGS[Keys.VIEW_WIDTH],
-        #     view_height = SETTINGS[Keys.VIEW_HEIGHT],
-        #     config_file_path = "scenes/0_0_0.json"
-        # ).scene
 
         self.__global_input_node: GlobalInputNode = GlobalInputNode()
 
