@@ -63,10 +63,14 @@ const mat3 yuv_matrix = mat3(
     vec3(-0.169, -0.331, 0.5),
     vec3(0.5, -0.419, -0.081)
 );
+const mat3 yuv_transposed = mat3(
+    vec3(0.299, -0.169, 0.5),
+    vec3(0.587, -0.331, -0.419),
+    vec3(0.114, 0.5, -0.081)
+);
 
 vec3 yuv(vec3 col) {
-    mat3 yuv = transpose(yuv_matrix);
-    return yuv * col;
+    return yuv_transposed * col;
 }
 
 bool similar(vec4 col1, vec4 col2) {
@@ -114,7 +118,28 @@ float distToLine(vec2 testPt, vec2 pt1, vec2 pt2, vec2 dir) {
 }
 
 //based on down-forward direction
-vec4 slice_dist(vec2 point, vec2 mainDir, vec2 point_dir, vec4 ub, vec4 u, vec4 uf, vec4 uff, vec4 b, vec4 c, vec4 f, vec4 ff, vec4 db, vec4 d, vec4 df, vec4 dff, vec4 ddb, vec4 dd, vec4 ddf){
+vec4 slice_dist(
+    vec2 point,
+    vec2 mainDir,
+    vec2 point_dir,
+    vec4 data[15]
+){
+    vec4 ub = data[0];
+    vec4 u = data[1];
+    vec4 uf = data[2];
+    vec4 uff = data[3];
+    vec4 b = data[4];
+    vec4 c = data[5];
+    vec4 f = data[6];
+    vec4 ff = data[7];
+    vec4 db = data[8];
+    vec4 d = data[9];
+    vec4 df = data[10];
+    vec4 dff = data[11];
+    vec4 ddb = data[12];
+    vec4 dd = data[13];
+    vec4 ddf = data[14];
+
     //clamped range prevents inacccurate identity (no change) result, feel free to disable if necessary
     #ifdef SLOPE
     float minWidth = 0.45;
@@ -309,6 +334,11 @@ void main() {
     // Neighbor pixels
     // Up, Down, Forward, and Back
     // relative to quadrant of current location within pixel.
+    //         [uub]   [u u]   [uuf]
+    // [ubb]   [u b]   [ u ]   [u f]   [uff]
+    // [b b]   [ b ]   [ c ]   [ f ]   [f f]
+    // [dbb]   [d b]   [ d ]   [d f]   [dff]
+    //         [ddb]   [d d]   [ddf]
     
     vec4 uub = texture(sprite_texture, (px + vec2(-1.0,-2.0) * point_dir) / size);
     vec4 uu = texture(sprite_texture, (px + vec2( 0.0,-2.0) * point_dir) / size);
@@ -340,9 +370,9 @@ void main() {
 
     // c_orner, b_ack, and u_p slices
     // (slices from neighbor pixels will only ever reach these 3 quadrants
-    vec4 c_col = slice_dist(local, vec2( 1.0, 1.0), point_dir, ub, u, uf, uff, b, c, f, ff, db, d, df, dff, ddb, dd, ddf);
-    vec4 b_col = slice_dist(local, vec2(-1.0, 1.0), point_dir, uf, u, ub, ubb, f, c, b, bb, df, d, db, dbb, ddf, dd, ddb);
-    vec4 u_col = slice_dist(local, vec2( 1.0,-1.0), point_dir, db, d, df, dff, b, c, f, ff, ub, u, uf, uff, uub, uu, uuf);
+    vec4 c_col = slice_dist(local, vec2( 1.0, 1.0), point_dir, vec4[15](ub, u, uf, uff, b, c, f, ff, db, d, df, dff, ddb, dd, ddf));
+    vec4 b_col = slice_dist(local, vec2(-1.0, 1.0), point_dir, vec4[15](uf, u, ub, ubb, f, c, b, bb, df, d, db, dbb, ddf, dd, ddb));
+    vec4 u_col = slice_dist(local, vec2( 1.0,-1.0), point_dir, vec4[15](db, d, df, dff, b, c, f, ff, ub, u, uf, uff, uub, uu, uuf));
 
     if (c_col.r >= 0.0) {
         col = c_col;
