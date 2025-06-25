@@ -43,14 +43,14 @@ class FishGame:
         controllers.create_controllers(window = self.__window)
 
         # On retina Macs everything is rendered 2x-zoomed for some reason. compensate for this using a platform scaling.
-        platform_scaling: float = 0.5 if "macOS" in GLOBALS[Keys.PLATFORM] else 1.0
+        platform_scaling: float = 0.5 if "macOS" in str(GLOBALS[Keys.PLATFORM]) else 1.0
 
         # Compute pixel scaling (minimum unit is <1 / scaling>)
         # Using a scaling of 1 means that movements are pixel-perfect (aka nothing moves by sub-pixel values).
         # Using a scaling of 5 means that the minimum unit is 1/5 of a pixel.
         GLOBALS[Keys.SCALING] = 1 if SETTINGS[Keys.PIXEL_PERFECT] else int(min(
-            self.__window.width // SETTINGS[Keys.VIEW_WIDTH],
-            self.__window.height // SETTINGS[Keys.VIEW_HEIGHT]
+            self.__window.width // int(SETTINGS[Keys.VIEW_WIDTH]),
+            self.__window.height // int(SETTINGS[Keys.VIEW_HEIGHT])
         ) * platform_scaling)
 
         # Define a custom shader for global scene rendering.
@@ -69,8 +69,8 @@ class FishGame:
         # Create a scene.
         scene_composer.SCENE_COMPOSER = SceneComposer(
             window = self.__window,
-            view_width = SETTINGS[Keys.VIEW_WIDTH],
-            view_height = SETTINGS[Keys.VIEW_HEIGHT]
+            view_width = int(SETTINGS[Keys.VIEW_WIDTH]),
+            view_height = int(SETTINGS[Keys.VIEW_HEIGHT])
         )
         scene_composer.SCENE_COMPOSER.load_scene(config_file_path = "scenes/0_0_0.json")
 
@@ -81,16 +81,16 @@ class FishGame:
         # Physics timestep.
         ########################
         self.phys_accumulated_time: float = 0.0
-        self.phys_timestep: float = 1.0 / (SETTINGS[Keys.TARGET_FPS])
+        self.phys_timestep: float = 1.0 / float((SETTINGS[Keys.TARGET_FPS]))
         ########################
         ########################
 
     def __create_window(self) -> pyglet.window.BaseWindow:
         window = pyglet.window.Window(
-            width = SETTINGS[Keys.WINDOW_WIDTH] if not SETTINGS[Keys.FULLSCREEN] else None,
-            height = SETTINGS[Keys.WINDOW_HEIGHT] if not SETTINGS[Keys.FULLSCREEN] else None,
-            caption = SETTINGS[Keys.TITLE],
-            fullscreen = SETTINGS[Keys.FULLSCREEN],
+            width = int(SETTINGS[Keys.WINDOW_WIDTH]) if not SETTINGS[Keys.FULLSCREEN] else None,
+            height = int(SETTINGS[Keys.WINDOW_HEIGHT]) if not SETTINGS[Keys.FULLSCREEN] else None,
+            caption = str(SETTINGS[Keys.TITLE]),
+            fullscreen = bool(SETTINGS[Keys.FULLSCREEN]),
             vsync = True,
             resizable = True
         )
@@ -157,7 +157,7 @@ class FishGame:
             self.phys_accumulated_time -= self.phys_timestep
 
     def run(self) -> None:
-        pyglet.clock.schedule_interval(self.update, 1.0 / (2.0 * SETTINGS[Keys.TARGET_FPS]))
-        pyglet.app.run(interval =  1.0 / SETTINGS[Keys.TARGET_FPS])
+        pyglet.clock.schedule_interval(self.update, 1.0 / (2.0 * float(SETTINGS[Keys.TARGET_FPS])))
+        pyglet.app.run(interval =  1.0 / float(SETTINGS[Keys.TARGET_FPS]))
 
 FishGame().run()

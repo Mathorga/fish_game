@@ -19,7 +19,7 @@ class GlobalInputNode(Node):
     def __fetch_input(self) -> None:
         self.__reset = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.R, False)
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         super().update(dt)
 
         # Fetch input.

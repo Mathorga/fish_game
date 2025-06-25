@@ -58,13 +58,13 @@ class LegNode(PositionNode):
 
         self.set_position(self.__data.get_position())
 
-    def delete(self):
+    def delete(self) -> None:
         self.__data.delete()
 
         super().delete()
 
-    def on_sprite_animation_end(self):
+    def on_sprite_animation_end(self) -> None:
         self.__state_machine.on_animation_end()
 
-    def on_collision(self, tags: list[str], collider_id: int, entered: bool):
+    def on_collision(self, tags: list[str], collider_id: int, entered: bool) -> None:
         self.__state_machine.on_collision(tags = tags, enter = entered)

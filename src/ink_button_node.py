@@ -30,7 +30,7 @@ class InkButtonNode(PositionNode):
         on_triggered_on: Callable | None = None,
         on_triggered_off: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
-    ):
+    ) -> None:
         super().__init__(
             x = x,
             y = y,

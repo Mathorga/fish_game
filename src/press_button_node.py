@@ -23,7 +23,7 @@ class PressButtonNode(PositionNode, Interactable):
         on_triggered_on: Callable | None = None,
         on_triggered_off: Callable | None = None,
         batch: pyglet.graphics.Batch | None = None
-    ):
+    ) -> None:
         PositionNode.__init__(
             self,
             x = x,

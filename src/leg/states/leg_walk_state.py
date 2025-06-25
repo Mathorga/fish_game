@@ -41,7 +41,7 @@ class LegWalkState(LegState):
         """
 
         if self.input_enabled:
-            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.LEG_CONTROLLER
             )

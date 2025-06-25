@@ -334,7 +334,7 @@ class LegDataNode(PositionNode):
         self.gravity_vec += self.gravity_accel * self.get_gravity_dampening() * dt
 
         self.gravity_vec = pm.Vec2.from_polar(
-            length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            length = round(self.gravity_vec.length(), int(GLOBALS[Keys.FLOAT_ROUNDING])),
             angle = self.gravity_vec.heading()
         )
 
@@ -348,15 +348,15 @@ class LegDataNode(PositionNode):
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
         converted_velocity: tuple[float, float] = (
-            round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
-            round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
+            round(velocity.x, int(GLOBALS[Keys.FLOAT_ROUNDING])),
+            round(velocity.y, int(GLOBALS[Keys.FLOAT_ROUNDING]))
         )
         self.__collider.set_velocity(converted_velocity)
 
     def put_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
         converted_velocity: tuple[float, float] = (
-            round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
-            round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
+            round(velocity.x, int(GLOBALS[Keys.FLOAT_ROUNDING])),
+            round(velocity.y, int(GLOBALS[Keys.FLOAT_ROUNDING]))
         )
         self.__collider.put_velocity(converted_velocity)
