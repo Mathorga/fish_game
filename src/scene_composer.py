@@ -11,8 +11,9 @@ from amonite.scene_node import SceneNode
 from amonite.tilemap_node import TilemapNode
 from amonite.utils.hittables_loader import HittableNode
 from amonite.utils.hittables_loader import HittablesLoader
+from amonite.settings import SETTINGS
 
-from constants import uniques
+from constants import custom_setting_keys, uniques
 from fish.fish_node import FishNode
 from ink_button_node import Direction, InkButtonNode
 from leg.leg_node import LegNode
@@ -257,7 +258,7 @@ class SceneComposer():
                 uniques.FISH = FishNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    enabled = True,
+                    enabled = not SETTINGS[custom_setting_keys.SINGLE_PLAYER],
                     batch = self.scene.world_batch
                 )
                 return uniques.FISH
