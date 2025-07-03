@@ -398,7 +398,7 @@ class FishDataNode(PositionNode, Grabbable):
                 self.gravity_vec *= 0.0
 
         self.gravity_vec = pm.Vec2.from_polar(
-            length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            length = round(self.gravity_vec.length(), int(GLOBALS[Keys.FLOAT_ROUNDING])),
             angle = self.gravity_vec.heading()
         )
 
@@ -420,7 +420,7 @@ class FishDataNode(PositionNode, Grabbable):
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
         converted_velocity: tuple[float, float] = (
-            round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
-            round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
+            round(velocity.x, int(GLOBALS[Keys.FLOAT_ROUNDING])),
+            round(velocity.y, int(GLOBALS[Keys.FLOAT_ROUNDING]))
         )
         self.__collider.set_velocity(converted_velocity)

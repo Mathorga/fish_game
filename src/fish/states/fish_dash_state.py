@@ -30,7 +30,7 @@ class FishDashState(FishState):
         self.__animation_ended: bool = False
 
         # Input.
-        self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__move_vec: pm.Vec2 = pyglet.math.Vec2()
 
         # Other.
         self.__constrained: bool = False
@@ -47,7 +47,7 @@ class FishDashState(FishState):
         """
 
         if self.input_enabled:
-            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )

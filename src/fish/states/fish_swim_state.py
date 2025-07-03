@@ -12,6 +12,7 @@ from constants import uniques
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_state import FishState
 from fish.states.fish_state import FishStates
+
 class FishSwimState(FishState):
     def __init__(
         self,
@@ -51,7 +52,7 @@ class FishSwimState(FishState):
             # Only read keyboard input if so specified in settings.
             if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
-                self.__dash += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
+                self.__dash = self.__dash or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
             self.__move_vec = self.__move_vec.normalize()
 

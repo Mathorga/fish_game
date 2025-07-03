@@ -37,7 +37,7 @@ class FishShootLoadState(FishState):
         ########################
         self.__aim: bool = False
         self.__shoot: bool = False
-        self.__aim_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__aim_vec: pm.Vec2 = pm.Vec2()
         ########################
         ########################
 
@@ -74,7 +74,7 @@ class FishShootLoadState(FishState):
         """
 
         if self.input_enabled:
-            self.__aim_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__aim_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.FISH_CONTROLLER
             )
@@ -90,8 +90,8 @@ class FishShootLoadState(FishState):
             # Only read keyboard input if so specified in settings.
             if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__aim_vec += controllers.INPUT_CONTROLLER.get_key_vector()
-                self.__aim += controllers.INPUT_CONTROLLER[pyglet.window.key.RSHIFT]
-                self.__shoot += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
+                self.__aim = self.__aim or controllers.INPUT_CONTROLLER[pyglet.window.key.RSHIFT]
+                self.__shoot = self.__shoot or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
             self.__aim_vec = self.__aim_vec.normalize()
 

@@ -16,7 +16,7 @@ from amonite.settings import Keys
 
 from constants import collision_tags
 from constants import uniques
-from gpt_parabola import GPTParabola
+from parabola import Parabola
 
 
 class InkDataNode(PositionNode):
@@ -86,7 +86,7 @@ class InkDataNode(PositionNode):
         ################################
 
 
-        self.parabola: GPTParabola | None
+        self.parabola: Parabola | None
         self.spawn_parabola()
 
 
@@ -123,7 +123,7 @@ class InkDataNode(PositionNode):
             self.__on_collision(tags, collider_id, entered)
 
     def spawn_parabola(self) -> None:
-        self.parabola = GPTParabola(
+        self.parabola = Parabola(
             sprite_resource = Animation(source = "sprites/fish/ink_parabola.json").content,
             gravity = self.gravity_accel.length(),
             batch = self.__batch
@@ -150,7 +150,7 @@ class InkDataNode(PositionNode):
         self.__collider.delete()
 
         # First remove parabola from the active scene.
-        if uniques.ACTIVE_SCENE is not None:
+        if uniques.ACTIVE_SCENE is not None and self.parabola is not None:
             uniques.ACTIVE_SCENE.remove_child(self.parabola)
 
         super().delete()
@@ -204,7 +204,7 @@ class InkDataNode(PositionNode):
                 self.gravity_vec *= 0.0
 
         self.gravity_vec = pm.Vec2.from_polar(
-            length = round(self.gravity_vec.length(), GLOBALS[Keys.FLOAT_ROUNDING]),
+            length = round(self.gravity_vec.length(), int(GLOBALS[Keys.FLOAT_ROUNDING])),
             angle = self.gravity_vec.heading()
         )
 
@@ -224,8 +224,8 @@ class InkDataNode(PositionNode):
     def set_velocity(self, velocity: pyglet.math.Vec2) -> None:
         # Apply the computed velocity to all colliders.
         converted_velocity: tuple[float, float] = (
-            round(velocity.x, GLOBALS[Keys.FLOAT_ROUNDING]),
-            round(velocity.y, GLOBALS[Keys.FLOAT_ROUNDING])
+            round(velocity.x, int(GLOBALS[Keys.FLOAT_ROUNDING])),
+            round(velocity.y, int(GLOBALS[Keys.FLOAT_ROUNDING]))
         )
         self.__collider.set_velocity(converted_velocity)
 
@@ -235,5 +235,7 @@ class InkDataNode(PositionNode):
         """
 
         self.shoot_vec = shoot_vec
-        self.parabola.set_speed(shoot_vec.length())
-        self.parabola.set_angle(math.degrees(shoot_vec.heading()))
+
+        if self.parabola is not None:
+            self.parabola.set_speed(shoot_vec.length())
+            self.parabola.set_angle(math.degrees(shoot_vec.heading()))

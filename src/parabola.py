@@ -6,8 +6,7 @@ from amonite.node import PositionNode
 from amonite.shapes.circle_node import CircleNode
 from amonite.sprite_node import SpriteNode
 
-# TODO Rename please.
-class GPTParabola(PositionNode):
+class Parabola(PositionNode):
     def __init__(
         self,
         sprite_resource: pyglet.image.Texture | pyglet.image.animation.Animation,
