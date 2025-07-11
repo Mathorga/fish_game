@@ -37,6 +37,9 @@ class InkDataNode(PositionNode):
         self.__batch: pyglet.graphics.Batch | None = batch
         self.heading: float = 0.0
 
+        # Threshold for showing parabola.
+        self.shoot_threshold: float = 0.1
+
 
         ################################
         # Input movement.
@@ -87,7 +90,7 @@ class InkDataNode(PositionNode):
 
 
         self.parabola: Parabola | None
-        self.spawn_parabola()
+        # self.spawn_parabola()
 
 
         ################################
@@ -236,6 +239,13 @@ class InkDataNode(PositionNode):
 
         self.shoot_vec = shoot_vec
 
-        if self.parabola is not None:
-            self.parabola.set_speed(shoot_vec.length())
-            self.parabola.set_angle(math.degrees(shoot_vec.heading()))
+        # Delete the parabola if the provided shoot length is zero.
+        if shoot_vec.length() < self.shoot_threshold and self.parabola is not None:
+            self.parabola.delete()
+            return
+
+        if self.parabola is None:
+            self.spawn_parabola()
+
+        self.parabola.set_speed(shoot_vec.length())
+        self.parabola.set_angle(math.degrees(shoot_vec.heading()))

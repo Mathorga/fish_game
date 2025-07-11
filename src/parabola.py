@@ -3,7 +3,6 @@ import pyglet.math as pm
 import math
 
 from amonite.node import PositionNode
-from amonite.shapes.circle_node import CircleNode
 from amonite.sprite_node import SpriteNode
 
 class Parabola(PositionNode):

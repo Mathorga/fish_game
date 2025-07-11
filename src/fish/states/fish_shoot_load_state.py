@@ -102,6 +102,8 @@ class FishShootLoadState(FishState):
         # Read inputs.
         self.__fetch_input()
 
+        print("AIM_VEC_LEN", self.__aim_vec.length())
+
         # Move the aiming around. This should also update the actor's facing.
         self.actor.aim_vec = self.__aim_vec
         self.actor.move_ink()
