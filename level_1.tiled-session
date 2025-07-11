@@ -25,11 +25,11 @@
             "scaleInEditor": 1
         },
         "lv_1.tmx": {
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 23,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 181.5,
-                "y": 198
+                "x": 105.91304347826086,
+                "y": 186.2173913043478
             }
         },
         "scaffolding.tsx": {
