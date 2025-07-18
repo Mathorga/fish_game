@@ -37,9 +37,6 @@ class InkDataNode(PositionNode):
         self.__batch: pyglet.graphics.Batch | None = batch
         self.heading: float = 0.0
 
-        # Threshold for showing parabola.
-        self.shoot_threshold: float = 0.1
-
 
         ################################
         # Input movement.
