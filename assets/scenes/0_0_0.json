@@ -13,8 +13,14 @@
         {
             "name": "leg_node",
             "id": 0,
-            "x": 680,
+            "x": 1000,
             "y": 135
+        },
+        {
+            "name": "door",
+            "id": 0,
+            "x": 1024,
+            "y": 96
         },
         {
             "name": "press_button_node",
