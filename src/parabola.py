@@ -3,7 +3,6 @@ import pyglet.math as pm
 import math
 
 from amonite.node import PositionNode
-from amonite.shapes.circle_node import CircleNode
 from amonite.sprite_node import SpriteNode
 
 class Parabola(PositionNode):
@@ -60,6 +59,9 @@ class Parabola(PositionNode):
         self.gravity = gravity
 
     def __compute_trajectory(self) -> None:
+        if len(self.steps) <= 0:
+            return
+
         for i in range(self.sections_count):
             t: float = self.__timestep * (i + 1)
             xt: float = self.x + self.speed * math.cos(self.__theta) * t
@@ -67,6 +69,12 @@ class Parabola(PositionNode):
             self.trajectory[i] = pm.Vec2(xt, yt)
             self.steps[i].set_position((xt, yt))
             t += self.__timestep
+
+    def delete(self) -> None:
+        # Steps are also saved as components, so no need to delete individual elements.
+        self.steps.clear()
+
+        super().delete()
 
     def update(self, dt: float) -> None:
         super().update(dt)
