@@ -89,7 +89,7 @@ class InkDataNode(PositionNode):
         ################################
 
 
-        self.parabola: Parabola | None
+        self.parabola: Parabola | None = None
         # self.spawn_parabola()
 
 
@@ -247,5 +247,6 @@ class InkDataNode(PositionNode):
         if self.parabola is None:
             self.spawn_parabola()
 
-        self.parabola.set_speed(shoot_vec.length())
-        self.parabola.set_angle(math.degrees(shoot_vec.heading()))
+        if self.parabola is not None:
+            self.parabola.set_speed(shoot_vec.length())
+            self.parabola.set_angle(math.degrees(shoot_vec.heading()))
