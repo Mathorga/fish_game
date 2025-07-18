@@ -239,11 +239,6 @@ class InkDataNode(PositionNode):
 
         self.shoot_vec = shoot_vec
 
-        # Delete the parabola if the provided shoot length is zero.
-        if shoot_vec.length() < self.shoot_threshold and self.parabola is not None:
-            self.parabola.delete()
-            return
-
         if self.parabola is None:
             self.spawn_parabola()
 

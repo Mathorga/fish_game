@@ -68,7 +68,6 @@ class FishShootLoadState(FishState):
         self.__animation_ended = False
         self.actor.set_animation(self.__animation)
         self.actor.move_vec *= 0.0
-        self.actor.spawn_ink()
         self.actor.set_shoot_force(self.__shoot_force)
 
     def __fetch_input(self) -> None:
