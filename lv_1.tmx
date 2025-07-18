@@ -7,7 +7,7 @@
  <tileset firstgid="41" source="farground.tsx"/>
  <tileset firstgid="141" source="water.tsx"/>
  <tileset firstgid="165" source="alt_floor.tsx"/>
- <tileset firstgid="213" source="alt. background.tsx"/>
+ <tileset firstgid="213" source="alt_background.tsx"/>
  <layer id="4" name="farground" width="68" height="22">
   <data encoding="csv">
 218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,228,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,218,
