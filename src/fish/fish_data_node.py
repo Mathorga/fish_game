@@ -249,6 +249,9 @@ class FishDataNode(PositionNode, Grabbable):
                 self.__interactables.remove(collider.owner)
 
     def spawn_ink(self) -> None:
+        if self.ink is not None:
+            return
+
         ink_spawn_offset: pm.Vec2 = self.ink_offset * self.aim_vec
         self.ink = InkNode(
             x = self.x + ink_spawn_offset.x,
