@@ -98,42 +98,42 @@
             "id": 0,
             "x": 760,
             "y": 104,
-            "starts_on": true
+            "starts_on": false
         },
         {
             "name": "red_platform_node",
             "id": 1,
             "x": 776,
             "y": 104,
-            "starts_on": true
+            "starts_on": false
         },
         {
             "name": "red_platform_node",
             "id": 2,
             "x": 824,
             "y": 136,
-            "starts_on": true
+            "starts_on": false
         },
         {
             "name": "red_platform_node",
             "id": 3,
             "x": 840,
             "y": 136,
-            "starts_on": true
+            "starts_on": false
         },
         {
             "name": "red_platform_node",
             "id": 4,
             "x": 888,
             "y": 168,
-            "starts_on": true
+            "starts_on": false
         },
         {
             "name": "red_platform_node",
             "id": 5,
             "x": 904,
             "y": 168,
-            "starts_on": true
+            "starts_on": false
         }
     ]
 }
