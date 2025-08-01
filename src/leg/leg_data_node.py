@@ -240,7 +240,7 @@ class LegDataNode(PositionNode):
             self.grounded = False
 
         # Clear gravity vector on collision.
-        if self.grounded:
+        if self.grounded and self.gravity_vec.y < 0.0:
             self.gravity_vec *= 0.0
 
     def on_roof_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
@@ -257,7 +257,7 @@ class LegDataNode(PositionNode):
             self.roofed = False
 
         # Clear gravity vector on collision.
-        if self.roofed:
+        if self.roofed and self.gravity_vec.y > 0.0:
             self.gravity_vec *= 0.0
             self.roofed = False
 
