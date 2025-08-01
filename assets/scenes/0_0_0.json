@@ -7,14 +7,14 @@
         {
             "name": "fish_node",
             "id": 0,
-            "x": 700,
+            "x": 50,
             "y": 110
         },
         {
             "name": "leg_node",
             "id": 0,
-            "x": 1000,
-            "y": 135
+            "x": 70,
+            "y": 280
         },
         {
             "name": "door",
@@ -26,7 +26,7 @@
             "name": "press_button_node",
             "id": 0,
             "x": 964,
-            "y": 88,
+            "y": 104,
             "allow_turning_off": true,
             "on_triggered_on": [
                 {
@@ -48,6 +48,16 @@
                     "action": "trigger_on",
                     "name": "red_platform_node",
                     "id": 3
+                },
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 4
+                },
+                {
+                    "action": "trigger_on",
+                    "name": "red_platform_node",
+                    "id": 5
                 }
             ],
             "on_triggered_off": [
@@ -70,6 +80,16 @@
                     "action": "trigger_off",
                     "name": "red_platform_node",
                     "id": 3
+                },
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 4
+                },
+                {
+                    "action": "trigger_off",
+                    "name": "red_platform_node",
+                    "id": 5
                 }
             ]
         },
@@ -77,25 +97,43 @@
             "name": "red_platform_node",
             "id": 0,
             "x": 760,
-            "y": 120
+            "y": 104,
+            "starts_on": true
         },
         {
             "name": "red_platform_node",
             "id": 1,
             "x": 776,
-            "y": 120
+            "y": 104,
+            "starts_on": true
         },
         {
             "name": "red_platform_node",
             "id": 2,
-            "x": 872,
-            "y": 152
+            "x": 824,
+            "y": 136,
+            "starts_on": true
         },
         {
             "name": "red_platform_node",
             "id": 3,
+            "x": 840,
+            "y": 136,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 4,
             "x": 888,
-            "y": 152
+            "y": 168,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 5,
+            "x": 904,
+            "y": 168,
+            "starts_on": true
         }
     ]
 }
