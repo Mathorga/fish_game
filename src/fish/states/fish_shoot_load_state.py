@@ -123,6 +123,11 @@ class FishShootLoadState(FishState):
 
             self.actor.set_shoot_force(self.__shoot_force)
 
+        self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
+        self.actor.compute_gravity_speed(dt = dt)
+
+        self.actor.move(dt = dt)
+
         # Check for state changes.
         if self.__shoot and self.__can_release:
             return FishStates.SHOOT
