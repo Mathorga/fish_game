@@ -129,6 +129,10 @@ class FishShootLoadState(FishState):
         self.actor.move(dt = dt)
 
         # Check for state changes.
+        if self.actor.in_water:
+            self.actor.delete_ink()
+            return FishStates.SWIM
+
         if self.__shoot and self.__can_release:
             return FishStates.SHOOT
 
