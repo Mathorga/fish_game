@@ -53,6 +53,9 @@ class FishShootLoadState(FishState):
 
         self.__shoot_force: float = self.actor.min_shoot_force
         self.__shoot_force_step: float = 200.0
+
+        # Threshold for showing ink.
+        self.shoot_threshold: float = 0.1
         ########################
         ########################
 
@@ -65,7 +68,6 @@ class FishShootLoadState(FishState):
         self.__animation_ended = False
         self.actor.set_animation(self.__animation)
         self.actor.move_vec *= 0.0
-        self.actor.spawn_ink()
         self.actor.set_shoot_force(self.__shoot_force)
 
     def __fetch_input(self) -> None:
@@ -82,8 +84,8 @@ class FishShootLoadState(FishState):
                 button = ControllerButton.EAST,
                 controller_index = uniques.FISH_CONTROLLER
             )
-            self.__shoot = controllers.INPUT_CONTROLLER.get_button_presses(
-                button = ControllerButton.RSHOULDER,
+            self.__shoot = controllers.INPUT_CONTROLLER.get_button_release(
+                button = ControllerButton.EAST,
                 controller_index = uniques.FISH_CONTROLLER
             )
 
@@ -102,17 +104,24 @@ class FishShootLoadState(FishState):
         # Read inputs.
         self.__fetch_input()
 
-        # Move the aiming around. This should also update the actor's facing.
-        self.actor.aim_vec = self.__aim_vec
-        self.actor.move_ink()
+        if self.__aim_vec.length() <= self.shoot_threshold:
+            # Shoot threshold is not reached, so delete ink and reset shoot force.
+            self.actor.delete_ink()
+            self.__shoot_force = self.actor.min_shoot_force
+        else:
+            self.actor.spawn_ink()
 
-        self.__elapsed += dt
-        self.__shoot_force += self.__shoot_force_step * dt
+            # Move the aiming around. This should also update the actor's facing.
+            self.actor.aim_vec = self.__aim_vec
+            self.actor.move_ink()
 
-        # Make sure the shoot force does not exceed its maximum possible value.
-        self.__shoot_force = pm.clamp(self.__shoot_force, 0.0, self.actor.max_shoot_force)
+            self.__elapsed += dt
+            self.__shoot_force += self.__shoot_force_step * dt
 
-        self.actor.set_shoot_force(self.__shoot_force)
+            # Make sure the shoot force does not exceed its maximum possible value.
+            self.__shoot_force = pm.clamp(self.__shoot_force, 0.0, self.actor.max_shoot_force)
+
+            self.actor.set_shoot_force(self.__shoot_force)
 
         # Check for state changes.
         if self.__shoot and self.__can_release:

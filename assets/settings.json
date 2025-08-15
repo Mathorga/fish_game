@@ -1,9 +1,9 @@
 {
     "debug": false,
-    "show_collisions": false,
+    "show_collisions": true,
     "show_tiles_grid": false,
     "free_cam_bounds": false,
-    "keyboard_controls": true,
+    "keyboard_controls": false,
     "single_player": false,
     "title": "FISH-GAME",
     "font_name": "rughai",

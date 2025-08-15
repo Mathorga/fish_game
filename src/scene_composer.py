@@ -1,3 +1,7 @@
+from amonite.animation import Animation
+from amonite.sprite_node import SpriteNode
+from amonite.door_node import DoorNode
+from amonite.scene_node import Bounds
 import json
 from typing import Any
 import pyglet
@@ -141,10 +145,10 @@ class SceneComposer():
             tilesets_path = "tilesets/",
             batch = self.scene.world_batch
         )
-        tile_size = tilemaps[0].get_tile_size()[0]
-        tilemap_width = tilemaps[0].map_width
-        tilemap_height = tilemaps[0].map_height
-        cam_bounds = tilemaps[0].bounds
+        tile_size: int = tilemaps[0].get_tile_size()[0]
+        tilemap_width: int = tilemaps[0].map_width
+        tilemap_height: int = tilemaps[0].map_height
+        cam_bounds: Bounds = tilemaps[0].bounds
         ################################
         ################################
 
@@ -270,6 +274,14 @@ class SceneComposer():
                     batch = self.scene.world_batch
                 )
                 return uniques.LEG
+            case "door":
+                return SpriteNode(
+                    resource = Animation(source = "sprites/door/door_closed.json").content,
+                    x = child_data["x"],
+                    y = child_data["y"],
+                    y_sort = False,
+                    batch = self.scene.world_batch
+                )
             case "ink_button_node":
                 return InkButtonNode(
                     x = child_data["x"],

@@ -1,0 +1,8 @@
+{
+    "name": "door_closed",
+    "path": "sprites/door/door_closed.png",
+    "rows": 1,
+    "columns": 1,
+    "center_x": true,
+    "center_y": false
+}

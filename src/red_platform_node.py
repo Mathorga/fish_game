@@ -11,6 +11,11 @@ from amonite.collision.collision_node import CollisionMethod
 
 from constants import collision_tags
 
+sprite_on_file: str = "sprites/platforms/platform_active.json"
+sprite_off_file: str = "sprites/platforms/platform_inactive.json"
+sprite_on_to_off_file: str = "sprites/platforms/platform_activating.json"
+sprite_off_to_on_file: str = "sprites/platforms/platform_inactive.json"
+
 class RedPlatformNode(PositionNode):
     def __init__(
         self,
@@ -38,7 +43,7 @@ class RedPlatformNode(PositionNode):
         # Sprite.
         ################################
         self.sprite: SpriteNode = SpriteNode(
-            resource = Animation(source = "sprites/platforms/platform_inactive.json").content,
+            resource = Animation(source = sprite_on_file if starts_on else sprite_off_file).content,
             y_sort = False,
             on_animation_end = self.__on_sprite_animation_end,
             batch = batch
@@ -66,7 +71,10 @@ class RedPlatformNode(PositionNode):
             ),
         )
         self.add_component(self.__collider)
-        # controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
+
+        # Only activate the collider if starting on.
+        if starts_on:
+            controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         ################################
         ################################
 
@@ -80,18 +88,24 @@ class RedPlatformNode(PositionNode):
         self.__switching = False
 
         if self.__on:
-            self.sprite.set_image(Animation(source = "sprites/platforms/platform_active.json").content)
+            self.sprite.set_image(Animation(source = sprite_on_file).content)
             controllers.COLLISION_CONTROLLER.add_collider(self.__collider)
         else:
-            self.sprite.set_image(Animation(source = "sprites/platforms/platform_inactive.json").content)
+            self.sprite.set_image(Animation(source = sprite_off_file).content)
             controllers.COLLISION_CONTROLLER.remove_collider(self.__collider)
 
     def trigger_on(self) -> None:
+        if self.__on:
+            return
+
         self.__switching = True
         self.__on = True
-        self.sprite.set_image(Animation(source = "sprites/platforms/platform_activating.json").content)
+        self.sprite.set_image(Animation(source = sprite_on_to_off_file).content)
 
     def trigger_off(self) -> None:
+        if not self.__on:
+            return
+
         self.__switching = True
         self.__on = False
-        self.sprite.set_image(Animation(source = "sprites/platforms/platform_inactive.json").content)
+        self.sprite.set_image(Animation(source = sprite_off_to_on_file).content)
