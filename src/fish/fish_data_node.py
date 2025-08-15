@@ -264,6 +264,9 @@ class FishDataNode(PositionNode, Grabbable):
             uniques.ACTIVE_SCENE.add_child(self.ink)
 
     def delete_ink(self) -> None:
+        # Restore aim vector since there can be no aiming with no ink (for now).
+        self.aim_vec *= 0.0
+
         if self.ink is None:
             return
 
