@@ -1,0 +1,26 @@
+{
+    "title": "0_0_1",
+    "tilemap": "tilemaps/0_0_1.tmx",
+    "walls": "wallmaps/0_0_1.json",
+    "waters": "watermaps/0_0_1.json",
+    "children": [
+        {
+            "name": "fish_node",
+            "id": 0,
+            "x": 50,
+            "y": 130
+        },
+        {
+            "name": "leg_node",
+            "id": 0,
+            "x": 70,
+            "y": 130
+        },
+        {
+            "name": "door",
+            "id": 0,
+            "x": 1024,
+            "y": 96
+        }
+    ]
+}
