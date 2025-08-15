@@ -12,6 +12,9 @@
             "scaleInDock": 4,
             "scaleInEditor": 8
         },
+        "alt_background.tsx": {
+            "scaleInDock": 1
+        },
         "alt_floor.tsx": {
             "scaleInDock": 3,
             "scaleInEditor": 11
@@ -25,11 +28,11 @@
             "scaleInEditor": 1
         },
         "lv_1.tmx": {
-            "scale": 23,
+            "scale": 3,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 105.91304347826086,
-                "y": 186.2173913043478
+                "x": 527,
+                "y": 183.33333333333331
             }
         },
         "scaffolding.tsx": {
@@ -56,17 +59,16 @@
         "floor_tile.tsx",
         "scaffolding.tsx",
         "farground.tsx",
-        "alt_floor.tsx",
-        "alt. background.tsx"
+        "alt_floor.tsx"
     ],
     "project": "level_1.tiled-project",
     "recentFiles": [
-        "alt. background.tsx",
         "alt_floor.tsx",
         "farground.tsx",
         "scaffolding.tsx",
         "floor_tile.tsx",
         "lv_1.tmx",
+        "alt. background.tsx",
         "server_tower_off.tsx",
         "server_tower_on.tsx"
     ],
