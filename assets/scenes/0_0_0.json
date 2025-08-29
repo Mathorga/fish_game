@@ -20,7 +20,11 @@
             "name": "door",
             "id": 0,
             "x": 1024,
-            "y": 96
+            "y": 96,
+            "width": 36,
+            "height": 42,
+            "anchor_x": 18,
+            "anchor_y": 0
         },
         {
             "name": "press_button_node",

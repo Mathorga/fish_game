@@ -275,11 +275,13 @@ class SceneComposer():
                 )
                 return uniques.LEG
             case "door":
-                return SpriteNode(
-                    resource = Animation(source = "sprites/door/door_closed.json").content,
+                return DoorNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    y_sort = False,
+                    width = child_data["width"] if "width" in child_data else 0,
+                    height = child_data["height"] if "height" in child_data else 0,
+                    anchor_x = child_data["anchor_x"] if "anchor_x" in child_data else 0,
+                    anchor_y = child_data["anchor_y"] if "anchor_y" in child_data else 0,
                     batch = self.scene.world_batch
                 )
             case "ink_button_node":
