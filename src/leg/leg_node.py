@@ -1,8 +1,10 @@
+from leg.states.leg_state import LegState
 import pyglet
 
 from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 
+from character_node import CharacterNode
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_idle_state import LegIdleState
 from leg.states.leg_jump_load_state import LegJumpLoadState
@@ -10,7 +12,7 @@ from leg.states.leg_jump_state import LegJumpState
 from leg.states.leg_walk_state import LegWalkState
 from leg.states.leg_state import LegStates
 
-class LegNode(PositionNode):
+class LegNode(CharacterNode):
     """
     Handles
     """
@@ -26,7 +28,8 @@ class LegNode(PositionNode):
         super().__init__(
             x = x,
             y = y,
-            z = z
+            z = z,
+            enabled = enabled
         )
 
         # Data node, responsible for all content handling.
@@ -48,6 +51,18 @@ class LegNode(PositionNode):
                 LegStates.JUMP: LegJumpState(actor = self.__data, input_enabled = enabled)
             }
         )
+
+    def toggle(self):
+        super().toggle()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, LegState):
+                continue
+
+            if state.input_enabled:
+                state.disable_input()
+            else:
+                state.enable_input()
 
     def update(self, dt: float) -> None:
         super().update(dt = dt)

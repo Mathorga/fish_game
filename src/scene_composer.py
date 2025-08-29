@@ -1,7 +1,5 @@
-from amonite.animation import Animation
-from amonite.sprite_node import SpriteNode
-from amonite.door_node import DoorNode
-from amonite.scene_node import Bounds
+
+from door.door_node import DoorNode
 import json
 from typing import Any
 import pyglet
@@ -9,6 +7,9 @@ from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
 import amonite.controllers as controllers
+from amonite.animation import Animation
+from amonite.sprite_node import SpriteNode
+from amonite.scene_node import Bounds
 from amonite.node import Node
 from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
@@ -275,11 +276,13 @@ class SceneComposer():
                 )
                 return uniques.LEG
             case "door":
-                return SpriteNode(
-                    resource = Animation(source = "sprites/door/door_closed.json").content,
+                return DoorNode(
                     x = child_data["x"],
                     y = child_data["y"],
-                    y_sort = False,
+                    width = child_data["width"] if "width" in child_data else 0,
+                    height = child_data["height"] if "height" in child_data else 0,
+                    anchor_x = child_data["anchor_x"] if "anchor_x" in child_data else 0,
+                    anchor_y = child_data["anchor_y"] if "anchor_y" in child_data else 0,
                     batch = self.scene.world_batch
                 )
             case "ink_button_node":

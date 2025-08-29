@@ -139,6 +139,7 @@ class LegDataNode(PositionNode):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
+                collision_tags.LEG_SENSE,
                 collision_tags.FALL,
             ],
             passive_tags = [],
