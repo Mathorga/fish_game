@@ -1,7 +1,5 @@
-from amonite.animation import Animation
-from amonite.sprite_node import SpriteNode
-from amonite.door_node import DoorNode
-from amonite.scene_node import Bounds
+
+from door.door_node import DoorNode
 import json
 from typing import Any
 import pyglet
@@ -9,6 +7,9 @@ from pyglet.graphics import Batch
 from pyglet.window import BaseWindow
 
 import amonite.controllers as controllers
+from amonite.animation import Animation
+from amonite.sprite_node import SpriteNode
+from amonite.scene_node import Bounds
 from amonite.node import Node
 from amonite.shapes.rect_node import RectNode
 from amonite.scene_node import SceneNode
