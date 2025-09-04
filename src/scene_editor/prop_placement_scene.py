@@ -129,7 +129,8 @@ class PropPlacementScene(Node):
 
         # Define all rooms.
         self.__rooms: list[str] = [
-            "0_0_0"
+            "0_0_0",
+            "0_0_1"
         ]
         self.__current_room: int = 0
 

@@ -136,6 +136,7 @@ class FishDataNode(PositionNode, Grabbable):
             active_tags = [
                 collision_tags.PLAYER_COLLISION,
                 collision_tags.PLAYER_SENSE,
+                collision_tags.FISH_SENSE,
                 collision_tags.FALL,
                 collision_tags.WATER
             ],

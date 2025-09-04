@@ -1,0 +1,16 @@
+{
+    "elements": [
+        {
+            "tags": [
+                "water"
+            ],
+            "sensor": true,
+            "positions": [
+                "72,56"
+            ],
+            "sizes": [
+                "448,48"
+            ]
+        }
+    ]
+}

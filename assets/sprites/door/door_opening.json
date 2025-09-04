@@ -1,0 +1,9 @@
+{
+    "name": "door_opening",
+    "path": "sprites/door/door_opening.png",
+    "rows": 1,
+    "columns": 9,
+    "center_x": true,
+    "center_y": false,
+    "loop": false
+}

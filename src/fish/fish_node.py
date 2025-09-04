@@ -1,8 +1,10 @@
+from fish.states.fish_state import FishState
 import pyglet
 
 from amonite.node import PositionNode
 from amonite.state_machine import StateMachine
 
+from character_node import CharacterNode
 from fish.fish_data_node import FishDataNode
 from fish.states.fish_shoot_load_state import FishShootLoadState
 from fish.states.fish_shoot_state import FishShootState
@@ -12,7 +14,7 @@ from fish.states.fish_dash_state import FishDashState
 from fish.states.fish_idle_state import FishIdleState
 from fish.states.fish_swim_state import FishSwimState
 
-class FishNode(PositionNode):
+class FishNode(CharacterNode):
     """
     Handles 
     """
@@ -28,7 +30,8 @@ class FishNode(PositionNode):
         super().__init__(
             x = x,
             y = y,
-            z = z
+            z = z,
+            enabled = enabled
         )
 
         # Data node, responsible for all content handling.
@@ -51,6 +54,18 @@ class FishNode(PositionNode):
                 FishStates.SHOOT: FishShootState(actor = self.__data, input_enabled = enabled)
             }
         )
+
+    def toggle(self):
+        super().toggle()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, FishState):
+                continue
+
+            if state.input_enabled:
+                state.disable_input()
+            else:
+                state.enable_input()
 
     def delete(self):
         self.__data.delete()
