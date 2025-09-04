@@ -1,6 +1,7 @@
 from typing import Any
 from typing import Callable
 import pyglet
+import pyglet.math as pm
 import pyglet.image as pimg
 
 from amonite import controllers
@@ -31,6 +32,13 @@ class DoorNode(PositionNode):
         self.__door_open_img: pimg.Animation = Animation(source = "sprites/door/door_open.json").content
         self.__door_opening_img: pimg.Animation = Animation(source = "sprites/door/door_opening.json").content
 
+        self.__light_bulb_off_img: pimg.Animation = Animation(source = "sprites/lightbulbs/lightbulb_off.json").content
+        self.__light_bulb_red_img: pimg.Animation = Animation(source = "sprites/lightbulbs/lightbulb_red.json").content
+        self.__light_bulb_purple_img: pimg.Animation = Animation(source = "sprites/lightbulbs/lightbulb_purple.json").content
+
+        self.__red_light_offset: pm.Vec2 = pm.Vec2(-4.0, 40.0)
+        self.__purple_light_offset: pm.Vec2 = pm.Vec2(4.0, 40.0)
+
         self.__sprite: SpriteNode = SpriteNode(
             resource = self.__door_closed_img,
             x = x,
@@ -39,7 +47,23 @@ class DoorNode(PositionNode):
             on_animation_end = self.__on_sprite_animation_end,
             batch = batch
         )
+        self.__red_light_sprite: SpriteNode = SpriteNode(
+            resource = self.__light_bulb_off_img,
+            x = x + self.__red_light_offset.x,
+            y = y + self.__red_light_offset.y,
+            y_sort = False,
+            batch = batch
+        )
+        self.__purple_light_sprite: SpriteNode = SpriteNode(
+            resource = self.__light_bulb_off_img,
+            x = x + self.__purple_light_offset.x,
+            y = y + self.__purple_light_offset.y,
+            y_sort = False,
+            batch = batch
+        )
         self.add_component(self.__sprite)
+        self.add_component(self.__red_light_sprite)
+        self.add_component(self.__purple_light_sprite)
 
         self.collider = CollisionNode(
             x = x,
@@ -83,7 +107,7 @@ class DoorNode(PositionNode):
         if collision_tags.LEG_SENSE in tags:
             self.__leg_sensed = entered
 
-    def update(self, dt: float):
+    def update(self, dt: float) -> None:
         super().update(dt = dt)
 
         if self.__open or self.__opening:

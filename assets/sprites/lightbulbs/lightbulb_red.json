@@ -1,0 +1,8 @@
+{
+    "name": "lightbulb_red",
+    "path": "sprites/lightbulbs/lightbulb_red.png",
+    "rows": 1,
+    "columns": 7,
+    "center_x": true,
+    "center_y": false
+}

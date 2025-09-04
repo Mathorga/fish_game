@@ -1,5 +1,4 @@
 
-from door.door_node import DoorNode
 import json
 from typing import Any
 import pyglet
@@ -25,6 +24,7 @@ from leg.leg_node import LegNode
 from press_button_node import PressButtonNode
 from red_platform_node import RedPlatformNode
 from mid_camera_node import MidCameraNode
+from door.door_node import DoorNode
 
 class WaterHittableNode(HittableNode):
     def __init__(
