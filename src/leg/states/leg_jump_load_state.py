@@ -78,7 +78,7 @@ class LegJumpLoadState(LegState):
             )
 
             # Only read keyboard input if so specified in settings.
-            if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
+            if SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
                 self.__jump += controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE]
 

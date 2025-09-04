@@ -50,7 +50,7 @@ class FishSwimState(FishState):
             )
 
             # Only read keyboard input if so specified in settings.
-            if SETTINGS[Keys.DEBUG] and SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
+            if SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
                 self.__dash = self.__dash or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
