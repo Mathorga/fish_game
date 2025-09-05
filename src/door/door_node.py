@@ -6,6 +6,7 @@ import pyglet.image as pimg
 
 from amonite import controllers
 from amonite.collision.collision_node import CollisionNode
+from amonite.collision.collision_node import CollisionMethod
 from amonite.collision.collision_shape import CollisionRect
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
@@ -36,28 +37,26 @@ class DoorNode(PositionNode):
         self.__light_bulb_red_img: pimg.Animation = Animation(source = "sprites/lightbulbs/lightbulb_red.json").content
         self.__light_bulb_purple_img: pimg.Animation = Animation(source = "sprites/lightbulbs/lightbulb_purple.json").content
 
-        self.__red_light_offset: pm.Vec2 = pm.Vec2(-4.0, 40.0)
-        self.__purple_light_offset: pm.Vec2 = pm.Vec2(4.0, 40.0)
+        self.__red_light_offset: pm.Vec2 = pm.Vec2(-8.0, 42.0)
+        self.__purple_light_offset: pm.Vec2 = pm.Vec2(8.0, 42.0)
 
         self.__sprite: SpriteNode = SpriteNode(
             resource = self.__door_closed_img,
-            x = x,
-            y = y,
             y_sort = False,
             on_animation_end = self.__on_sprite_animation_end,
             batch = batch
         )
         self.__red_light_sprite: SpriteNode = SpriteNode(
             resource = self.__light_bulb_off_img,
-            x = x + self.__red_light_offset.x,
-            y = y + self.__red_light_offset.y,
+            x = self.__red_light_offset.x,
+            y = self.__red_light_offset.y,
             y_sort = False,
             batch = batch
         )
         self.__purple_light_sprite: SpriteNode = SpriteNode(
             resource = self.__light_bulb_off_img,
-            x = x + self.__purple_light_offset.x,
-            y = y + self.__purple_light_offset.y,
+            x = self.__purple_light_offset.x,
+            y = self.__purple_light_offset.y,
             y_sort = False,
             batch = batch
         )
@@ -65,19 +64,18 @@ class DoorNode(PositionNode):
         self.add_component(self.__red_light_sprite)
         self.add_component(self.__purple_light_sprite)
 
-        self.collider = CollisionNode(
+        self.collider: CollisionNode = CollisionNode(
             x = x,
             y = y,
             passive_tags = [
                 collision_tags.FISH_SENSE,
                 collision_tags.LEG_SENSE
             ],
+            collision_method = CollisionMethod.PASSIVE,
             sensor = True,
             on_triggered = self.__on_collision_triggered,
             color = DOOR_COLOR,
             shape = CollisionRect(
-                x = x,
-                y = y,
                 width = width,
                 height = height,
                 anchor_x = anchor_x,
@@ -113,6 +111,25 @@ class DoorNode(PositionNode):
         if self.__open or self.__opening:
             return
 
+        # Turn on light for leg.
+        purple_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__purple_light_sprite.get_image()
+        if self.__leg_sensed:
+            if purple_light_image != self.__light_bulb_purple_img:
+                self.__purple_light_sprite.set_image(self.__light_bulb_purple_img)
+        else:
+            if purple_light_image != self.__light_bulb_off_img:
+                self.__purple_light_sprite.set_image(self.__light_bulb_off_img)
+
+        # Turn on light for fish.
+        red_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__red_light_sprite.get_image()
+        if self.__fish_sensed:
+            if red_light_image != self.__light_bulb_red_img:
+                self.__red_light_sprite.set_image(self.__light_bulb_red_img)
+        else:
+            if red_light_image != self.__light_bulb_off_img:
+                self.__red_light_sprite.set_image(self.__light_bulb_off_img)
+
+        # Open the door.
         if self.__leg_sensed and self.__fish_sensed:
             self.__sprite.set_image(self.__door_opening_img)
             self.__opening = True
