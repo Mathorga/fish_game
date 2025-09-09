@@ -1,3 +1,4 @@
+from amonite.input_controller import ControllerButton
 import pyglet
 
 from amonite.node import Node
@@ -18,6 +19,8 @@ class GlobalInputNode(Node):
 
         self.__reset: bool = False
         self.__switch: bool = False
+        self.__next_level_fish: bool = False
+        self.__next_level_leg: bool = False
 
     def __fetch_input(self) -> None:
         self.__reset = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.R, False)
@@ -25,6 +28,16 @@ class GlobalInputNode(Node):
         # Only read character switch input if in single player mode.
         if SETTINGS[custom_setting_keys.SINGLE_PLAYER]:
             self.__switch = controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.TAB, False)
+
+        self.__next_level_fish = controllers.INPUT_CONTROLLER.get_button_presses(
+            button = ControllerButton.WEST,
+            controller_index = uniques.FISH_CONTROLLER
+        )
+
+        self.__next_level_leg = controllers.INPUT_CONTROLLER.get_button_presses(
+            button = ControllerButton.WEST,
+            controller_index = uniques.LEG_CONTROLLER
+        )
 
     def __reset_scene(self) -> None:
         if scene_composer.SCENE_COMPOSER is None:
