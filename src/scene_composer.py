@@ -283,6 +283,9 @@ class SceneComposer():
                     height = child_data["height"] if "height" in child_data else 0,
                     anchor_x = child_data["anchor_x"] if "anchor_x" in child_data else 0,
                     anchor_y = child_data["anchor_y"] if "anchor_y" in child_data else 0,
+                    destination = child_data["destination"] if "destination" in child_data else None,
+                    # Set room to the specified destination one.
+                    on_triggered = lambda tags, collider, entered: print("nano"),
                     batch = self.scene.world_batch
                 )
             case "ink_button_node":

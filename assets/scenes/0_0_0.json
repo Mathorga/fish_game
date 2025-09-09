@@ -24,7 +24,8 @@
             "width": 36,
             "height": 42,
             "anchor_x": 18,
-            "anchor_y": 0
+            "anchor_y": 0,
+            "destination": "0_0_1"
         },
         {
             "name": "press_button_node",

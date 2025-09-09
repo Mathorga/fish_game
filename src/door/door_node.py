@@ -24,7 +24,8 @@ class DoorNode(PositionNode):
         height: int = 0,
         anchor_x: int = 0,
         anchor_y: int = 0,
-        on_triggered: Callable[[list[str], Any, bool], None] | None = None,
+        destination: str = "",
+        on_triggered: Callable[[None], None] | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
         super().__init__(x, y)
@@ -85,6 +86,8 @@ class DoorNode(PositionNode):
         )
 
         controllers.COLLISION_CONTROLLER.add_collider(self.collider)
+
+        self.__on_triggered: Callable[[list[str], Any, bool], None] | None = on_triggered
 
         self.__fish_sensed: bool = False
         self.__leg_sensed: bool = False
