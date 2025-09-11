@@ -14,8 +14,9 @@ from amonite.animation import Animation
 from amonite.door_node import DOOR_COLOR
 
 from constants import collision_tags
+from interactable.interactable import Interactable
 
-class DoorNode(PositionNode):
+class DoorNode(PositionNode, Interactable):
     def __init__(
         self,
         x: float = 0,
