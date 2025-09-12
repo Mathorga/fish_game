@@ -14,9 +14,8 @@ from amonite.animation import Animation
 from amonite.door_node import DOOR_COLOR
 
 from constants import collision_tags
-from interactable.interactable import Interactable
 
-class DoorNode(PositionNode, Interactable):
+class DoorNode(PositionNode):
     def __init__(
         self,
         x: float = 0,
@@ -70,8 +69,7 @@ class DoorNode(PositionNode, Interactable):
             x = x,
             y = y,
             passive_tags = [
-                collision_tags.FISH_SENSE,
-                collision_tags.LEG_SENSE
+                collision_tags.LEVEL_DOOR
             ],
             collision_method = CollisionMethod.PASSIVE,
             sensor = True,
@@ -117,7 +115,7 @@ class DoorNode(PositionNode, Interactable):
 
         # Turn on light for leg.
         purple_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__purple_light_sprite.get_image()
-        if self.__leg_sensed:
+        if self.__fish_sensed:
             if purple_light_image != self.__light_bulb_purple_img:
                 self.__purple_light_sprite.set_image(self.__light_bulb_purple_img)
         else:
@@ -126,7 +124,7 @@ class DoorNode(PositionNode, Interactable):
 
         # Turn on light for fish.
         red_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__red_light_sprite.get_image()
-        if self.__fish_sensed:
+        if self.__leg_sensed:
             if red_light_image != self.__light_bulb_red_img:
                 self.__red_light_sprite.set_image(self.__light_bulb_red_img)
         else:

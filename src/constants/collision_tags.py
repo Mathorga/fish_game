@@ -25,3 +25,6 @@ INTERACTABLE: str = "interactable"
 
 # Ink collisions.
 INK: str = "ink"
+
+# Collisions with doors to next levels.
+LEVEL_DOOR: str = "level_door"

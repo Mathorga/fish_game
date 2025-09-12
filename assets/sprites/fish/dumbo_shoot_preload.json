@@ -1,0 +1,9 @@
+{
+    "name": "dumbo_shoot_preload",
+    "path": "sprites/fish/dumbo_shoot_preload.png",
+    "rows": 1,
+    "columns": 8,
+    "center_x": true,
+    "center_y": true,
+    "duration": 0.02
+}

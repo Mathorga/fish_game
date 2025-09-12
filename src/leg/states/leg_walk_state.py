@@ -67,7 +67,7 @@ class LegWalkState(LegState):
         self.__fetch_input()
 
         if self.__grab:
-            self.actor.toggle_grab()
+            self.actor.interact()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)

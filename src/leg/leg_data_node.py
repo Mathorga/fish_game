@@ -1,3 +1,4 @@
+from enum import unique
 import math
 from typing import Callable
 import pyglet
@@ -15,6 +16,7 @@ from amonite.settings import GLOBALS
 from amonite.settings import Keys
 
 from constants import collision_tags
+from constants import uniques
 from grabbable.grabber import Grabber
 
 class LegDataNode(PositionNode):
@@ -39,6 +41,7 @@ class LegDataNode(PositionNode):
         "grounded",
         "roofed",
         "in_water",
+        "__on_door",
         "sprite",
         "__collider",
         "__water_sensor",
@@ -110,6 +113,7 @@ class LegDataNode(PositionNode):
         self.grounded: bool = False
         self.roofed: bool = False
         self.in_water: bool = False
+        self.__on_door: bool = False
         ################################
         ################################
 
@@ -141,6 +145,7 @@ class LegDataNode(PositionNode):
                 collision_tags.PLAYER_SENSE,
                 collision_tags.LEG_SENSE,
                 collision_tags.FALL,
+                collision_tags.LEVEL_DOOR
             ],
             passive_tags = [],
             shape = CollisionRect(
@@ -150,6 +155,7 @@ class LegDataNode(PositionNode):
                 height = 28,
                 batch = batch
             ),
+            on_triggered = self.on_collision
         )
         self.__water_sensor: CollisionNode = CollisionNode(
             collision_type = CollisionType.DYNAMIC,
@@ -213,6 +219,12 @@ class LegDataNode(PositionNode):
         ################################
         ################################
 
+    def on_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
+        # Check for collisions with next level door.
+        if collision_tags.LEVEL_DOOR in tags:
+            self.__on_door = entered
+            return
+
     def on_water_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if entered:
             # Entering water: set the water flag, reset gravity in order to get the water resistance effect and disable grabber, so that no object can be grabbed while in water.
@@ -262,7 +274,12 @@ class LegDataNode(PositionNode):
             self.gravity_vec *= 0.0
             self.roofed = False
 
-    def toggle_grab(self) -> None:
+    def interact(self) -> None:
+        if self.__on_door:
+            uniques.LEG_DOOR_TRIGGERED = True
+            uniques.LEG.toggle()
+            return
+
         self.__grabber.toggle_grab()
 
     def get_move_dampening(self) -> float:

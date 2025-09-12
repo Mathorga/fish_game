@@ -28,7 +28,8 @@ class FishShootLoadState(FishState):
         ########################
         # Animation.
         ########################
-        self.__animation: Animation = Animation(source = "sprites/fish/dumbo_shoot_load.json")
+        self.__preload_animation: Animation = Animation(source = "sprites/fish/dumbo_shoot_preload.json")
+        self.__load_animation: Animation = Animation(source = "sprites/fish/dumbo_shoot_load.json")
         ########################
         ########################
 
@@ -44,6 +45,8 @@ class FishShootLoadState(FishState):
         ########################
         # Other.
         ########################
+        self.__preloading: bool = True
+
         # Time elapsed since state start, used to check for releasability.
         self.__elapsed: float = 0.0
 
@@ -60,13 +63,14 @@ class FishShootLoadState(FishState):
         ########################
 
     def start(self) -> None:
+        self.__preloading = True
         self.__shoot_force = self.actor.min_shoot_force
         self.__aim = False
         self.__shoot = False
         self.__elapsed = 0.0
         self.__release_threshold = 1.0
         self.__animation_ended = False
-        self.actor.set_animation(self.__animation)
+        self.actor.set_animation(self.__preload_animation)
         self.actor.move_vec *= 0.0
         self.actor.set_shoot_force(self.__shoot_force)
 
@@ -143,5 +147,10 @@ class FishShootLoadState(FishState):
 
     def on_animation_end(self) -> None:
         super().on_animation_end()
+
+        if self.__preloading:
+            self.__preloading = False
+            self.actor.set_animation(self.__load_animation)
+            return
 
         self.__animation_ended = True
