@@ -12,7 +12,6 @@ from amonite.collision.collision_shape import CollisionRect
 from amonite.collision.collision_node import CollisionMethod
 
 from constants import collision_tags
-from constants import uniques
 from interactable.interactable import Interactable
 
 class Interactor(PositionNode):
