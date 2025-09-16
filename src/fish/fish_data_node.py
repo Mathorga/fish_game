@@ -89,7 +89,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.__interactables: set[PositionNode] = set()
         self.grounded: bool = False
         self.in_water: bool = False
-        self.__on_door: bool = False
+        # self.__on_door: bool = False
         ################################
         ################################
 
@@ -207,9 +207,9 @@ class FishDataNode(PositionNode, Grabbable):
 
     def on_collision(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         # Check for collisions with next level door.
-        if collision_tags.LEVEL_DOOR in tags:
-            self.__on_door = entered
-            return
+        # if collision_tags.LEVEL_DOOR in tags:
+        #     self.__on_door = entered
+        #     return
 
         if collision_tags.WATER not in tags:
             return
@@ -322,13 +322,13 @@ class FishDataNode(PositionNode, Grabbable):
         self.gravity_vec *= 0.0
 
     def interact(self) -> None:
-        if self.__on_door:
-            print("PIPPOMO")
-            uniques.FISH_DOOR_TRIGGERED = True
-            uniques.FISH.toggle()
-            return
+        # if self.__on_door:
+        #     print("PIPPOMO")
+        #     uniques.FISH_DOOR_TRIGGERED = True
+        #     uniques.FISH.toggle()
+        #     return
 
-        self.__interactor.interact()
+        self.__interactor.interact(collision_tags.FISH_SENSE)
 
     def get_move_dampening(self) -> float:
         return self.water_move_dampening if self.in_water else self.land_move_dampening

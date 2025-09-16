@@ -75,8 +75,11 @@ class PressButtonNode(PositionNode, Interactable):
         ################################
         ################################
 
-    def interact(self):
-        super().interact()
+    def interact(
+        self,
+        tags: list[str]
+    ):
+        super().interact(tags = tags)
 
         if self.on:
             self.sprite.set_image(Animation(source = "sprites/buttons/button_down.json").content)

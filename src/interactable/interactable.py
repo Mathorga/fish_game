@@ -13,7 +13,10 @@ class Interactable:
         self.__one_shot: bool = one_shot
         self.__state_changed: bool = False
 
-    def interact(self) -> None:
+    def interact(
+        self,
+        tags: list[str]
+    ) -> None:
         """
         Toggles the interacting state on or of.
         """

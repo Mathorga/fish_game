@@ -7,6 +7,7 @@ import pyglet.image as pimg
 from amonite import controllers
 from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionMethod
+from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
@@ -14,12 +15,15 @@ from amonite.animation import Animation
 from amonite.door_node import DOOR_COLOR
 
 from constants import collision_tags
+from constants import uniques
+from interactable.interactable import Interactable
 
-class DoorNode(PositionNode):
+class DoorNode(PositionNode, Interactable):
     def __init__(
         self,
-        x: float = 0,
-        y: float = 0,
+        x: float = 0.0,
+        y: float = 0.0,
+        z: float = 0.0,
         width: int = 0,
         height: int = 0,
         anchor_x: int = 0,
@@ -28,7 +32,16 @@ class DoorNode(PositionNode):
         on_triggered: Callable[[None], None] | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
-        super().__init__(x, y)
+        PositionNode.__init__(
+            self,
+            x = x,
+            y = y,
+            z = z
+        )
+        Interactable.__init__(
+            self,
+            one_shot = True
+        )
 
         self.__door_closed_img: pimg.Animation = Animation(source = "sprites/door/door_closed.json").content
         self.__door_open_img: pimg.Animation = Animation(source = "sprites/door/door_open.json").content
@@ -66,12 +79,12 @@ class DoorNode(PositionNode):
         self.add_component(self.__purple_light_sprite)
 
         self.collider: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
-            passive_tags = [
-                collision_tags.LEVEL_DOOR
-            ],
+            collision_type = CollisionType.STATIC,
             collision_method = CollisionMethod.PASSIVE,
+            passive_tags = [
+                collision_tags.LEVEL_DOOR,
+                collision_tags.INTERACTABLE
+            ],
             sensor = True,
             on_triggered = self.__on_collision_triggered,
             color = DOOR_COLOR,
@@ -81,9 +94,11 @@ class DoorNode(PositionNode):
                 anchor_x = anchor_x,
                 anchor_y = anchor_y,
                 batch = batch
-            )
+            ),
+            owner = self
         )
 
+        self.add_component(self.collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.collider)
 
         self.__on_triggered: Callable[[list[str], Any, bool], None] | None = on_triggered
@@ -140,3 +155,17 @@ class DoorNode(PositionNode):
         self.collider.delete()
 
         super().delete()
+
+    def interact(
+        self,
+        tags: list[str]
+    ):
+        super().interact(tags = tags)
+
+        if uniques.FISH_DOOR_TRIGGERED and collision_tags.FISH_SENSE in tags:
+            uniques.FISH_DOOR_TRIGGERED = True
+            uniques.FISH.toggle()
+
+        if uniques.LEG_DOOR_TRIGGERED and collision_tags.LEG_SENSE in tags:
+            uniques.LEG_DOOR_TRIGGERED = True
+            uniques.LEG.toggle()
