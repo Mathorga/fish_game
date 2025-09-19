@@ -17,7 +17,8 @@ from amonite.utils.hittables_loader import HittableNode
 from amonite.utils.hittables_loader import HittablesLoader
 from amonite.settings import SETTINGS
 
-from constants import custom_setting_keys, uniques
+from constants import custom_setting_keys
+from constants import uniques
 from fish.fish_node import FishNode
 from ink_button_node import Direction, InkButtonNode
 from leg.leg_node import LegNode
@@ -212,6 +213,7 @@ class SceneComposer():
             )
 
         uniques.ACTIVE_SCENE = self.scene
+        uniques.NEXT_SCENE_SRC = None
 
     def __trigger_child(self, action: str, target_child_id: tuple[str, int]) -> None:
         """

@@ -1,7 +1,7 @@
-from amonite.input_controller import ControllerButton, ControllerStick
 import pyglet
 import pyglet.math as pm
 
+from amonite.input_controller import ControllerButton, ControllerStick
 from amonite.settings import SETTINGS
 from amonite.settings import Keys
 from amonite.animation import Animation

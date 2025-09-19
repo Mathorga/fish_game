@@ -7,6 +7,7 @@ from character_node import CharacterNode
 
 # Global active scene accessor.
 ACTIVE_SCENE_SRC: str | None = None
+NEXT_SCENE_SRC: str | None = None
 ACTIVE_SCENE: SceneNode | None = None
 
 # Main charactes' global accessors.

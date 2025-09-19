@@ -103,11 +103,18 @@ class DoorNode(PositionNode):
         self.__open: bool = False
         self.__opening: bool = False
 
+        self.__destination: str = destination
+
     def __on_sprite_animation_end(self) -> None:
         if self.__opening:
             self.__sprite.set_image(self.__door_open_img)
             self.__opening = False
             self.__open = True
+            return
+
+        if self.__open:
+            uniques.NEXT_SCENE_SRC = f"scenes/{self.__destination}.json"
+            return
 
     def __on_collision_triggered(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if collision_tags.FISH_SENSE in tags:
