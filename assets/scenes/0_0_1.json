@@ -7,20 +7,175 @@
         {
             "name": "fish_node",
             "id": 0,
-            "x": 50,
-            "y": 130
+            "x": 80,
+            "y": 160
         },
         {
             "name": "leg_node",
             "id": 0,
-            "x": 70,
-            "y": 130
+            "x": 110,
+            "y": 160
         },
         {
             "name": "door",
             "id": 0,
             "x": 1024,
             "y": 96
+        },
+        {
+            "name": "red_platform_node",
+            "id": 0,
+            "x": 200,
+            "y": 152,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 1,
+            "x": 248,
+            "y": 152,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 2,
+            "x": 296,
+            "y": 168,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 3,
+            "x": 344,
+            "y": 168,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 4,
+            "x": 392,
+            "y": 152,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 5,
+            "x": 440,
+            "y": 152,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 6,
+            "x": 600,
+            "y": 152,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 7,
+            "x": 648,
+            "y": 152,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 8,
+            "x": 696,
+            "y": 168,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 9,
+            "x": 744,
+            "y": 168,
+            "starts_on": true
+        },
+        {
+            "name": "red_platform_node",
+            "id": 10,
+            "x": 792,
+            "y": 152,
+            "starts_on": false
+        },
+        {
+            "name": "red_platform_node",
+            "id": 11,
+            "x": 840,
+            "y": 152,
+            "starts_on": true
+        },
+        {
+            "name": "press_button_node",
+            "id": 0,
+            "x": 520,
+            "y": 152,
+            "allow_turning_off": true,
+            "on_triggered_on": [
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 0
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 1
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 2
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 3
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 4
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 5
+                }
+            ],
+            "on_triggered_off": [
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 0
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 1
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 2
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 3
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 4
+                },
+                {
+                    "action": "switch",
+                    "name": "red_platform_node",
+                    "id": 5
+                }
+            ]
         }
     ]
 }
