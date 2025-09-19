@@ -61,6 +61,10 @@ class LegWalkState(LegState):
                 self.__grab += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move_vec = self.__move_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__jump = False
+            self.__grab = False
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

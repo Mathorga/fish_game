@@ -71,11 +71,15 @@ class FishCrawlState(FishState):
 
             # Only read keyboard input if so specified in settings.
             if SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
-                self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
+                self.__move_vec = controllers.INPUT_CONTROLLER.get_key_vector()
                 self.__aim = self.__aim or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.RSHIFT, False)
                 self.__interact = self.__interact or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move_vec = self.__move_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__aim = False
+            self.__interact = False
 
     def update(self, dt: float) -> str | None:
         self.__update_animation()

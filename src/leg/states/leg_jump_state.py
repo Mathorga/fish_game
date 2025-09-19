@@ -56,6 +56,8 @@ class LegJumpState(LegState):
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
 
             self.__move_vec = self.__move_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
 
     def update(self, dt: float) -> str | None:
         # Read inputs.

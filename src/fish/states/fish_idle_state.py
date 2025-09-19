@@ -76,6 +76,10 @@ class FishIdleState(FishState):
                 self.__interact = self.__interact or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move = move_vec.normalize().length() > 0.0
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__aim = False
+            self.__interact = False
 
     def update(self, dt: float) -> str | None:
         self.__update_animation()

@@ -16,9 +16,8 @@ from amonite.door_node import DOOR_COLOR
 
 from constants import collision_tags
 from constants import uniques
-from interactable.interactable import Interactable
 
-class DoorNode(PositionNode, Interactable):
+class DoorNode(PositionNode):
     def __init__(
         self,
         x: float = 0.0,
@@ -32,15 +31,10 @@ class DoorNode(PositionNode, Interactable):
         on_triggered: Callable[[None], None] | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
-        PositionNode.__init__(
-            self,
+        super().__init__(
             x = x,
             y = y,
             z = z
-        )
-        Interactable.__init__(
-            self,
-            one_shot = True
         )
 
         self.__door_closed_img: pimg.Animation = Animation(source = "sprites/door/door_closed.json").content
@@ -146,26 +140,14 @@ class DoorNode(PositionNode, Interactable):
             if red_light_image != self.__light_bulb_off_img:
                 self.__red_light_sprite.set_image(self.__light_bulb_off_img)
 
-        # Open the door.
+        # Open the door and disable controls on characters.
         if self.__leg_sensed and self.__fish_sensed:
             self.__sprite.set_image(self.__door_opening_img)
             self.__opening = True
+            uniques.FISH.disable()
+            uniques.LEG.disable()
 
     def delete(self):
         self.collider.delete()
 
         super().delete()
-
-    def interact(
-        self,
-        tags: list[str]
-    ):
-        super().interact(tags = tags)
-
-        if uniques.FISH_DOOR_TRIGGERED and collision_tags.FISH_SENSE in tags:
-            uniques.FISH_DOOR_TRIGGERED = True
-            uniques.FISH.toggle()
-
-        if uniques.LEG_DOOR_TRIGGERED and collision_tags.LEG_SENSE in tags:
-            uniques.LEG_DOOR_TRIGGERED = True
-            uniques.LEG.toggle()
