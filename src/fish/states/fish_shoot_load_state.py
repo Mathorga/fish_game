@@ -100,6 +100,10 @@ class FishShootLoadState(FishState):
                 self.__shoot = self.__shoot or controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
 
             self.__aim_vec = self.__aim_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__aim = False
+            self.__shoot = False
 
     def __can_release(self) -> bool:
         return self.__animation_ended or self.__elapsed > self.__release_threshold

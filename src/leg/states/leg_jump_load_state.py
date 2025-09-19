@@ -83,6 +83,9 @@ class LegJumpLoadState(LegState):
                 self.__jump += controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE]
 
             self.__move_vec = self.__move_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__jump = False
 
     def __can_release(self) -> bool:
         return self.__animation_ended or self.__elapsed > self.__release_threshold

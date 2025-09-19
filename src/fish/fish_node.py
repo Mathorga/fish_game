@@ -67,6 +67,24 @@ class FishNode(CharacterNode):
             else:
                 state.enable_input()
 
+    def enable(self):
+        super().enable()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, FishState):
+                continue
+
+            state.enable_input()
+
+    def disable(self):
+        super().disable()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, FishState):
+                continue
+
+            state.disable_input()
+
     def delete(self):
         self.__data.delete()
 

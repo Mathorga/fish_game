@@ -1,3 +1,4 @@
+from scene_composer import SCENE_COMPOSER
 import os
 import pyglet
 import pyglet.gl as gl
@@ -145,6 +146,11 @@ class FishGame:
         # controllers.COLLISION_CONTROLLER.update(dt = dt)
 
         while self.phys_accumulated_time >= self.phys_timestep:
+            # Check for scene change.
+            if uniques.NEXT_SCENE_SRC is not None:
+                if uniques.NEXT_SCENE_SRC != uniques.ACTIVE_SCENE_SRC:
+                    scene_composer.SCENE_COMPOSER.load_scene(config_file_path = uniques.NEXT_SCENE_SRC)
+                continue
 
             # InputController makes sure every input is handled correctly.
             with controllers.INPUT_CONTROLLER:

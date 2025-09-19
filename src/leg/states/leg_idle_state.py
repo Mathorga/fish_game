@@ -61,6 +61,10 @@ class LegIdleState(LegState):
                 self.__grab += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move = move_vec.normalize().length() > 0.0
+        else:
+            self.__move = False
+            self.__jump = False
+            self.__grab = False
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
