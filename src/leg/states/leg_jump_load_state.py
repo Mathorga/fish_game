@@ -47,7 +47,6 @@ class LegJumpLoadState(LegState):
         self.__elapsed: float = 0.0
 
         # Time (in seconds) before the player can release the jump.
-        self.__release_threshold: float = 1.0
         self.__animation_ended: bool = False
 
         self.__jump_force_step: float = 500.0
@@ -59,7 +58,6 @@ class LegJumpLoadState(LegState):
         self.actor.jump_force = 0.0
         self.__jump = False
         self.__elapsed = 0.0
-        self.__release_threshold = 1.0
         self.__animation_ended = False
 
     def __fetch_input(self) -> None:
@@ -68,7 +66,7 @@ class LegJumpLoadState(LegState):
         """
 
         if self.input_enabled:
-            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.LEG_CONTROLLER
             )

@@ -37,6 +37,10 @@ class LegJumpState(LegState):
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
+
+        # Make sure the jump force does not exceed its maximum possible value.
+        self.actor.jump_force = pm.clamp(500.0, 0.0, self.actor.get_max_jump_force())
+
         self.__jump_force = self.actor.jump_force * self.actor.get_jump_dampening()
         self.__startup = True
 
@@ -46,7 +50,7 @@ class LegJumpState(LegState):
         """
 
         if self.input_enabled:
-            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.LEG_CONTROLLER
             )

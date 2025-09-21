@@ -81,7 +81,7 @@ class LegWalkState(LegState):
 
         # Check for state changes.
         if self.__jump and self.actor.grounded:
-            return LegStates.JUMP_LOAD
+            return LegStates.JUMP
 
         if self.actor.move_vec.length() <= 0.0:
             return LegStates.IDLE

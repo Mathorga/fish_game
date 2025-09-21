@@ -7,7 +7,6 @@ from amonite.state_machine import StateMachine
 from character_node import CharacterNode
 from leg.leg_data_node import LegDataNode
 from leg.states.leg_idle_state import LegIdleState
-from leg.states.leg_jump_load_state import LegJumpLoadState
 from leg.states.leg_jump_state import LegJumpState
 from leg.states.leg_walk_state import LegWalkState
 from leg.states.leg_state import LegStates
@@ -47,7 +46,6 @@ class LegNode(CharacterNode):
             states = {
                 LegStates.IDLE: LegIdleState(actor = self.__data, input_enabled = enabled),
                 LegStates.WALK: LegWalkState(actor = self.__data, input_enabled = enabled),
-                LegStates.JUMP_LOAD: LegJumpLoadState(actor = self.__data, input_enabled = enabled),
                 LegStates.JUMP: LegJumpState(actor = self.__data, input_enabled = enabled)
             }
         )

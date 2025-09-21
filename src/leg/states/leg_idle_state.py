@@ -83,4 +83,4 @@ class LegIdleState(LegState):
             return LegStates.WALK
 
         if self.__jump and self.actor.grounded:
-            return LegStates.JUMP_LOAD
+            return LegStates.JUMP
