@@ -86,9 +86,9 @@ class FishDataNode(PositionNode, Grabbable):
         # Collision flags.
         ################################
         self.__ground_collision_ids: set[int] = set()
+        self.__interactables: set[PositionNode] = set()
         self.grounded: bool = False
         self.in_water: bool = False
-        self.__interactables: set[PositionNode] = set()
         ################################
         ################################
 
@@ -138,7 +138,8 @@ class FishDataNode(PositionNode, Grabbable):
                 collision_tags.PLAYER_SENSE,
                 collision_tags.FISH_SENSE,
                 collision_tags.FALL,
-                collision_tags.WATER
+                collision_tags.WATER,
+                collision_tags.LEVEL_DOOR
             ],
             passive_tags = [],
             shape = CollisionRect(
@@ -315,7 +316,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.gravity_vec *= 0.0
 
     def interact(self) -> None:
-        self.__interactor.interact()
+        self.__interactor.interact(collision_tags.FISH_SENSE)
 
     def get_move_dampening(self) -> float:
         return self.water_move_dampening if self.in_water else self.land_move_dampening

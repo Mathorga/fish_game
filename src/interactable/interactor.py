@@ -86,11 +86,19 @@ class Interactor(PositionNode):
             self.__button_signal.delete()
             self.__button_signal = None
 
-    def interact(self) -> None:
+    def interact(
+        self,
+        tags: list[str]
+    ) -> None:
+        """
+        Triggers interaction with the first interactable perceived.
+        All tags are passed through to the interactable.
+        """
+
         # Only interact with the first interactable in line.
         if len(self.__interactables) > 0:
             interactable: Interactable = self.__interactables[0]
-            interactable.interact()
+            interactable.interact(tags = tags)
 
             if not interactable.is_active():
                 self.__interactables.remove(interactable)

@@ -109,3 +109,8 @@ class RedPlatformNode(PositionNode):
         self.__switching = True
         self.__on = False
         self.sprite.set_image(Animation(source = sprite_off_to_on_file).content)
+
+    def switch(self) -> None:
+        self.__switching = True
+        self.__on = not self.__on
+        self.sprite.set_image(Animation(source = sprite_on_to_off_file if self.__on else sprite_off_to_on_file).content)

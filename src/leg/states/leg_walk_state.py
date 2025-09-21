@@ -1,7 +1,7 @@
-from amonite.input_controller import ControllerButton, ControllerStick
 import pyglet
 import pyglet.math as pm
 
+from amonite.input_controller import ControllerButton, ControllerStick
 from amonite.settings import SETTINGS
 from amonite.settings import Keys
 from amonite.animation import Animation
@@ -61,13 +61,17 @@ class LegWalkState(LegState):
                 self.__grab += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move_vec = self.__move_vec.normalize()
+        else:
+            self.__move_vec = pm.Vec2()
+            self.__jump = False
+            self.__grab = False
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
 
         if self.__grab:
-            self.actor.toggle_grab()
+            self.actor.interact()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)

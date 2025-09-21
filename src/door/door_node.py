@@ -7,6 +7,7 @@ import pyglet.image as pimg
 from amonite import controllers
 from amonite.collision.collision_node import CollisionNode
 from amonite.collision.collision_node import CollisionMethod
+from amonite.collision.collision_node import CollisionType
 from amonite.collision.collision_shape import CollisionRect
 from amonite.node import PositionNode
 from amonite.sprite_node import SpriteNode
@@ -14,13 +15,14 @@ from amonite.animation import Animation
 from amonite.door_node import DOOR_COLOR
 
 from constants import collision_tags
-from interactable.interactable import Interactable
+from constants import uniques
 
-class DoorNode(PositionNode, Interactable):
+class DoorNode(PositionNode):
     def __init__(
         self,
-        x: float = 0,
-        y: float = 0,
+        x: float = 0.0,
+        y: float = 0.0,
+        z: float = 0.0,
         width: int = 0,
         height: int = 0,
         anchor_x: int = 0,
@@ -29,7 +31,11 @@ class DoorNode(PositionNode, Interactable):
         on_triggered: Callable[[None], None] | None = None,
         batch: pyglet.graphics.Batch | None = None
     ) -> None:
-        super().__init__(x, y)
+        super().__init__(
+            x = x,
+            y = y,
+            z = z
+        )
 
         self.__door_closed_img: pimg.Animation = Animation(source = "sprites/door/door_closed.json").content
         self.__door_open_img: pimg.Animation = Animation(source = "sprites/door/door_open.json").content
@@ -67,13 +73,12 @@ class DoorNode(PositionNode, Interactable):
         self.add_component(self.__purple_light_sprite)
 
         self.collider: CollisionNode = CollisionNode(
-            x = x,
-            y = y,
-            passive_tags = [
-                collision_tags.FISH_SENSE,
-                collision_tags.LEG_SENSE
-            ],
+            collision_type = CollisionType.STATIC,
             collision_method = CollisionMethod.PASSIVE,
+            passive_tags = [
+                collision_tags.LEVEL_DOOR,
+                collision_tags.INTERACTABLE
+            ],
             sensor = True,
             on_triggered = self.__on_collision_triggered,
             color = DOOR_COLOR,
@@ -83,9 +88,11 @@ class DoorNode(PositionNode, Interactable):
                 anchor_x = anchor_x,
                 anchor_y = anchor_y,
                 batch = batch
-            )
+            ),
+            owner = self
         )
 
+        self.add_component(self.collider)
         controllers.COLLISION_CONTROLLER.add_collider(self.collider)
 
         self.__on_triggered: Callable[[list[str], Any, bool], None] | None = on_triggered
@@ -96,11 +103,18 @@ class DoorNode(PositionNode, Interactable):
         self.__open: bool = False
         self.__opening: bool = False
 
+        self.__destination: str = destination
+
     def __on_sprite_animation_end(self) -> None:
         if self.__opening:
             self.__sprite.set_image(self.__door_open_img)
             self.__opening = False
             self.__open = True
+            return
+
+        if self.__open:
+            uniques.NEXT_SCENE_SRC = f"scenes/{self.__destination}.json"
+            return
 
     def __on_collision_triggered(self, tags: list[str], collider: CollisionNode, entered: bool) -> None:
         if collision_tags.FISH_SENSE in tags:
@@ -117,7 +131,7 @@ class DoorNode(PositionNode, Interactable):
 
         # Turn on light for leg.
         purple_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__purple_light_sprite.get_image()
-        if self.__leg_sensed:
+        if self.__fish_sensed:
             if purple_light_image != self.__light_bulb_purple_img:
                 self.__purple_light_sprite.set_image(self.__light_bulb_purple_img)
         else:
@@ -126,17 +140,19 @@ class DoorNode(PositionNode, Interactable):
 
         # Turn on light for fish.
         red_light_image: pyglet.image.AbstractImage | pyglet.image.animation.Animation = self.__red_light_sprite.get_image()
-        if self.__fish_sensed:
+        if self.__leg_sensed:
             if red_light_image != self.__light_bulb_red_img:
                 self.__red_light_sprite.set_image(self.__light_bulb_red_img)
         else:
             if red_light_image != self.__light_bulb_off_img:
                 self.__red_light_sprite.set_image(self.__light_bulb_off_img)
 
-        # Open the door.
+        # Open the door and disable controls on characters.
         if self.__leg_sensed and self.__fish_sensed:
             self.__sprite.set_image(self.__door_opening_img)
             self.__opening = True
+            uniques.FISH.disable()
+            uniques.LEG.disable()
 
     def delete(self):
         self.collider.delete()

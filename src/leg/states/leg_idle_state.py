@@ -61,13 +61,17 @@ class LegIdleState(LegState):
                 self.__grab += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move = move_vec.normalize().length() > 0.0
+        else:
+            self.__move = False
+            self.__jump = False
+            self.__grab = False
 
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
 
         if self.__grab:
-            self.actor.toggle_grab()
+            self.actor.interact()
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(0.0, 0.0))
         self.actor.compute_gravity_speed(dt = dt)

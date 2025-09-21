@@ -20,3 +20,9 @@ class CharacterNode(PositionNode):
 
     def toggle(self) -> None:
         self.enabled = not self.enabled
+
+    def disable(self) -> None:
+        self.enabled = False
+
+    def enable(self) -> None:
+        self.enabled = True
