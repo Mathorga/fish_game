@@ -79,6 +79,9 @@ class LegJumpState(LegState):
         # Read inputs.
         self.__fetch_input()
 
+        # Cut jump force if the jump button is released (not self.__jump).
+        # Also make sure the jump is only cut once (not self.__jump_cut).
+        # Also make sure the gravity is not cut while falling (self.actor.gravity_vec.y > 0.0).
         if not self.__jump and not self.__jump_cut and self.actor.gravity_vec.y > 0.0:
             self.__jump_cut = True
             self.actor.gravity_vec *= 0.5
