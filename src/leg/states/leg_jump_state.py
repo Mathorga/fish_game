@@ -1,3 +1,4 @@
+from amonite.input_controller import ControllerButton
 import pyglet
 import pyglet.math as pm
 
@@ -29,16 +30,25 @@ class LegJumpState(LegState):
 
         # Input.
         self.__move_vec: pyglet.math.Vec2 = pyglet.math.Vec2()
+        self.__jump: bool = True
 
         # Other.
         self.__jump_force: float = 500.0
         self.__startup: bool = True
 
+        # Tells whether the jump has been cut or not.
+        self.__jump_cut: bool = False
+
     def start(self) -> None:
         self.actor.set_animation(self.__animation)
         self.actor.grounded = False
+
+        # Make sure the jump force does not exceed its maximum possible value.
+        self.actor.jump_force = pm.clamp(500.0, 0.0, self.actor.get_max_jump_force())
+
         self.__jump_force = self.actor.jump_force * self.actor.get_jump_dampening()
         self.__startup = True
+        self.__jump_cut = False
 
     def __fetch_input(self) -> None:
         """
@@ -46,14 +56,20 @@ class LegJumpState(LegState):
         """
 
         if self.input_enabled:
-            self.__move_vec: pm.Vec2 = controllers.INPUT_CONTROLLER.get_stick_vector(
+            self.__move_vec = controllers.INPUT_CONTROLLER.get_stick_vector(
                 stick = ControllerStick.LSTICK,
+                controller_index = uniques.LEG_CONTROLLER
+            )
+
+            self.__jump = controllers.INPUT_CONTROLLER.get_button(
+                button = ControllerButton.SOUTH,
                 controller_index = uniques.LEG_CONTROLLER
             )
 
             # Only read keyboard input if so specified in settings.
             if SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
+                self.__jump += controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE]
 
             self.__move_vec = self.__move_vec.normalize()
         else:
@@ -62,6 +78,10 @@ class LegJumpState(LegState):
     def update(self, dt: float) -> str | None:
         # Read inputs.
         self.__fetch_input()
+
+        if not self.__jump and not self.__jump_cut and self.actor.gravity_vec.y > 0.0:
+            self.__jump_cut = True
+            self.actor.gravity_vec *= 0.5
 
         self.actor.compute_move_speed(dt = dt, move_vec = pm.Vec2(self.__move_vec.x, 0.0))
         self.actor.compute_gravity_speed(dt = dt)
