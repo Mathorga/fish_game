@@ -45,7 +45,7 @@ class LegWalkState(LegState):
                 stick = ControllerStick.LSTICK,
                 controller_index = uniques.LEG_CONTROLLER
             )
-            self.__jump = controllers.INPUT_CONTROLLER.get_button(
+            self.__jump = controllers.INPUT_CONTROLLER.get_button_presses(
                 button = ControllerButton.SOUTH,
                 controller_index = uniques.LEG_CONTROLLER
             )
@@ -57,7 +57,7 @@ class LegWalkState(LegState):
             # Only read keyboard input if so specified in settings.
             if SETTINGS[custom_setting_keys.KEYBOARD_CONTROLS]:
                 self.__move_vec += controllers.INPUT_CONTROLLER.get_key_vector()
-                self.__jump += controllers.INPUT_CONTROLLER[pyglet.window.key.SPACE]
+                self.__jump += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.SPACE, False)
                 self.__grab += controllers.INPUT_CONTROLLER.key_presses.get(pyglet.window.key.H, False)
 
             self.__move_vec = self.__move_vec.normalize()
