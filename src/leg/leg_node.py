@@ -62,6 +62,24 @@ class LegNode(CharacterNode):
             else:
                 state.enable_input()
 
+    def enable(self):
+        super().enable()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, LegState):
+                continue
+
+            state.enable_input()
+
+    def disable(self):
+        super().disable()
+
+        for state in self.__state_machine.states.values():
+            if not isinstance(state, LegState):
+                continue
+
+            state.disable_input()
+
     def update(self, dt: float) -> None:
         super().update(dt = dt)
         
