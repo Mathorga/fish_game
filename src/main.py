@@ -23,7 +23,7 @@ class FishGame:
         pyglet.resource.path = [f"{os.path.dirname(__file__)}/../assets"]
         pyglet.resource.reindex()
 
-        pyglet.options.dpi_scaling = "stretch"
+        pyglet.options.dpi_scaling = "scaled"
 
         # Load font files.
         pyglet.font.add_file(f"{pyglet.resource.path[0]}/fonts/I-pixel-u.ttf")
@@ -43,16 +43,13 @@ class FishGame:
         # Controllers.
         controllers.create_controllers(window = self.__window)
 
-        # On retina Macs everything is rendered 2x-zoomed for some reason. compensate for this using a platform scaling.
-        platform_scaling: float = 0.5 if "macOS" in str(GLOBALS[Keys.PLATFORM]) else 1.0
-
         # Compute pixel scaling (minimum unit is <1 / scaling>)
         # Using a scaling of 1 means that movements are pixel-perfect (aka nothing moves by sub-pixel values).
         # Using a scaling of 5 means that the minimum unit is 1/5 of a pixel.
         GLOBALS[Keys.SCALING] = 1 if SETTINGS[Keys.PIXEL_PERFECT] else int(min(
             self.__window.width // int(SETTINGS[Keys.VIEW_WIDTH]),
             self.__window.height // int(SETTINGS[Keys.VIEW_HEIGHT])
-        ) * platform_scaling)
+        ))
 
         # Define a custom shader for global scene rendering.
         upscaler_program: pyglet.graphics.shader.ShaderProgram = utils.load_shader(
@@ -62,8 +59,8 @@ class FishGame:
 
         self.__upscaler = TrueUpscaler(
             window = self.__window,
-            render_width = int((SETTINGS[Keys.VIEW_WIDTH] * GLOBALS[Keys.SCALING]) / platform_scaling),
-            render_height = int((SETTINGS[Keys.VIEW_HEIGHT] * GLOBALS[Keys.SCALING]) / platform_scaling),
+            render_width = int((SETTINGS[Keys.VIEW_WIDTH] * GLOBALS[Keys.SCALING])),
+            render_height = int((SETTINGS[Keys.VIEW_HEIGHT] * GLOBALS[Keys.SCALING])),
             program = upscaler_program
         )
 
