@@ -1,4 +1,3 @@
-from scene_composer import SCENE_COMPOSER
 import os
 import pyglet
 import pyglet.gl as gl
@@ -14,6 +13,7 @@ from constants import uniques
 from global_input_node import GlobalInputNode
 import scene_composer
 from scene_composer import SceneComposer
+from scene_composer import SCENE_COMPOSER
 from utils import utils
 
 
