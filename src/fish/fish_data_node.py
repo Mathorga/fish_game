@@ -68,6 +68,7 @@ class FishDataNode(PositionNode, Grabbable):
         self.move_vec: pm.Vec2 = pm.Vec2(0.0, 0.0)
         self.max_move_speed: float = 80.0
         self.move_accel: float = 400.0
+        self.heading: float = 0.0
         ################################
         ################################
 
@@ -329,7 +330,7 @@ class FishDataNode(PositionNode, Grabbable):
         super().update(dt = dt)
 
         # Compute facing direction from aim if any, otherwise from movement.
-        dir_cos: float = math.cos(self.aim_vec.heading() if self.aim_vec.length() > 0.0 else self.move_vec.heading())
+        dir_cos: float = math.cos(self.aim_vec.heading() if self.aim_vec.length() > 0.0 else self.heading)
         dir_len: float = abs(dir_cos)
 
         # Only update facing if there's any horizontal movement.
@@ -365,14 +366,13 @@ class FishDataNode(PositionNode, Grabbable):
         max_speed: float | None = None,
     ) -> None:
         target_speed: float = 0.0
-        target_heading: float = self.move_vec.heading()
 
         current_speed: float = self.move_vec.length()
 
         # Set target speed and heading from input move vector.
         if move_vec.length() > 0.0:
             target_speed = self.max_move_speed
-            target_heading = move_vec.heading()
+            self.heading = move_vec.heading()
 
         if move_vec.length() < target_speed:
             # Accelerate when the current speed is lower than the target speed.
@@ -387,7 +387,7 @@ class FishDataNode(PositionNode, Grabbable):
                 0.0,
                 (max_speed if max_speed is not None else self.max_move_speed) * self.get_move_dampening()
             ),
-            angle = target_heading
+            angle = self.heading
         )
 
     def compute_gravity_speed(self, dt: float) -> None:

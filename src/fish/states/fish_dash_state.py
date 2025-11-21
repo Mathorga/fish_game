@@ -82,7 +82,7 @@ class FishDashState(FishState):
             self.__startup = False
             self.actor.move_vec = pm.Vec2.from_polar(
                 length = self.actor.dash_force,
-                angle = self.__move_vec.heading()
+                angle = self.actor.heading
             )
 
         # Move the player.
